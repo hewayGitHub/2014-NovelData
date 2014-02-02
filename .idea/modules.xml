@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../Dataframe/.idea/Dataframe.iml" filepath="$PROJECT_DIR$/../Dataframe/.idea/Dataframe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../DataFrame/.idea/DataFrame.iml" filepath="$PROJECT_DIR$/../DataFrame/.idea/DataFrame.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/NovelData.iml" filepath="$PROJECT_DIR$/.idea/NovelData.iml" />
     </modules>
   </component>
