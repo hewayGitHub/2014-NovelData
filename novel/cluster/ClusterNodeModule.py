@@ -36,6 +36,7 @@ class ClusterNodeModule(object):
             if novel_node is False:
                 continue
             self.integrate_novel_node(novel_node)
+            self.update_novel_node(novel_node)
 
     def update_novel_node(self, novel_node):
         """
