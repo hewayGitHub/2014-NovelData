@@ -26,9 +26,9 @@ class MySQLModule(object):
         parser = SafeConfigParser()
         parser.read('./conf/db.conf')
 
-        self.conection_info = dict
+        self.conection_info = {}
         for table_name in parser.sections():
-            item = dict
+            item = {}
             for key, value in parser.items(table_name):
                 item[key] = value
             self.conection_info[table_name] = item
