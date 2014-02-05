@@ -30,6 +30,7 @@ class ClusterNodeModule(object):
         """
         cluster_db = ClusterDBModule()
         novel_id_list = cluster_db.get_dirfmtinfo_id_list(site_id, update_time)
+        self.logger.info('get {0} novel info'.format(len(novel_id_list)))
 
         for novel_id in novel_id_list:
             novel_node = self.generate_novel_node(site_id, novel_id)

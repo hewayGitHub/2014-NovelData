@@ -46,7 +46,7 @@ class MySQLModule(object):
         try:
             conn = MySQLdb.connect(
                 host = self.conection_info[table_name]['host'],
-                port = self.conection_info[table_name]['port'],
+                port = int(self.conection_info[table_name]['port']),
                 user = self.conection_info[table_name]['user'],
                 passwd = self.conection_info[table_name]['passwd'],
                 db = self.conection_info[table_name]['db']
