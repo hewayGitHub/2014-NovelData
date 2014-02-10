@@ -30,7 +30,6 @@ class ClusterEdgeModule(object):
         self.current_novel_node_info_list = None
         self.current_novel_edge_info_list = None
 
-
     def novel_edge_generate(self, novel_node_list):
         """
             计算单个特征下点集合的边信息
@@ -47,25 +46,34 @@ class ClusterEdgeModule(object):
             for index_y, novel_node_y in enumerate(self.current_novel_node_info_list):
                 if index_x == index_y:
                     continue
+                similarity = self.novel_node_similarity_calculation(novel_node_x, novel_node_y)
 
     def novel_node_similarity_calculation(self, novel_node_x, novel_node_y):
         """
             计算两个点的相似度
         """
-
-    def book_name_similarity_calculation(self, book_name_x, book_name_y):
-        """
-        """
-        return string_similarity(book_name_x, book_name_y)
-
-    def pen_name_similarity_calculation(self, pen_name_x, pen_name_y):
-        """
-        """
-        return string_similarity(pen_name_x, pen_name_y)
+        novel_similarity = self.chapter_list_similarity_calculation(novel_node_x.chapter_list, novel_node_y.chapter_list)
+        if novel_node_x.book_name == novel_node_y.book_name:
+            novel_similarity += 10
+        if novel_node_x.pen_name == novel_node_y.pen_name:
+            novel_similarity += 10
+        return novel_similarity
 
     def chapter_list_similarity_calculation(self, chapter_list_x, chapter_list_y):
         """
         """
+        chapter_count = min(len(chapter_list_x), len(chapter_list_y))
+        if chapter_count == 0:
+            return 0
+        match_count = 0
+        for chapter_x in chapter_list_x:
+            for chapter_y in chapter_list_y:
+                if string_similarity(chapter_x.chapter_title, chapter_y.chapter_title) > 0.7:
+                    match_count += 1
+                    break
+        similarity = match_count * 1.0 / chapter_count
+        similarity = int(similarity * 10)
+        return similarity
 
     def novel_node_generate(self, dir_id):
         """

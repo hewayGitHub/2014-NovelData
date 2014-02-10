@@ -96,6 +96,11 @@ class NovelChapterInfo(object):
         )
         return result
 
+class NovelEdgeInfo(object):
+    """
+        两点直接的边的信息，即两本小说的相似度
+    """
+
 if __name__ == '__main__':
     here()
 
