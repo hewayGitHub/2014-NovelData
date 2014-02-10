@@ -44,7 +44,7 @@ class ClusterNodeModule(object):
             单本小说信息更新到点集合当中
         """
         cluster_node = self.generate_cluster_node(novel_node.dir_id)
-        if novel_node.equal(cluster_node):
+        if cluster_node and novel_node.equal(cluster_node):
             return False
 
         cluster_db = ClusterDBModule()
@@ -62,7 +62,7 @@ class ClusterNodeModule(object):
         cluster_db = ClusterDBModule()
 
         result = cluster_db.get_novelclusterdirinfo_info(dir_id)
-        if result is False:
+        if not result:
             return False
 
         (site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name) = result

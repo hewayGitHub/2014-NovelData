@@ -41,8 +41,6 @@ class NovelNodeInfo(object):
         """
             判断两个点是否完全相同
         """
-        if node is False:
-            return False
         if self.book_name != node.book_name or self.pen_name != node.pen_name or self.site_status != node.site_status:
             return False
         if len(self.chapter_list) != len(node.chapter_list):
