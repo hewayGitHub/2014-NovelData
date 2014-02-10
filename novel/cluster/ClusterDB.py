@@ -128,7 +128,7 @@ class ClusterDBModule(MySQLModule):
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
-            cursor.commit()
+            conn.commit()
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
             return False
@@ -146,7 +146,7 @@ class ClusterDBModule(MySQLModule):
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
-            cursor.commit()
+            conn.commit()
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
             return False
@@ -167,7 +167,7 @@ class ClusterDBModule(MySQLModule):
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
-            cursor.commit()
+            conn.commit()
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
             return False
@@ -185,7 +185,7 @@ class ClusterDBModule(MySQLModule):
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
-            cursor.commit()
+            conn.commit()
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
             return False
