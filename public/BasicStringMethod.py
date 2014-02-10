@@ -4,6 +4,8 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-03 16:39'
 
+import Levenshtein
+
 def here():
     print('PrimeMusic')
 
@@ -85,6 +87,12 @@ def string_format(string):
     string = string.replace(u'\u0027', u'\u005c\u0027')
     string = string.encode("GBK", "ignore")
     return string
+
+def string_similarity(string_x, string_y):
+    """
+    """
+    return Levenshtein.ratio(string_x, string_y)
+
 
 if __name__ == '__main__':
     string = '我是abc**987&^%test我是全角'.decode('GBK', 'ignore')

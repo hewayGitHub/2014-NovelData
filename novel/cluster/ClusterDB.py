@@ -194,7 +194,24 @@ class ClusterDBModule(MySQLModule):
         conn.close()
         return True
 
+    def get_novelclusterdirinfo_list(self, table_id, field):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_dir_info')
+        sql = 'SELECT dir_id, {0} FROM novel_cluster_dir_info{1}'.format(field, table_id)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
 
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        conn.close()
+        return result
 
 if __name__ == '__main__':
     here()    
