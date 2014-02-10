@@ -4,6 +4,8 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-02 14:05'
 
+from public.BasicStringMethod import *
+
 def here():
     print('PrimeMusic')
 
@@ -56,7 +58,7 @@ class NovelNodeInfo(object):
         result = (
             self.site_id, self.site, self.site_status,
             self.dir_id, self.dir_url,
-            self.gid, self.book_name.encode('GBK', 'ignore'), self.pen_name.encode('GBK', 'ignore'),
+            self.gid, string_format(self.book_name), string_format(self.pen_name),
             self.chapter_count, self.valid_chapter_count, self.chapter_word_sum
         )
         return result
@@ -89,7 +91,7 @@ class NovelChapterInfo(object):
         """
         result = (
             self.dir_id, self.chapter_id, self.chapter_sort,
-            self.chapter_url, self.chapter_title.encode('GBK', 'ignore'), self.raw_chapter_title.encode('GBK', 'ignore'),
+            self.chapter_url, string_format(self.chapter_title), string_format(self.raw_chapter_title),
             self.chapter_status, self.word_sum
         )
         return result

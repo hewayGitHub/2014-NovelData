@@ -78,6 +78,14 @@ def string_filter(string):
     string = ''.join(is_legal(char) and char or '' for char in string)
     return string
 
+def string_format(string):
+    """
+    """
+    string = string.replace(u'\u005c', u'')
+    string = string.replace(u'\u0027', u'\u005c\u0027')
+    string = string.encode("GBK", "ignore")
+    return string
+
 if __name__ == '__main__':
     string = '我是abc**987&^%test我是全角'.decode('GBK', 'ignore')
     print(string.encode('utf8', 'ignore'))

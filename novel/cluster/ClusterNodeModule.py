@@ -51,6 +51,8 @@ class ClusterNodeModule(object):
         if cluster_node:
             cluster_db.delete_novelclusterdirinfo(novel_node.dir_id)
             cluster_db.delete_novelclusterchapterinfo_list(novel_node.dir_id)
+
+        self.logger.info('dir_id: {0}, table_id: {1}'.format(novel_node.dir_id, novel_node.dir_id % 256))
         cluster_db.insert_novelclusterdirinfo(novel_node.dir_id, novel_node.generate_insert_tuple())
         cluster_db.insert_novelclusterchapterinfo_list(novel_node.dir_id, [chapter.generate_insert_tuple() for chapter in novel_node.chapter_list])
         return True
