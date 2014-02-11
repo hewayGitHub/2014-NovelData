@@ -6,8 +6,10 @@ __date__ = '2014-02-02 14:05'
 
 from public.BasicStringMethod import *
 
+
 def here():
     print('PrimeMusic')
+
 
 class Singleton(type) :
     """
@@ -17,6 +19,8 @@ class Singleton(type) :
         if '_instance' not in vars(self):
             self._instance = super(Singleton, self).__call__(*args, **kwargs)
         return self._instance
+
+
 
 class NovelNodeInfo(object):
     """
@@ -39,6 +43,7 @@ class NovelNodeInfo(object):
         self.chapter_word_sum = chapter_word_sum
         self.chapter_list = []
 
+
     def equal(self, node):
         """
             判断两个点是否完全相同
@@ -52,6 +57,7 @@ class NovelNodeInfo(object):
                 return False
         return True
 
+
     def generate_insert_tuple(self):
         """
         """
@@ -62,6 +68,8 @@ class NovelNodeInfo(object):
             self.chapter_count, self.valid_chapter_count, self.chapter_word_sum
         )
         return result
+
+
 
 class NovelChapterInfo(object):
     """
@@ -78,6 +86,7 @@ class NovelChapterInfo(object):
         self.chapter_status = chapter_status
         self.word_sum = word_sum
 
+
     def equal(self, chapter):
         """
             判断两个章节是否完全相同
@@ -85,6 +94,7 @@ class NovelChapterInfo(object):
         if self.chapter_id != chapter.chapter_id or self.chapter_title != chapter.chapter_title:
             return False
         return True
+
 
     def generate_insert_tuple(self):
         """
@@ -96,10 +106,25 @@ class NovelChapterInfo(object):
         )
         return result
 
+
+
 class NovelEdgeInfo(object):
     """
         两点直接的边的信息，即两本小说的相似度
     """
+    def __init__(self, dir_id_i = 0, dir_id_j = 0, similarity = 0):
+        """
+            一条边的信息
+        """
+        self.dir_id_i = dir_id_i
+        self.dir_id_j = dir_id_j
+        self.similarity = similarity
+
+    def generate_insert_tuple(self):
+        """
+        """
+        result = (self.dir_id_i, self.dir_id_j, self.similarity)
+        return result
 
 if __name__ == '__main__':
     here()

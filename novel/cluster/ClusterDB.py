@@ -13,7 +13,6 @@ class ClusterDBModule(MySQLModule):
     """
         封装聚类模块中用到的数据库操作
     """
-
     def get_dirfmtinfo_id_list(self, site_id, update_time):
         """
         """
@@ -33,6 +32,7 @@ class ClusterDBModule(MySQLModule):
         conn.close()
         return result
 
+
     def get_dirfmtinfo_info(self, site_id, novel_id):
         """
         """
@@ -51,6 +51,7 @@ class ClusterDBModule(MySQLModule):
         cursor.close()
         conn.close()
         return result
+
 
     def get_chapteroriinfo_list(self, site_id, dir_id):
         """
@@ -75,6 +76,7 @@ class ClusterDBModule(MySQLModule):
         conn.close()
         return result
 
+
     def get_novelclusterdirinfo_info(self, dir_id):
         """
         """
@@ -93,6 +95,7 @@ class ClusterDBModule(MySQLModule):
         cursor.close()
         conn.close()
         return result
+
 
     def get_novelclusterchapterinfo_list(self, dir_id):
         """
@@ -114,6 +117,7 @@ class ClusterDBModule(MySQLModule):
         cursor.close()
         conn.close()
         return result
+
 
     def insert_novelclusterdirinfo(self, dir_id, tuple):
         """
@@ -137,6 +141,7 @@ class ClusterDBModule(MySQLModule):
         conn.close()
         return True
 
+
     def delete_novelclusterdirinfo(self, dir_id):
         """
         """
@@ -154,6 +159,7 @@ class ClusterDBModule(MySQLModule):
         cursor.close()
         conn.close()
         return True
+
 
     def insert_novelclusterchapterinfo_list(self, dir_id, tuple_list):
         """
@@ -176,6 +182,7 @@ class ClusterDBModule(MySQLModule):
         conn.close()
         return True
 
+
     def delete_novelclusterchapterinfo_list(self, dir_id):
         """
         """
@@ -193,6 +200,7 @@ class ClusterDBModule(MySQLModule):
         cursor.close()
         conn.close()
         return True
+
 
     def get_novelclusterdirinfo_list(self, table_id, field):
         """
@@ -212,6 +220,43 @@ class ClusterDBModule(MySQLModule):
         cursor.close()
         conn.close()
         return result
+
+
+    def delete_novelclusteredgeinfo(self):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_edge_info')
+        for table_id in xrange(0, 256):
+            sql = 'DELETE FROM novel_cluster_edge_info{0}'.format(table_id)
+            try:
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                conn.commit()
+            except Exception, e:
+                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+                continue
+            cursor.close()
+        conn.close()
+
+
+    def insert_novelclusteredgeinfo_list(self, dir_id, tuple_list):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_edge_info')
+        sql = 'INSERT IGNORE INTO novel_cluster_edge_info{0} ' \
+              '(dir_id_i, dir_id_j, similarity) ' \
+              'VALUES {1}'.format(dir_id % 256, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            conn.commit()
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+
+        cursor.close()
+        conn.close()
+        return True
 
 if __name__ == '__main__':
     here()    

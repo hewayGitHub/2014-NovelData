@@ -5,10 +5,12 @@ __author__ = 'sunhaowen'
 __date__ = '2014-02-02 22:51'
 
 import logging
+import time
 from collections import defaultdict
 
 from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
+from novel.cluster.NovelSimilarityModule import *
 from public.BasicStringMethod import *
 
 def here():
@@ -20,7 +22,7 @@ class ClusterEdgeModule(object):
     """
     def __init__(self):
         """
-            初始化操作，读取配置
+            初始化操作
         """
         self.logger = logging.getLogger('novel.cluster.edge')
         self.err = logging.getLogger('err.cluster.edge')
@@ -28,55 +30,12 @@ class ClusterEdgeModule(object):
         self.novel_node_dict = None
 
         self.current_novel_node_info_list = None
-        self.current_novel_edge_info_list = None
+        self.current_novel_edge_info_dict = None
 
-    def novel_edge_generate(self, novel_node_list):
-        """
-            计算单个特征下点集合的边信息
-        """
-        self.current_novel_node_info_list = []
-        for dir_id in novel_node_list:
-            novel_node = self.novel_node_generate(dir_id)
-            if not novel_node:
-                continue
-            self.current_novel_node_info_list.append(novel_node)
-
-        self.current_novel_edge_info_list = []
-        for index_x, novel_node_x in enumerate(self.current_novel_node_info_list):
-            for index_y, novel_node_y in enumerate(self.current_novel_node_info_list):
-                if index_x == index_y:
-                    continue
-                similarity = self.novel_node_similarity_calculation(novel_node_x, novel_node_y)
-
-    def novel_node_similarity_calculation(self, novel_node_x, novel_node_y):
-        """
-            计算两个点的相似度
-        """
-        novel_similarity = self.chapter_list_similarity_calculation(novel_node_x.chapter_list, novel_node_y.chapter_list)
-        if novel_node_x.book_name == novel_node_y.book_name:
-            novel_similarity += 10
-        if novel_node_x.pen_name == novel_node_y.pen_name:
-            novel_similarity += 10
-        return novel_similarity
-
-    def chapter_list_similarity_calculation(self, chapter_list_x, chapter_list_y):
-        """
-        """
-        chapter_count = min(len(chapter_list_x), len(chapter_list_y))
-        if chapter_count == 0:
-            return 0
-        match_count = 0
-        for chapter_x in chapter_list_x:
-            for chapter_y in chapter_list_y:
-                if string_similarity(chapter_x.chapter_title, chapter_y.chapter_title) > 0.7:
-                    match_count += 1
-                    break
-        similarity = match_count * 1.0 / chapter_count
-        similarity = int(similarity * 10)
-        return similarity
 
     def novel_node_generate(self, dir_id):
         """
+            根据dir_id从点集合中读取一本小说的信息
         """
         cluster_db = ClusterDBModule()
 
@@ -96,24 +55,90 @@ class ClusterEdgeModule(object):
             novel_node.chapter_list.append(chapter)
         return novel_node
 
-    def novel_node_collection(self):
+
+    def novel_edge_generate(self, novel_node_list):
         """
-            读取所有小说的点集合，按特征划分
+            计算单个特征下点集合的边信息
+        """
+        novel_similarity = NovelSimilarityModule()
+        novel_node_list = sorted(novel_node_list)
+
+        self.current_novel_node_info_list = []
+        for dir_id in novel_node_list:
+            novel_node = self.novel_node_generate(dir_id)
+            if not novel_node:
+                continue
+            self.current_novel_node_info_list.append(novel_node)
+
+        self.current_novel_edge_info_dict = defaultdict(list)
+        for index_i in xrange(0, len(self.current_novel_node_info_list)):
+            for index_j in xrange(index_i + 1, len(self.current_novel_node_info_list)):
+                novel_node_i = self.current_novel_node_info_list[index_i]
+                novel_node_j = self.current_novel_node_info_list[index_j]
+                similarity = novel_similarity.novel_node_similarity_calculation(novel_node_i, novel_node_j)
+                if similarity > 15:
+                    edge = NovelEdgeInfo(novel_node_i.dir_id, novel_node_j.dir_id, similarity)
+                    self.current_novel_edge_info_dict[novel_node_i.dir_id].append(edge)
+
+
+    def novel_edge_update(self):
+        """
+            单个特征下边集合的更新
+        """
+        cluster_db = ClusterDBModule()
+
+        for (dir_id, novel_edge_info_list) in self.current_novel_edge_info_dict.items():
+            cluster_db.insert_novelclusteredgeinfo_list(dir_id, [edge.generate_insert_tuple() for edge in novel_edge_info_list])
+
+
+    def novel_node_collection(self, field = 'book_name'):
+        """
+            收集所有小说点，按特征分组
         """
         cluster_db = ClusterDBModule()
 
         self.novel_node_dict = defaultdict(list)
         for table_id in xrange(0, 256):
-            novel_node_list = cluster_db.get_novelclusterdirinfo_list(table_id, 'book_name')
+            novel_node_list = cluster_db.get_novelclusterdirinfo_list(table_id, field)
             if not novel_node_list:
                 continue
-            for (dir_id, field) in novel_node_list:
-                self.novel_node_dict[field].append(dir_id)
+            for (dir_id, name) in novel_node_list:
+                self.novel_node_dict[name].append(dir_id)
+
+
+    def run(self):
+        """
+            1.  读取所有小说点，按特征分组
+            2.  每组内小说点计算相似度，更新边信息
+        """
+        cluster_db = ClusterDBModule()
+        cluster_db.delete_novelclusteredgeinfo()
+
+        self.novel_node_collection('book_name')
+        for (name, novel_node_list) in self.novel_node_dict.items():
+            if len(novel_node_list) == 1:
+                continue
+            self.novel_edge_generate(novel_node_list)
+            self.novel_edge_update()
+
+        self.novel_node_collection('pen_name')
+        for (name, novel_node_list) in self.novel_node_dict.items():
+            if len(novel_node_list) == 1:
+                continue
+            self.novel_edge_generate(novel_node_list)
+            self.novel_edge_update()
+
+
+    def exit(self):
+        """
+        """
+        self.novel_node_dict = None
+        self.current_novel_node_info_list = None
+        self.current_novel_edge_info_dict = None
 
 
 if __name__ == '__main__':
-    here()    
-
+    here()
 
 
 
