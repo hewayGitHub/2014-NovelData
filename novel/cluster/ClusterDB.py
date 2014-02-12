@@ -128,7 +128,7 @@ class ClusterDBModule(MySQLModule):
               'dir_id, dir_url, ' \
               'gid, book_name, pen_name, ' \
               'chapter_count, valid_chapter_count, chapter_word_sum) ' \
-              'VALUES ({1})'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
+              'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
