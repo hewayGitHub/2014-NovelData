@@ -29,6 +29,7 @@ if __name__ == '__main__':
     init_log('err')
 
     cluster_node_module = ClusterNodeModule()
+    cluster_node_module.init()
     cluster_node_module.run()
 
 
