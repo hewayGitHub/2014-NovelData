@@ -119,7 +119,7 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def insert_novelclusterdirinfo(self, dir_id, tuple):
+    def insert_novelclusterdirinfo(self, table_id, tuple_list):
         """
         """
         conn = self.buid_connection('novel_cluster_dir_info')
@@ -128,7 +128,7 @@ class ClusterDBModule(MySQLModule):
               'dir_id, dir_url, ' \
               'gid, book_name, pen_name, ' \
               'chapter_count, valid_chapter_count, chapter_word_sum) ' \
-              'VALUES ({1})'.format(dir_id % 256, ', '.join("'%s'" % str(filed) for filed in tuple))
+              'VALUES ({1})'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -142,12 +142,12 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def delete_novelclusterdirinfo(self, dir_id):
+    def delete_novelclusterdirinfo(self, table_id, dir_id_list):
         """
         """
         conn = self.buid_connection('novel_cluster_dir_info')
         sql = 'DELETE FROM novel_cluster_dir_info{0} ' \
-              'WHERE dir_id = {1}'.format(dir_id % 256, dir_id)
+              'WHERE dir_id IN ({1})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -161,7 +161,7 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def insert_novelclusterchapterinfo_list(self, dir_id, tuple_list):
+    def insert_novelclusterchapterinfo_list(self, table_id, tuple_list):
         """
         """
         conn = self.buid_connection('novel_cluster_chapter_info')
@@ -169,7 +169,7 @@ class ClusterDBModule(MySQLModule):
               '(dir_id, chapter_id, chapter_sort, ' \
               'chapter_url, chapter_title, raw_chapter_title, ' \
               'chapter_status, word_sum) ' \
-              'VALUES {1}'.format(dir_id % 256, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
+              'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -183,12 +183,12 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def delete_novelclusterchapterinfo_list(self, dir_id):
+    def delete_novelclusterchapterinfo_list(self, table_id, dir_id_list):
         """
         """
         conn = self.buid_connection('novel_cluster_chapter_info')
         sql = 'DELETE FROM novel_cluster_chapter_info{0} ' \
-              'WHERE dir_id = {1}'.format(dir_id % 256, dir_id)
+              'WHERE dir_id IN ({1})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)

@@ -6,6 +6,7 @@ __date__ = '2014-02-02 22:51'
 
 import logging
 from ConfigParser import SafeConfigParser
+from collections import defaultdict
 
 from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
@@ -88,17 +89,27 @@ class ClusterNodeModule(object):
         return True
 
 
-    def novel_node_update(self, novel_node):
+    def novel_node_update(self, table_id):
         """
-            单本小说信息更新到点集合当中
         """
         cluster_db = ClusterDBModule()
 
-        cluster_db.delete_novelclusterdirinfo(novel_node.dir_id)
-        cluster_db.delete_novelclusterchapterinfo_list(novel_node.dir_id)
+        dir_id_list = []
+        for novel_node in self.current_novel_node_dict[table_id]:
+            dir_id_list.append(novel_node.dir_id)
+        cluster_db.delete_novelclusterdirinfo(table_id, dir_id_list)
+        cluster_db.delete_novelclusterchapterinfo_list(table_id, dir_id_list)
 
-        cluster_db.insert_novelclusterdirinfo(novel_node.dir_id, novel_node.generate_insert_tuple())
-        cluster_db.insert_novelclusterchapterinfo_list(novel_node.dir_id, [chapter.generate_insert_tuple() for chapter in novel_node.chapter_list])
+        dir_insert_tuple_list = []
+        chapter_insert_tuple_list = []
+        for novel_node in self.current_novel_node_dict[table_id]:
+            dir_insert_tuple_list.append(novel_node.generate_insert_tuple())
+            for chapter in novel_node.chapter_list:
+                chapter_insert_tuple_list.append(chapter.generate_insert_tuple())
+        cluster_db.insert_novelclusterdirinfo(table_id, dir_insert_tuple_list)
+        cluster_db.insert_novelclusterchapterinfo_list(table_id, chapter_insert_tuple_list)
+
+        self.current_novel_node_dict[table_id] = []
         return True
 
 
@@ -109,15 +120,24 @@ class ClusterNodeModule(object):
         cluster_db = ClusterDBModule()
         novel_id_list = cluster_db.get_dirfmtinfo_id_list(site_id, update_time)
 
+        self.current_novel_node_dict = defaultdict(list)
         for index, novel_id in enumerate(novel_id_list):
             novel_node = self.novel_node_collection(site_id, novel_id)
             if not novel_node:
                 continue
+
             self.novel_node_integrate(novel_node)
-            self.novel_node_update(novel_node)
+            table_id = novel_node.dir_id % 256
+            self.current_novel_node_dict[table_id].append(novel_node)
+
+            if len(self.current_novel_node_dict[table_id]) == 100:
+                self.novel_node_update(table_id)
 
             if index % 100 == 0:
                 self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
+
+        for (table_id, novel_node_list) in self.current_novel_node_dict.items():
+            self.novel_node_update(table_id)
         return True
 
 
