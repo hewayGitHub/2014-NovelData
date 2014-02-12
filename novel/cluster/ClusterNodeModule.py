@@ -11,8 +11,10 @@ from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
 from public.BasicStringMethod import *
 
+
 def here():
     print('PrimeMusic')
+
 
 class ClusterNodeModule(object):
     """
