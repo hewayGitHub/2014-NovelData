@@ -11,7 +11,8 @@ def here():
 
 if __name__ == '__main__':
     for index in xrange(0, 256):
-        print('create table novel_cluster_edge_info{0} like novel_edge_chapter_info;'.format(index))
+        #print('create table novel_cluster_edge_info{0} like novel_edge_chapter_info;'.format(index))
+        print('dir_fmt_info{0}:0'.format(index))
     here()    
 
 
