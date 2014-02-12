@@ -39,8 +39,8 @@ class ClusterNodeModule(object):
         """
         parser = SafeConfigParser()
         parser.read('./conf/NovelClusterModule.conf')
-        self.start_site_id = parser.get('cluster_node_module', 'proc_start_site_id')
-        self.end_site_id = parser.get('cluster_node_module', 'proc_end_site_id')
+        self.start_site_id = parser.getint('cluster_node_module', 'proc_start_site_id')
+        self.end_site_id = parser.getint('cluster_node_module', 'proc_end_site_id')
 
 
     def init(self):
