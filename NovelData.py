@@ -10,6 +10,7 @@ from novel.cluster.ClusterNodeModule import *
 def here():
     print('PrimeMusic')
 
+
 def init_log(name):
     """
     """
@@ -22,12 +23,15 @@ def init_log(name):
     logger.addHandler(fh)
     logger.info('{0} log init successful!'.format(name))
 
-if __name__ == '__main__':
-   init_log('novel')
-   init_log('err')
 
-   node_module = ClusterNodeModule()
-   node_module.generate_novel_node_list(6, 0)
+if __name__ == '__main__':
+    init_log('novel')
+    init_log('err')
+
+    cluster_node_module = ClusterNodeModule()
+    cluster_node_module.run()
+
+
 
 
 
