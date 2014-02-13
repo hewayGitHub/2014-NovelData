@@ -15,19 +15,19 @@ class TrieNode(object):
     """
         Trie树上的一个节点
     """
-    def __init__(self, char = '', count = 0, length = 0):
+    def __init__(self, char = '', count = 0):
         """
         """
         self.char = char
         self.count = count
-        self.length = length
+
         self.child = defaultdict(object)
 
 
     def insert_child(self, char = ''):
         """
         """
-        self.child[char] = TrieNode(char, 0, self.length + 1)
+        self.child[char] = TrieNode(char)
 
 
 
@@ -56,9 +56,32 @@ class Trie(object):
             node.count += 1
 
 
+    def find_common_prefix(self, node, count = 2, prefix = ''):
+        """
+            在Trie树上找到出现次数大于等于count的最长公共前缀
+        """
+        prefix += node.char
+        current_prefix = prefix
+        for (char, child_node) in node.child.items():
+            if child_node.count >= count:
+                string = self.find_common_prefix(child_node, count, current_prefix)
+                if len(string) > len(prefix):
+                    prefix = string
+        return prefix
 
 
 if __name__ == '__main__':
+
+    trie = Trie()
+    trie.insert_string(u'第一章 六安瓜片')
+    trie.insert_string(u'一章 北灵院')
+    trie.insert_string(u'第一章-1-六安瓜片')
+    trie.insert_string(u'第一章 数学之美')
+    trie.insert_string(u'第一章-1- 标题是浮云')
+    trie.insert_string(u'第一章-1- 北灵院')
+
+    print(trie.find_common_prefix(trie.root, 2, '').encode('utf8', 'ignore'))
+
     here()    
 
 

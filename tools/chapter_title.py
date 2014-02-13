@@ -7,6 +7,8 @@ __date__ = '2014-02-12 18:07'
 import MySQLdb
 import random
 
+from novel.cluster.NovelCleanModule import *
+
 def here():
     print('PrimeMusic')
 
@@ -40,7 +42,8 @@ if __name__ == '__main__':
             cursor = conn.cursor()
             cursor.execute(sql)
             (book_name, pen_name) = cursor.fetchone()
-            print('book_name: {0}, pen_name: {1}'.format(book_name, pen_name))
+            novel_node = NovelNodeInfo(book_name = book_name.decode('GBK', 'ignore'), pen_name = pen_name.decode('GBK', 'ignore'))
+            novel_node.chapter_list = []
             cursor.close()
 
             sql = 'SELECT chapter_title, raw_chapter_title, chapter_sort ' \
@@ -50,8 +53,12 @@ if __name__ == '__main__':
             cursor = conn.cursor()
             cursor.execute(sql)
             for (chapter_title, raw_chapter_title, chapter_sort, ) in cursor.fetchall():
-                print('chapter_sort: {0}, chapter_title: {1}, raw_chapter_title: {2}'.format(chapter_sort, chapter_title, raw_chapter_title))
+                novel_node.chapter_list.append(NovelChapterInfo(chapter_title = raw_chapter_title.decode('GBK', 'ignore')))
             cursor.close()
+
+            print('book_name: {0}, pen_name: {1}'.format(novel_node.book_name.encode('GBK', 'ignore'), novel_node.pen_name.encode('GBK', 'ignore')))
+            for chapter in novel_node.chapter_list:
+                print('chapter_title: {0}, raw_chapter_title: {1}'.format(chapter.chapter_title.encode('GBK', 'ignore'), chapter.raw_chapter_title.encode('GBK', 'ignore')))
 
             print('---------------------------------------------------------------------------------------')
     conn.close()

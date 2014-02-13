@@ -4,9 +4,9 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-11 15:42'
 
-import re
 
 from basic.NovelStructure import *
+from public.Trie import *
 from public.BasicStringMethod import *
 
 
@@ -58,13 +58,16 @@ class NovelCleanModule(object):
                 flag = True
             else:
                 if flag:
-                    format_chapter_title += u'0'
+                    format_chapter_title += u'#'
                 flag = False
         return format_chapter_title
 
 
     def chapter_title_format(self, chapter_list):
         """
+            章节标题归一化：
+            1.  把数字的字符统一归一化为#，连续多个合并
+            2.  把符号字符统一归一化为*，连续多个合并
         """
         for chapter in chapter_list:
             chapter.chapter_title = self.number_char_format(chapter.chapter_title)
@@ -74,19 +77,112 @@ class NovelCleanModule(object):
     def common_prefix_generate(self, chapter_list):
         """
         """
+        trie = Trie()
+        for chapter in chapter_list:
+            trie.insert_string(chapter.chapter_title)
+
+        count = int(len(chapter_list) * 0.7) + 1
+        common_prefix = trie.find_common_prefix(trie.root, count, '')
+        return common_prefix
+
+
+    def common_prefix_filter(self, chapter_list):
+        """
+            公共前缀过滤：
+            1.  用chapter_title建立Trie树
+            2.  在Trie树中选择出现次数大于70%的最长公共前缀
+        """
+        common_prefix = self.common_prefix_generate(chapter_list)
+        length = len(common_prefix)
+
+        for chapter in chapter_list:
+            if chapter.chapter_title[0 : length] == common_prefix:
+                chapter.chapter_title = chapter.chapter_title[length : ]
+
+
+    def useless_suffix_generate(self, chapter):
+        """
+        """
+        useless_suffix = ''
+        if chapter.raw_chapter_title[-1] not in [u']', u')', u'}', u'】', u'）', u'}']:
+            return useless_suffix
+
+        for index in xrange(2, len(chapter.chapter_title)):
+            if chapter.chapter_title[-index] == u'*':
+                useless_suffix = chapter.chapter_title[-(index - 1) : -1]
+                break
+        return useless_suffix
+
+
+    def useless_suffix_check(self, index, chapter_list, useless_suffix):
+        """
+        """
+        chapter_title = chapter_list[index].chapter_title
+        length = len(chapter_title) - len(useless_suffix) - 2
+
+        if index != 0:
+            pre_chapter_title = chapter_list[index - 1].chapter_title
+            if chapter_title[0 : length] == pre_chapter_title[0 : length]:
+                return False
+
+        if index != len(chapter_list) - 1:
+            next_chapter_title = chapter_list[index + 1].chapter_title
+            if chapter_title[0 : length] == next_chapter_title[0 : length]:
+                return False
+        return True
+
+
+    def useless_suffix_filter(self, chapter_list):
+        """
+            过滤无用的章节标题后缀：
+            1.  找出chapter_title中以（...）【...】结尾的字符串后缀
+            2.  判断chapter_title去掉后缀后和自己前后的chapter_title是否相同
+        """
+        for index, chapter in enumerate(chapter_list):
+            useless_suffix = self.useless_suffix_generate(chapter)
+            if not useless_suffix:
+                continue
+            if self.useless_suffix_check(index, chapter_list, useless_suffix):
+                length = len(chapter.chapter_title) - len(useless_suffix) - 2
+                chapter.chapter_title = chapter.chapter_title[0 : length]
+
 
     def novel_chapter_clean(self, novel_node):
         """
+            小说章节标题清理：
+            1.  对chapter_title进行归一化
+            2.  过滤chapter_title中的公共前缀
+            3.  过滤chapter_title中的无用的后缀
         """
+        for chapter in novel_node.chapter_list:
+            chapter.chapter_title.replace(novel_node.book_name, u'')
+            chapter.chapter_title.replace(novel_node.pen_name, u'')
+
+        self.chapter_title_format(novel_node.chapter_list)
+        self.common_prefix_filter(novel_node.chapter_list)
+        self.useless_suffix_filter(novel_node.chapter_list)
+
+        for chapter in novel_node.chapter_list:
+            chapter.chapter_title = string_filter(chapter.chapter_title)
+
 
 if __name__ == '__main__':
 
     clean = NovelCleanModule()
-    chapter_title = u'第二三章   可口可乐！（上）（求月票）'
-    chapter_title = clean.illegal_char_format(chapter_title)
-    print(chapter_title.encode('utf8', 'ignore'))
-    chapter_title = clean.number_char_format(chapter_title)
-    print(chapter_title.encode('utf8', 'ignore'))
+    novel_node = NovelNodeInfo(book_name = u'络泪千秋', pen_name = u'言若珂月')
+    novel_node.chapter_list = []
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（1）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（2）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（1）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（2）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.新嫁娘（1）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（1）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（2）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.寒灯忆旧事（3）'))
+    clean.novel_chapter_clean(novel_node)
+    for chapter in novel_node.chapter_list:
+        print(chapter.chapter_title.encode('utf8', 'ignore'))
+        print(chapter.raw_chapter_title.encode('utf8', 'ignore'))
 
     here()    
 

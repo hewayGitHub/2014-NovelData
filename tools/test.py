@@ -13,6 +13,14 @@ def here():
 
 if __name__ == '__main__':
 
+    if 'a' not in ['a', 'n', 'b']:
+        here()
+    string = 'abcdefg'
+    print(string[-3 : -1])
+
+    string = ''
+    if not string:
+        here()
     for index in xrange(0, 0):
         print('drop table if exists novel_cluster_edge_info{0};'.format(index))
         print('create table novel_cluster_edge_info{0} like novel_cluster_edge_info;'.format(index))
