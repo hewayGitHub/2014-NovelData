@@ -127,12 +127,11 @@ class NovelCleanModule(object):
                 else:
                     index -= 1
             while index >= 0:
-                if index == 0:
-                    s = index - 1
-                    break
                 char = raw_chapter_title[index]
                 if self.number_char_dict.has_key(char):
                     index -= 1
+                    if index == -1:
+                        s = index
                     continue
                 else:
                     s = index
@@ -227,7 +226,8 @@ if __name__ == '__main__':
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（2）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.3十二旧事（三）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.  【剑脉，红菱】 '))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.[灵境，牧]'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'十五章.[灵境，牧]'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第30深 他是真的喜欢她'))
     clean.novel_chapter_clean(novel_node)
     for chapter in novel_node.chapter_list:
         print(chapter.chapter_title.encode('utf8', 'ignore'))
