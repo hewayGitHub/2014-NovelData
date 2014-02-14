@@ -94,12 +94,16 @@ class NovelCleanModule(object):
             1.  用chapter_title建立Trie树
             2.  在Trie树中选择出现次数大于70%的最长公共前缀
         """
+        if len(chapter_list) == 1:
+            return
         common_prefix = self.common_prefix_generate(chapter_list)
-        length = len(common_prefix)
 
         for chapter in chapter_list:
-            if chapter.chapter_title[0 : length] == common_prefix:
-                chapter.chapter_title = chapter.chapter_title[length : ]
+            index = 0
+            for char in common_prefix:
+                if chapter.chapter_title[index] == char:
+                    index += 1
+            chapter.chapter_title = chapter.chapter_title[index : ]
 
 
     def number_char_recover(self, chapter_title, raw_chapter_title):
@@ -223,7 +227,7 @@ if __name__ == '__main__':
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第８章.炼血魔女（下）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.  落泪（第一更'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（1）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（2）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一.暝（2）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.3十二旧事（三）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.  【剑脉，红菱】 '))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'十五章.[灵境，牧]'))
