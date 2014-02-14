@@ -16,7 +16,7 @@ if __name__ == '__main__':
     if 'a' not in ['a', 'n', 'b']:
         here()
     string = 'abcdefg'
-    print(string[-3 : -1])
+    print(string[-6 : ])
 
     string = ''
     if not string:

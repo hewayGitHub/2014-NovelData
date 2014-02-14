@@ -4,6 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-11 15:42'
 
+import re
 
 from basic.NovelStructure import *
 from public.Trie import *
@@ -66,12 +67,12 @@ class NovelCleanModule(object):
     def chapter_title_format(self, chapter_list):
         """
             章节标题归一化：
-            1.  把数字的字符统一归一化为#，连续多个合并
-            2.  把符号字符统一归一化为*，连续多个合并
+            1.  全角转半角，去除空格
+            2.  把数字的字符统一归一化为0，连续多个合并
         """
         for chapter in chapter_list:
             chapter.chapter_title = string_Q2B(chapter.chapter_title)
-            chapter.chapter_title = self.illegal_char_format(chapter.chapter_title)
+            chapter.chapter_title = re.sub(r'\s+', '', chapter.chapter_title)
             chapter.chapter_title = self.number_char_format(chapter.chapter_title)
 
 
@@ -149,13 +150,11 @@ class NovelCleanModule(object):
         """
         """
         useless_suffix = ''
-        if chapter.raw_chapter_title[-1] not in [u']', u')', u'}', u'】', u'）', u'}']:
-            return useless_suffix
-
-        for index in xrange(2, len(chapter.chapter_title)):
-            if chapter.chapter_title[-index] == u'*':
-                useless_suffix = chapter.chapter_title[-(index - 1) : -1]
-                break
+        for index in xrange(1, len(chapter.chapter_title)):
+            char = chapter.chapter_title[-index]
+            if char not in [u'(', u'[', u'（', u'【']:
+                continue
+            useless_suffix = chapter.chapter_title[-index : ]
         return useless_suffix
 
 
@@ -163,8 +162,7 @@ class NovelCleanModule(object):
         """
         """
         chapter_title = chapter_list[index].chapter_title
-        length = len(chapter_title) - len(useless_suffix) - 2
-
+        length = len(chapter_title) - len(useless_suffix)
         if index != 0:
             pre_chapter_title = chapter_list[index - 1].chapter_title
             if chapter_title[0 : length] == pre_chapter_title[0 : length]:
@@ -188,7 +186,7 @@ class NovelCleanModule(object):
             if not useless_suffix:
                 continue
             if self.useless_suffix_check(index, chapter_list, useless_suffix):
-                length = len(chapter.chapter_title) - len(useless_suffix) - 2
+                length = len(chapter.chapter_title) - len(useless_suffix)
                 chapter.chapter_title = chapter.chapter_title[0 : length]
 
 
@@ -202,7 +200,6 @@ class NovelCleanModule(object):
         for chapter in novel_node.chapter_list:
             chapter.chapter_title = chapter.chapter_title.replace(novel_node.book_name, u'')
             chapter.chapter_title = chapter.chapter_title.replace(novel_node.pen_name, u'')
-            chapter.chapter_title = chapter.chapter_title.strip()
 
         self.chapter_title_format(novel_node.chapter_list)
         self.common_prefix_filter(novel_node.chapter_list)
@@ -225,10 +222,12 @@ if __name__ == '__main__':
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第1章.旅人（二）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第2章.炼血魔女（上）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第８章.炼血魔女（下）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.（1）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.  落泪（第一更'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（1）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（2）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.3十二旧事（三）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.  【剑脉，红菱】 '))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.[灵境，牧]'))
     clean.novel_chapter_clean(novel_node)
     for chapter in novel_node.chapter_list:
         print(chapter.chapter_title.encode('utf8', 'ignore'))
