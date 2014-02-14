@@ -103,6 +103,8 @@ class NovelCleanModule(object):
             for char in common_prefix:
                 if chapter.chapter_title[index] == char:
                     index += 1
+                    if index >= len(chapter.chapter_title):
+                        break
             chapter.chapter_title = chapter.chapter_title[index : ]
 
 
