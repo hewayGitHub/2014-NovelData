@@ -58,7 +58,7 @@ class NovelCleanModule(object):
                 flag = True
             else:
                 if flag:
-                    format_chapter_title += u'#'
+                    format_chapter_title += u'0'
                 flag = False
         return format_chapter_title
 
@@ -70,8 +70,8 @@ class NovelCleanModule(object):
             2.  把符号字符统一归一化为*，连续多个合并
         """
         for chapter in chapter_list:
-            chapter.chapter_title = self.number_char_format(chapter.chapter_title)
             chapter.chapter_title = self.illegal_char_format(chapter.chapter_title)
+            chapter.chapter_title = self.number_char_format(chapter.chapter_title)
 
 
     def common_prefix_generate(self, chapter_list):
@@ -98,6 +98,50 @@ class NovelCleanModule(object):
         for chapter in chapter_list:
             if chapter.chapter_title[0 : length] == common_prefix:
                 chapter.chapter_title = chapter.chapter_title[length : ]
+
+
+    def number_char_recover(self, chapter_title, raw_chapter_title):
+        """
+            恢复chapter_title中被归一化的数字字符
+        """
+        recover_chapter_title = ''
+
+        index = len(raw_chapter_title) - 1
+        for i in xrange(0, len(chapter_title)):
+            j = len(chapter_title) - i - 1
+            char = chapter_title[j]
+
+            if char != u'0':
+                recover_chapter_title += char
+                continue
+
+            s = None
+            e = None
+            while index >= 0:
+                char = raw_chapter_title[index]
+                if self.number_char_dict.has_key(char):
+                    e = index
+                    break
+                else:
+                    index -= 1
+            while index >= 0:
+                if index == 0:
+                    s = index - 1
+                    break
+                char = raw_chapter_title[index]
+                if self.number_char_dict.has_key(char):
+                    index -= 1
+                    continue
+                else:
+                    s = index
+                    break
+            if (s is None) or (e is None):
+                continue
+
+            recover_chapter_title += raw_chapter_title[s + 1 : e + 1][::-1]
+
+        recover_chapter_title = recover_chapter_title[::-1]
+        return recover_chapter_title
 
 
     def useless_suffix_generate(self, chapter):
@@ -150,8 +194,8 @@ class NovelCleanModule(object):
     def novel_chapter_clean(self, novel_node):
         """
             小说章节标题清理：
-            1.  对chapter_title进行归一化
-            2.  过滤chapter_title中的公共前缀
+            1.  对chapter_title中的数字，符号做归一化处理
+            2.  过滤chapter_title中的公共前缀，剩下的部分恢复数字
             3.  过滤chapter_title中的无用的后缀
         """
         for chapter in novel_node.chapter_list:
@@ -160,6 +204,10 @@ class NovelCleanModule(object):
 
         self.chapter_title_format(novel_node.chapter_list)
         self.common_prefix_filter(novel_node.chapter_list)
+
+        for chapter in novel_node.chapter_list:
+            chapter.chapter_title = self.number_char_recover(chapter.chapter_title, chapter.raw_chapter_title)
+
         self.useless_suffix_filter(novel_node.chapter_list)
 
         for chapter in novel_node.chapter_list:
@@ -171,14 +219,14 @@ if __name__ == '__main__':
     clean = NovelCleanModule()
     novel_node = NovelNodeInfo(book_name = u'络泪千秋', pen_name = u'言若珂月')
     novel_node.chapter_list = []
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（1）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（2）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（1）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（2）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.新嫁娘（1）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（一）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（二）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（上）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（下）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.（1）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（1）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（2）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.寒灯忆旧事（3）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十五章.3十二旧事（三）'))
     clean.novel_chapter_clean(novel_node)
     for chapter in novel_node.chapter_list:
         print(chapter.chapter_title.encode('utf8', 'ignore'))
