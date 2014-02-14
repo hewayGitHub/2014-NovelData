@@ -70,6 +70,7 @@ class NovelCleanModule(object):
             2.  把符号字符统一归一化为*，连续多个合并
         """
         for chapter in chapter_list:
+            chapter.chapter_title = string_Q2B(chapter.chapter_title)
             chapter.chapter_title = self.illegal_char_format(chapter.chapter_title)
             chapter.chapter_title = self.number_char_format(chapter.chapter_title)
 
@@ -199,8 +200,9 @@ class NovelCleanModule(object):
             3.  过滤chapter_title中的无用的后缀
         """
         for chapter in novel_node.chapter_list:
-            chapter.chapter_title.replace(novel_node.book_name, u'')
-            chapter.chapter_title.replace(novel_node.pen_name, u'')
+            chapter.chapter_title = chapter.chapter_title.replace(novel_node.book_name, u'')
+            chapter.chapter_title = chapter.chapter_title.replace(novel_node.pen_name, u'')
+            chapter.chapter_title = chapter.chapter_title.strip()
 
         self.chapter_title_format(novel_node.chapter_list)
         self.common_prefix_filter(novel_node.chapter_list)
@@ -219,10 +221,10 @@ if __name__ == '__main__':
     clean = NovelCleanModule()
     novel_node = NovelNodeInfo(book_name = u'络泪千秋', pen_name = u'言若珂月')
     novel_node.chapter_list = []
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（一）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第一章.旅人（二）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（上）'))
-    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第二章.炼血魔女（下）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'络泪千秋 第一章.旅人（一）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第1章.旅人（二）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第2章.炼血魔女（上）'))
+    novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第８章.炼血魔女（下）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第五章.（1）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（1）'))
     novel_node.chapter_list.append(NovelChapterInfo(chapter_title = u'第十一章.暝（2）'))

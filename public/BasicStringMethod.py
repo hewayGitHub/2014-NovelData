@@ -72,11 +72,16 @@ def Q2B(char):
         return char
     return unichr(inside_code)
 
+def string_Q2B(string):
+    """
+    """
+    string = ''.join(Q2B(char) for char in string)
+    return string
+
 def string_filter(string):
     """
         全角转半角，过滤各种特殊符号
     """
-    string = ''.join(Q2B(char) for char in string)
     string = ''.join(is_legal(char) and char or '' for char in string)
     return string
 
