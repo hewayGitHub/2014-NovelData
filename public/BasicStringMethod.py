@@ -4,7 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-03 16:39'
 
-#import Levenshtein
+import Levenshtein
 
 def here():
     print('PrimeMusic')
@@ -96,7 +96,7 @@ def string_format(string):
 def string_similarity(string_x, string_y):
     """
     """
-    #return Levenshtein.ratio(string_x, string_y)
+    return Levenshtein.ratio(string_x, string_y)
 
 
 if __name__ == '__main__':

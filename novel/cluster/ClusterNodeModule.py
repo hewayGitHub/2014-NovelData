@@ -10,6 +10,7 @@ from collections import defaultdict
 
 from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
+from novel.cluster.NovelCleanModule import *
 from public.BasicStringMethod import *
 
 
@@ -84,8 +85,8 @@ class ClusterNodeModule(object):
         """
             单本小说信息的整合处理
         """
-        for chapter in novel_node.chapter_list:
-            chapter.chapter_title = string_filter(chapter.chapter_title)
+        clean = NovelCleanModule()
+        clean.novel_chapter_clean(novel_node)
         return True
 
 
