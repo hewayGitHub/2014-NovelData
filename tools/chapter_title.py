@@ -15,13 +15,6 @@ def here():
 
 if __name__ == '__main__':
 
-    conn = MySQLdb.connect(
-        host = "127.0.0.1",
-        port = 3306,
-        user = "root",
-        passwd = "root",
-        db = "novels"
-    )
 
     for table_id in xrange(0, 256):
 

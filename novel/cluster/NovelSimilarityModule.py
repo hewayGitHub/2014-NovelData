@@ -4,8 +4,11 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-11 15:42'
 
+from collections import defaultdict
+
 from basic.NovelStructure import *
 from public.BasicStringMethod import *
+from public.BipartiteGraph import *
 
 def here():
     print('PrimeMusic')
@@ -31,8 +34,36 @@ class NovelSimilarityModule(object):
         """
             计算两个章节列表的相似性
         """
-        similarity = 0
-        return similarity
+        short_list = chapter_list_x
+        long_list = chapter_list_y
+
+        if len(chapter_list_x) > len(chapter_list_y):
+            short_list = chapter_list_y
+            long_list = chapter_list_x
+
+        begin_match = len(short_list) - 1
+        end_match = 0
+        similarity_matirx = defaultdict(list)
+
+        for index_x, chapter_x in enumerate(short_list):
+            flag = False
+            for index_y, chapter_y in enumerate(long_list):
+                chapter_similarity = self.chapter_similarity_calculation(chapter_x, chapter_y)
+                if chapter_similarity >= 0.8:
+                    flag = True
+                    similarity_matirx[index_x].append(index_y)
+            if flag:
+                begin_match = min(begin_match, index_x)
+                end_match = max(end_match, index_x)
+        if begin_match > end_match:
+            return 0
+
+        match = BipartiteGraph()
+        match_number = match.bipartite_graph_max_match(len(short_list), len(long_list), similarity_matirx)
+
+        similarity = match_number * 10.0 / (end_match - begin_match + 1)
+
+        return int(similarity)
 
 
     def novel_node_similarity_calculation(self, novel_node_x, novel_node_y):
