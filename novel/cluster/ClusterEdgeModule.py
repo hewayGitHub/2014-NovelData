@@ -102,6 +102,8 @@ class ClusterEdgeModule(object):
             novel_node_list = cluster_db.get_novelclusterdirinfo_list(table_id, field)
             if not novel_node_list:
                 continue
+
+            self.logger.info('[table_id: {0}, novel_node_number: {1}]'.format(table_id, len(novel_node_list)))
             for (dir_id, name) in novel_node_list:
                 self.novel_node_dict[name].append(dir_id)
 
@@ -118,15 +120,17 @@ class ClusterEdgeModule(object):
         for (name, novel_node_list) in self.novel_node_dict.items():
             if len(novel_node_list) == 1:
                 continue
+            self.logger.info('[name: {0}, novel_node_number: {1}]'.format(name, len(novel_node_list)))
             self.novel_edge_generate(novel_node_list)
             self.novel_edge_update()
-
+        """
         self.novel_node_collection('pen_name')
         for (name, novel_node_list) in self.novel_node_dict.items():
             if len(novel_node_list) == 1:
                 continue
             self.novel_edge_generate(novel_node_list)
             self.novel_edge_update()
+        """
 
 
     def exit(self):

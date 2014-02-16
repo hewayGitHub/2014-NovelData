@@ -93,6 +93,9 @@ class ClusterNodeModule(object):
     def novel_node_update(self, table_id):
         """
         """
+        if len(self.current_novel_node_dict[table_id]) == 0:
+            return True
+
         cluster_db = ClusterDBModule()
 
         dir_id_list = []
