@@ -76,7 +76,7 @@ class ClusterEdgeModule(object):
                 novel_node_i = self.current_novel_node_info_list[index_i]
                 novel_node_j = self.current_novel_node_info_list[index_j]
                 similarity = novel_similarity.novel_node_similarity_calculation(novel_node_i, novel_node_j)
-                if similarity > 15:
+                if similarity > 16:
                     edge = NovelEdgeInfo(novel_node_i.dir_id, novel_node_j.dir_id, similarity)
                     self.current_novel_edge_info_dict[novel_node_i.dir_id].append(edge)
 
@@ -123,14 +123,13 @@ class ClusterEdgeModule(object):
             self.logger.info('[name: {0}, novel_node_number: {1}]'.format(name, len(novel_node_list)))
             self.novel_edge_generate(novel_node_list)
             self.novel_edge_update()
-        """
+
         self.novel_node_collection('pen_name')
         for (name, novel_node_list) in self.novel_node_dict.items():
             if len(novel_node_list) == 1:
                 continue
             self.novel_edge_generate(novel_node_list)
             self.novel_edge_update()
-        """
 
 
     def exit(self):

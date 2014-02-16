@@ -46,6 +46,8 @@ class NovelSimilarityModule(object):
         similarity_matirx = defaultdict(list)
 
         for index_x, chapter_x in enumerate(short_list):
+            if chapter_x.chapter_title == '':
+                continue
             flag = False
             for index_y, chapter_y in enumerate(long_list):
                 chapter_similarity = self.chapter_similarity_calculation(chapter_x, chapter_y)
