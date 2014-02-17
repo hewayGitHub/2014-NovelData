@@ -9,44 +9,53 @@ def here():
     print('PrimeMusic')
 
 
+class ClusterNode(object):
+    """
+    """
+    def __init__(self, dir_id = 0, gid = 0):
+        """
+        """
+        self.dir_id = dir_id
+        self.gid = gid
+
+        self.parent = dir_id
+        self.rand = 1
+
+
+
 class DisjointSet(object):
     """
     """
-    def __init__(self):
+    def initialize(self, cluster_node_dict):
         """
         """
-
-    def initialize(self, parent, rank):
-        """
-        """
-        self.parent = parent
-        self.rank = rank
+        self.cluster_node_dict = cluster_node_dict
 
 
-    def get_father(self, index):
+    def get_father(self, node):
         """
             路径压缩
         """
-        if self.parent[index] != index :
-            self.parent[index] = self.get_father(self.parent[index])
-        return self.parent[index]
+        if node.parent != node.dir_id:
+            node.parent = self.get_father(self.cluster_node_dict[node.parent])
+        return node.parent
 
 
-    def merge(self, index1, index2):
+    def merge(self, nodex, nodey):
         """
             按秩合并
         """
-        index1 = self.get_father(index1)
-        index2 = self.get_father(index2)
+        nodex.parent = self.get_father(nodex)
+        nodey.parent = self.get_father(nodey)
 
-        if index1 == index2 :
+        if nodex.parent == nodey.parent:
             return
-        if self.rank[index1] > self.rank[index2] :
-            self.parent[index2] = index1
-            self.rank[index1] += self.rank[index2]
-        else :
-            self.parent[index1] = index2
-            self.rank[index2] += self.rank[index1]
+        if nodex.rank > nodey.rank:
+            nodey.parent = nodex.parent
+            nodex.rank += nodey.rank
+        else:
+            nodex.parent = nodey.parent
+            nodey.rank += nodex.rank
 
 
 if __name__ == '__main__':
