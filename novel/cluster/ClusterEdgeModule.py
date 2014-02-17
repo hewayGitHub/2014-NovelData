@@ -12,6 +12,7 @@ from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
 from novel.cluster.NovelSimilarityModule import *
 from public.BasicStringMethod import *
+from tools.debug import *
 
 def here():
     print('PrimeMusic')
