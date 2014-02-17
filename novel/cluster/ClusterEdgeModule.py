@@ -56,10 +56,12 @@ class ClusterEdgeModule(object):
         return novel_node
 
 
-    def novel_edge_generate(self, novel_node_list):
+    def novel_edge_generate(self, name, novel_node_list, similarity_threshold):
         """
             计算单个特征下点集合的边信息
         """
+        self.logger.info('[name: {0}, novel_node_number: {1}]'.format(name, len(novel_node_list)))
+
         novel_similarity = NovelSimilarityModule()
         novel_node_list = sorted(novel_node_list)
 
@@ -73,10 +75,12 @@ class ClusterEdgeModule(object):
         self.current_novel_edge_info_dict = defaultdict(list)
         for index_i in xrange(0, len(self.current_novel_node_info_list)):
             for index_j in xrange(index_i + 1, len(self.current_novel_node_info_list)):
+                if name == 'pen_name' and novel_node_i.book_name == novel_node_j.book_name:
+                    continue
                 novel_node_i = self.current_novel_node_info_list[index_i]
                 novel_node_j = self.current_novel_node_info_list[index_j]
                 similarity = novel_similarity.novel_node_similarity_calculation(novel_node_i, novel_node_j)
-                if similarity > 16:
+                if similarity > similarity_threshold:
                     edge = NovelEdgeInfo(novel_node_i.dir_id, novel_node_j.dir_id, similarity)
                     self.current_novel_edge_info_dict[novel_node_i.dir_id].append(edge)
 
@@ -120,15 +124,15 @@ class ClusterEdgeModule(object):
         for (name, novel_node_list) in self.novel_node_dict.items():
             if len(novel_node_list) == 1:
                 continue
-            self.logger.info('[name: {0}, novel_node_number: {1}]'.format(name, len(novel_node_list)))
-            self.novel_edge_generate(novel_node_list)
+            self.novel_edge_generate(name, novel_node_list, 16)
             self.novel_edge_update()
 
         self.novel_node_collection('pen_name')
         for (name, novel_node_list) in self.novel_node_dict.items():
             if len(novel_node_list) == 1:
                 continue
-            self.novel_edge_generate(novel_node_list)
+            self.logger.info('[name: {0}, novel_node_number: {1}]'.format(name, len(novel_node_list)))
+            self.novel_edge_generate(name, novel_node_list, 16)
             self.novel_edge_update()
 
 
