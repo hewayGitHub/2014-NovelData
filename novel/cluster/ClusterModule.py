@@ -4,6 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-17 00:40'
 
+from collections import defaultdict
 
 from novel.cluster.ClusterDB import *
 from public.DisjointSet import *
@@ -18,7 +19,7 @@ class ClusterModule(object):
     def __init__(self):
         """
         """
-        self.cluster_node_dict = None
+        self.cluster_node_dict = {}
 
 
     def cluster_edge_generate(self, table_id, similarity):
@@ -44,6 +45,15 @@ class ClusterModule(object):
     def cluster_info_update(self):
         """
         """
+        cluster_rid_dict = defaultdict(list)
+
+        disjoint_set = DisjointSet()
+
+        for (dir_id, cluster_node) in self.cluster_node_dict.items():
+            parent = disjoint_set.get_father(cluster_node)
+            cluster_rid_dict[parent].append(cluster_node)
+
+
 
 
     def run(self):
@@ -61,6 +71,7 @@ class ClusterModule(object):
                     nodex = self.cluster_node_dict[dir_id_i]
                     nodey = self.cluster_node_dict[dir_id_j]
                     disjoint_set.merge(nodex, nodey)
+
 
         self.cluster_info_update()
 

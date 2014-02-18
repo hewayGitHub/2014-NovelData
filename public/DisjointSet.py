@@ -4,6 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-17 10:29'
 
+from basic.NovelStructure import *
 
 def here():
     print('PrimeMusic')
@@ -26,6 +27,8 @@ class ClusterNode(object):
 class DisjointSet(object):
     """
     """
+    __metaclass__ = Singleton
+
     def initialize(self, cluster_node_dict):
         """
         """
@@ -57,6 +60,7 @@ class DisjointSet(object):
             nodex.parent = nodey.parent
             nodey.rank += nodex.rank
 
+    def
 
 if __name__ == '__main__':
     here()    
