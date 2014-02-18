@@ -13,14 +13,16 @@ def here():
 class ClusterNode(object):
     """
     """
-    def __init__(self, dir_id = 0, gid = 0):
+    def __init__(self, gid = 0):
         """
         """
-        self.dir_id = dir_id
         self.gid = gid
 
-        self.parent = dir_id
-        self.rand = 1
+    def add_node(self, site_status = 0):
+        """
+        """
+
+
 
 
 
