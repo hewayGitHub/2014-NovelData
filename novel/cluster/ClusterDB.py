@@ -259,6 +259,29 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
+    def get_novelclusteredgeinfo_list(self, table_id, similarity):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_edge_info')
+        sql = 'SELECT dir_id_i, dir_id_j ' \
+              'FROM novel_cluster_edge_info{0} ' \
+              'WHERE similarity = {1}'.format(table_id, similarity)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            conn.commit()
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        conn.close()
+        return True
+
+
 if __name__ == '__main__':
     here()    
 

@@ -13,8 +13,8 @@ def here():
 
 if __name__ == '__main__':
 
-    string = ''
-    print(string[0])
+    for index in xrange(0, 5, 1):
+        print(index)
 
     for index in xrange(0, 256):
         print('drop table if exists novel_cluster_chapter_info{0};'.format(index))
