@@ -127,7 +127,7 @@ class ClusterDBModule(MySQLModule):
         sql = 'INSERT IGNORE INTO novel_cluster_dir_info ' \
               '(site_id, site, site_status, ' \
               'dir_id, dir_url, ' \
-              'gid, book_name, pen_name, ' \
+              'gid, rid, book_name, pen_name, ' \
               'chapter_count, valid_chapter_count, chapter_word_sum) ' \
               'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
         try:
@@ -148,7 +148,7 @@ class ClusterDBModule(MySQLModule):
         """
         conn = self.buid_connection('novel_cluster_chapter_info')
         sql = 'INSERT IGNORE INTO novel_cluster_chapter_info{0} ' \
-              '(dir_id, chapter_id, chapter_sort, ' \
+              '(gid, dir_id, chapter_id, chapter_sort, ' \
               'chapter_url, chapter_title, raw_chapter_title, ' \
               'chapter_status, word_sum) ' \
               'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))

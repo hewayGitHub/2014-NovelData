@@ -36,6 +36,7 @@ class NovelNodeInfo(object):
         self.dir_id = dir_id
         self.dir_url = dir_url
         self.gid = gid
+        self.rid = gid
         self.book_name = book_name
         self.pen_name = pen_name
         self.chapter_count = chapter_count
@@ -50,7 +51,7 @@ class NovelNodeInfo(object):
         result = (
             self.site_id, self.site, self.site_status,
             self.dir_id, self.dir_url,
-            self.gid, string_format(self.book_name), string_format(self.pen_name),
+            self.gid, self.rid, string_format(self.book_name), string_format(self.pen_name),
             self.chapter_count, self.valid_chapter_count, self.chapter_word_sum
         )
         return result
@@ -70,8 +71,9 @@ class NovelChapterInfo(object):
     """
         一个章节的基础信息，章节信息作为聚类点的一个特征
     """
-    def __init__(self, dir_id = 0, chapter_id = 0, chapter_sort = 0,
+    def __init__(self, gid = 0, dir_id = 0, chapter_id = 0, chapter_sort = 0,
                  chapter_url = "", chapter_title = "", chapter_status = 0, word_sum = 0):
+        self.gid = gid
         self.dir_id = dir_id
         self.chapter_id = chapter_id
         self.chapter_sort = chapter_sort
@@ -86,7 +88,7 @@ class NovelChapterInfo(object):
         """
         """
         result = (
-            self.dir_id, self.chapter_id, self.chapter_sort,
+            self.gid, self.dir_id, self.chapter_id, self.chapter_sort,
             self.chapter_url, string_format(self.chapter_title), string_format(self.raw_chapter_title),
             self.chapter_status, self.word_sum
         )
