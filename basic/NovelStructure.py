@@ -96,6 +96,18 @@ class NovelChapterInfo(object):
 
 
 
+class NovelClusterInfo(object):
+    """
+        一个簇的基础信息，包含gid相同的所有小说
+    """
+    def __init__(self, gid = 0):
+        """
+        """
+        self.gid = gid
+        self.novel_node_list = []
+
+
+
 class NovelEdgeInfo(object):
     """
         两点直接的边的信息，即两本小说的相似度

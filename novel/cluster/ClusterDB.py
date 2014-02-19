@@ -98,6 +98,54 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
+    def get_novelclusterdirinfo_all(self, field_list):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_dir_info')
+        cursor = conn.cursor()
+
+        sql = 'SELECT max(id) AS id FROM novel_cluster_dir_info'
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+        max_id = cursor.fetchone()[0]
+
+        sql = 'SELECT min(id) AS id FROM novel_cluster_dir_info'
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+        min_id = cursor.fetchone()[0]
+
+        result = []
+        while True:
+            if min_id > max_id:
+                break
+
+            start_id = min_id
+            end_id = min_id + 10000
+            if end_id > max_id:
+                end_id = max_id
+
+            sql = 'SELECT {0} FROM novel_cluster_dir_info ' \
+                  'WHERE id >= {1} AND id <= {2}'.format(', '.join(field_list), start_id, end_id)
+            try:
+                cursor.execute(sql)
+            except Exception, e:
+                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+                break
+            for row in cursor.fetchall():
+                result.append(row)
+            min_id = end_id + 1
+
+        cursor.close()
+        conn.close()
+        return result
+
+
     def update_novelclusterdirinfo(self, update_tuple_list):
         """
         """

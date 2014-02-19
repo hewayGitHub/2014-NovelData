@@ -106,8 +106,10 @@ class ClusterNodeModule(object):
                 update_tuple_list.append(novel_node.generate_update_tuple())
             else:
                 insert_tuple_list.append(novel_node.generate_insert_tuple())
-        cluster_db.update_novelclusterdirinfo(update_tuple_list)
-        cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
+        if len(update_tuple_list):
+            cluster_db.update_novelclusterdirinfo(update_tuple_list)
+        if len(insert_tuple_list):
+            cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
 
 
     def novel_node_chapter_update(self, table_id, current_novel_node_list):
@@ -133,7 +135,6 @@ class ClusterNodeModule(object):
 
         self.novel_node_dir_update(current_novel_node_list)
         self.novel_node_chapter_update(table_id, current_novel_node_list)
-
         current_novel_node_list = []
         return True
 
@@ -152,20 +153,17 @@ class ClusterNodeModule(object):
                 continue
 
             self.novel_node_integrate(novel_node)
-
             table_id = novel_node.gid % 256
             current_novel_node_dict[table_id].append(novel_node)
 
             current_novel_node_list = current_novel_node_dict[table_id]
             if len(current_novel_node_list) == 100:
                 self.novel_node_update(table_id, current_novel_node_list)
-
             if index % 100 == 0:
                 self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
 
         for (table_id, current_novel_node_list) in current_novel_node_dict.items():
             self.novel_node_update(table_id, current_novel_node_list)
-
         return True
 
 

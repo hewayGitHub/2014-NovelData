@@ -13,6 +13,9 @@ def here():
 
 if __name__ == '__main__':
 
+    for index in xrange(10, 105, 10):
+        print(index)
+
     for index in xrange(0, 256):
         print('drop table if exists novel_cluster_rid_info{0};'.format(index))
         print('create table novel_cluster_rid_info{0} like novel_cluster_rid_info;'.format(index))
