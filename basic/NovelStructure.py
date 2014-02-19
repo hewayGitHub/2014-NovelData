@@ -44,20 +44,6 @@ class NovelNodeInfo(object):
         self.chapter_list = []
 
 
-    def equal(self, node):
-        """
-            判断两个点是否完全相同
-        """
-        if self.book_name != node.book_name or self.pen_name != node.pen_name or self.site_status != node.site_status:
-            return False
-        if len(self.chapter_list) != len(node.chapter_list):
-            return False
-        for index, chapter in enumerate(self.chapter_list):
-            if chapter.equal(node.chapter_list[index]) is False:
-                return False
-        return True
-
-
     def generate_insert_tuple(self):
         """
         """
@@ -66,6 +52,15 @@ class NovelNodeInfo(object):
             self.dir_id, self.dir_url,
             self.gid, string_format(self.book_name), string_format(self.pen_name),
             self.chapter_count, self.valid_chapter_count, self.chapter_word_sum
+        )
+        return result
+
+
+    def generate_update_tuple(self):
+        """
+        """
+        result = (
+            self.gid, string_format(self.book_name), string_format(self.pen_name), self.dir_id
         )
         return result
 
@@ -85,15 +80,6 @@ class NovelChapterInfo(object):
         self.raw_chapter_title = chapter_title
         self.chapter_status = chapter_status
         self.word_sum = word_sum
-
-
-    def equal(self, chapter):
-        """
-            判断两个章节是否完全相同
-        """
-        if self.chapter_id != chapter.chapter_id or self.chapter_title != chapter.chapter_title:
-            return False
-        return True
 
 
     def generate_insert_tuple(self):
