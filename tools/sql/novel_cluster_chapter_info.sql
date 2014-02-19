@@ -1,6 +1,7 @@
 drop table if exists novel_cluster_chapter_info;
 create table `novel_cluster_chapter_info` (
     `id` bigint(20) unsigned not null auto_increment,
+    `gid` bigint(20) unsigned not null,
     `dir_id` bigint(20) unsigned not null,
     `chapter_id` bigint(20) unsigned not null,
     `chapter_url` varchar(512) not null,
@@ -12,6 +13,7 @@ create table `novel_cluster_chapter_info` (
     `update_time` timestamp(12) not null default current_timestamp on update current_timestamp,
     primary key (`id`),
     unique key `dir_id` (`dir_id`, `chapter_sort`),
+    key `gid` (`gid`),
     key `chapter_id` (`chapter_id`)
 ) engine=InnoDB default charset=gbk;
 drop table if exists novel_cluster_chapter_info0;

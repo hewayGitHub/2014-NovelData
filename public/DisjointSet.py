@@ -17,12 +17,9 @@ class ClusterNode(object):
         """
         """
         self.gid = gid
+        self.parent = gid
 
-    def add_node(self, site_status = 0):
-        """
-        """
-
-
+        self.rank = 0
 
 
 
@@ -31,38 +28,61 @@ class DisjointSet(object):
     """
     __metaclass__ = Singleton
 
-    def initialize(self, cluster_node_dict):
+    def __init__(self):
         """
         """
-        self.cluster_node_dict = cluster_node_dict
+        self.cluster_node_dict = {}
 
 
-    def get_father(self, node):
+    def add_novel_node(self, gid = 0, rank = 10):
+        """
+        """
+        if not self.cluster_node_dict.has_key(gid):
+            self.cluster_node_dict[gid] = ClusterNode(gid)
+        self.cluster_node_dict[gid].rank += rank
+
+
+    def get_father(self, gid):
         """
             路径压缩
         """
-        if node.parent != node.dir_id:
-            node.parent = self.get_father(self.cluster_node_dict[node.parent])
+        node = self.cluster_node_dict[gid]
+        if node.parent != node.gid:
+            node.parent = self.cluster_node_dict(node.parent)
         return node.parent
 
 
-    def merge(self, nodex, nodey):
+    def check_rank(self, nodex, nodey):
+        """
+            比较两个点大小
+        """
+        if nodex.rank > nodey.rank:
+            return True
+        else:
+            if nodex.rank == nodey.rank and nodex.gid < nodey.gid:
+                return True
+            return False
+
+
+    def merge(self, gidx, gidy):
         """
             按秩合并
         """
-        nodex.parent = self.get_father(nodex)
-        nodey.parent = self.get_father(nodey)
+        gidx = self.get_father(gidx)
+        gidy = self.get_father(gidy)
 
-        if nodex.parent == nodey.parent:
+        if gidx == gidy:
             return
-        if nodex.rank > nodey.rank:
+
+        nodex = self.cluster_node_dict[gidx]
+        nodey = self.cluster_node_dict[gidy]
+
+        if self.check_rank(nodex, nodey):
             nodey.parent = nodex.parent
-            nodex.rank += nodey.rank
         else:
             nodex.parent = nodey.parent
-            nodey.rank += nodex.rank
 
-    def
+
 
 if __name__ == '__main__':
     here()    
