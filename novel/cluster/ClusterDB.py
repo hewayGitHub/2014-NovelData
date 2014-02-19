@@ -129,7 +129,7 @@ class ClusterDBModule(MySQLModule):
               'dir_id, dir_url, ' \
               'gid, rid, book_name, pen_name, ' \
               'chapter_count, valid_chapter_count, chapter_word_sum) ' \
-              'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
+              'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -143,7 +143,7 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def insert_novelclusterchapterinfo(self, table_id, tuple_list):
+    def insert_novelclusterchapterinfo(self, table_id, insert_tuple_list):
         """
         """
         conn = self.buid_connection('novel_cluster_chapter_info')
@@ -151,7 +151,7 @@ class ClusterDBModule(MySQLModule):
               '(gid, dir_id, chapter_id, chapter_sort, ' \
               'chapter_url, chapter_title, raw_chapter_title, ' \
               'chapter_status, word_sum) ' \
-              'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
+              'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
