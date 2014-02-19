@@ -76,7 +76,7 @@ class ClusterNodeModule(object):
             return False
         for (dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status) in result:
             chapter_title = chapter_title.decode('GBK', 'ignore')
-            chapter = NovelChapterInfo(dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status)
+            chapter = NovelChapterInfo(gid, dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status)
             novel_node.chapter_list.append(chapter)
         return novel_node
 
