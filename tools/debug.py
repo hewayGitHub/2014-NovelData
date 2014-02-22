@@ -16,6 +16,13 @@ def print_novel_node(novel_node):
     print(',  '.join('%s' % chapter.chapter_title.encode('GBK') for chapter in novel_node.chapter_list))
 
 
+def print_cluster_node(cluster_node):
+    """
+    """
+    print('book_name: {0}, pen_name: {1}'.format(cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK')))
+
+
+
 def compare_similar_novel(novel_node_x, novel_node_y, similarity):
     """
     """

@@ -21,127 +21,120 @@ class ClusterEdgeModule(object):
     """
         更新小说边集合信息
     """
-    def __init__(self):
+    def init_conf_info(self):
         """
-            初始化操作
+        """
+        parser = SafeConfigParser()
+        parser.read('./conf/NovelClusterModule.conf')
+        self.start_gid_id = parser.getint('cluster_edge_module', 'proc_start_gid_id')
+        self.end_gid_id = parser.getint('cluster_edge_module', 'proc_end_gid_id')
+
+
+    def init_log_info(self):
+        """
         """
         self.logger = logging.getLogger('novel.cluster.edge')
         self.err = logging.getLogger('err.cluster.edge')
 
-        self.novel_node_dict = None
 
-        self.current_novel_node_info_list = None
-        self.current_novel_edge_info_dict = None
-
-
-    def novel_node_generate(self, dir_id):
+    def init(self):
         """
-            根据dir_id从点集合中读取一本小说的信息
+            初始化操作
         """
+        self.init_log_info()
+        self.init_conf_info()
+        self.logger.info('novel cluster edge module init successful')
+
+
+    def cluster_node_collection(self, gid):
+        """
+        """
+        cluster_node = NovelClusterInfo(gid)
+
         cluster_db = ClusterDBModule()
+        dir_info_list = cluster_db.get_novelclusterdirinfo_gid(gid)
+        chapter_info_list = cluster_db.get_novelclusterchapterinfo_gid(gid)
 
-        result = cluster_db.get_novelclusterdirinfo_info(dir_id)
-        if not result:
-            return False
+        chapter_dict = defaultdict(list)
+        for (dir_id, chapter_id, chapter_title) in chapter_info_list:
+            chapter = NovelChapterInfo(chapter_id = chapter_id, chapter_title = chapter_title)
+            chapter_dict[dir_id].append(chapter)
 
-        (site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name) = result
-        book_name = book_name.decode('GBK', 'ignore')
-        pen_name = pen_name.decode('GBK', 'ignore')
-        novel_node = NovelNodeInfo(site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name)
-
-        result = cluster_db.get_novelclusterchapterinfo_list(dir_id)
-        for (dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status) in result:
-            chapter_title = chapter_title.decode('GBK', 'ignore')
-            chapter = NovelChapterInfo(dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status)
-            novel_node.chapter_list.append(chapter)
-        return novel_node
-
-
-    def novel_edge_generate(self, key, value, novel_node_list, similarity_threshold):
-        """
-            计算单个特征下点集合的边信息
-        """
-        self.logger.info('[{0}: {1}, novel_node_number: {2}]'.format(key, value, len(novel_node_list)))
-
-        novel_similarity = NovelSimilarityModule()
-        novel_node_list = sorted(novel_node_list)
-
-        self.current_novel_node_info_list = []
-        for dir_id in novel_node_list:
-            novel_node = self.novel_node_generate(dir_id)
-            if not novel_node:
+        cluster_node.novel_node_list = []
+        for (site_id, dir_id, dir_url, gid, book_name, pen_name) in dir_info_list:
+            novel_node = NovelNodeInfo(site_id = site_id, dir_id = dir_id, dir_url = dir_url, gid = gid)
+            novel_node.book_name = book_name.decode('GBK', 'ignore')
+            novel_node.pen_name = pen_name.decode('GBK', 'ignore')
+            if not chapter_dict.has_key(novel_node.dir_id):
                 continue
-            self.current_novel_node_info_list.append(novel_node)
+            novel_node.chapter_list = chapter_dict[novel_node.dir_id]
+            cluster_node.novel_node_list.append(novel_node)
 
-        self.current_novel_edge_info_dict = defaultdict(list)
-        for index_i in xrange(0, len(self.current_novel_node_info_list)):
-            for index_j in xrange(index_i + 1, len(self.current_novel_node_info_list)):
-                novel_node_i = self.current_novel_node_info_list[index_i]
-                novel_node_j = self.current_novel_node_info_list[index_j]
-                if key == 'pen_name' and novel_node_i.book_name == novel_node_j.book_name:
-                    continue
-                similarity = novel_similarity.novel_node_similarity_calculation(novel_node_i, novel_node_j)
-                if similarity > similarity_threshold:
-                    edge = NovelEdgeInfo(novel_node_i.dir_id, novel_node_j.dir_id, similarity)
-                    self.current_novel_edge_info_dict[novel_node_i.dir_id].append(edge)
+        cluster_node.book_name = cluster_node.novel_node_list[0].book_name
+        cluster_node.pen_name = cluster_node.novel_node_list[0].pen_name
+        return cluster_node
 
 
-    def novel_edge_update(self):
+    def process_gid_collection(self):
         """
-            单个特征下边集合的更新
+        """
+        cluster_db = ClusterDBModule()
+        result = cluster_db.get_novelclusterdirinfo_all('gid')
+
+        g = lambda gid: gid % 256 <= self.end_gid_id and gid % 256 >= self.start_gid_id
+        return {}.fromkeys(filter(g, result)).keys()
+
+
+    def related_gid_collection(self, cluster_node):
+        """
         """
         cluster_db = ClusterDBModule()
 
-        for (dir_id, novel_edge_info_list) in self.current_novel_edge_info_dict.items():
-            cluster_db.insert_novelclusteredgeinfo_list(dir_id, [edge.generate_insert_tuple() for edge in novel_edge_info_list])
+        related_list = []
+        related_list.extend(cluster_db.get_novelclusterdirinfo_name('book_name', cluster_node.book_name.encode('GBK', 'ignore')))
+        related_list.extend(cluster_db.get_novelclusterdirinfo_name('pen_name', cluster_node.pen_name.encode('GBK', 'ignore')))
+
+        g = lambda gid: gid > cluster_node.gid
+        return {}.fromkeys(filter(g, related_list)).keys()
 
 
-    def novel_node_collection(self, field = 'book_name'):
+    def cluster_edge_update(self, gid, cluster_edge_list):
         """
-            收集所有小说点，按特征分组
         """
         cluster_db = ClusterDBModule()
 
-        self.novel_node_dict = defaultdict(list)
-        for table_id in xrange(0, 256):
-            novel_node_list = cluster_db.get_novelclusterdirinfo_list(table_id, field)
-            if not novel_node_list:
-                continue
-
-            self.logger.info('[table_id: {0}, novel_node_number: {1}]'.format(table_id, len(novel_node_list)))
-            for (dir_id, name) in novel_node_list:
-                self.novel_node_dict[name].append(dir_id)
+        cluster_db.delete_novelclusteredgeinfo(gid)
+        cluster_db.insert_novelclusteredgeinfo([edge.generate_insert_tuple() for edge in cluster_edge_list])
 
 
     def run(self):
         """
-            1.  读取所有小说点，按特征分组
-            2.  每组内小说点计算相似度，更新边信息
         """
-        cluster_db = ClusterDBModule()
-        cluster_db.delete_novelclusteredgeinfo()
+        similarity = NovelSimilarityModule()
 
-        self.novel_node_collection('book_name')
-        for (name, novel_node_list) in self.novel_node_dict.items():
-            if len(novel_node_list) == 1 or name == '':
-                continue
-            self.novel_edge_generate('book_name', name, novel_node_list, 16)
-            self.novel_edge_update()
+        process_gid_list = self.process_gid_collection()
+        self.logger.info('process gid list length: {0}'.format(len(process_gid_list)))
 
-        self.novel_node_collection('pen_name')
-        for (name, novel_node_list) in self.novel_node_dict.items():
-            if len(novel_node_list) == 1 or name == '':
-                continue
-            self.novel_edge_generate('pen_name', name, novel_node_list, 16)
-            self.novel_edge_update()
+        for gid in process_gid_list:
+            cluster_node = self.cluster_node_collection(gid)
+            self.logger.info('started process gid: {0}'.format(gid))
+            self.logger.info('book_name: {0}, pen_name: {1}'.format(cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK')))
+
+            related_gid_list = self.related_gid_collection(cluster_node)
+            self.logger.info('related gid list length: {0}'.format(len(related_gid_list)))
+
+            related_edge_list = []
+            for related_gid in related_gid_list:
+                related_cluster_node = self.cluster_node_collection(related_gid)
+                cluster_similarity = similarity.novel_cluster_similarity_calculation(cluster_node, related_cluster_node)
+                if cluster_similarity >= 0.6:
+                    cluster_edge = ClusterEdgeInfo(cluster_node.gid, related_cluster_node.gid, cluster_similarity)
+                    related_edge_list.append(cluster_edge)
+                    self.logger.info('book_name: {0}, pen_name: {1}'.format(related_cluster_node.book_name.encode('GBK'), related_cluster_node.pen_name.encode('GBK')))
 
 
-    def exit(self):
-        """
-        """
-        self.novel_node_dict = None
-        self.current_novel_node_info_list = None
-        self.current_novel_edge_info_dict = None
+        return True
+
 
 
 if __name__ == '__main__':

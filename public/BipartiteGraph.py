@@ -4,6 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-16 17:09'
 
+from basic.NovelStructure import *
 
 def here():
     print('PrimeMusic')
@@ -13,23 +14,16 @@ class BipartiteGraph(object):
     """
         二分图
     """
-    def __init__(self):
-        """
-        """
-        self.visit = []
-        self.match = []
-
+    __metaclass__ = Singleton
 
     def initialize(self, m, edge):
         """
             初始化操作
         """
-        for index in xrange(0, m):
-            self.match.append(-1)
-            self.visit.append(False)
+        self.match = [-1] * m
+        self.visit = [False] * m
 
         self.edge = edge
-        self.max_match = 0
 
 
     def visit_clean(self, m):
@@ -60,14 +54,13 @@ class BipartiteGraph(object):
         """
         self.initialize(m, edge)
 
+        match_number = 0
         for u in xrange(0, n):
             self.visit_clean(m)
-
             if self.find_path(u):
-                self.max_match += 1
+                match_number += 1
 
-        return self.max_match
-
+        return match_number
 
 
 if __name__ == '__main__':

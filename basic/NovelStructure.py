@@ -106,25 +106,30 @@ class NovelClusterInfo(object):
         self.gid = gid
         self.novel_node_list = []
 
+        self.book_name = ''
+        self.pen_name = ''
 
 
-class NovelEdgeInfo(object):
+
+class ClusterEdgeInfo(object):
     """
         两点直接的边的信息，即两本小说的相似度
     """
-    def __init__(self, dir_id_i = 0, dir_id_j = 0, similarity = 0):
+    def __init__(self, gid_x = 0, gid_y = 0, similarity = 0):
         """
             一条边的信息
         """
-        self.dir_id_i = dir_id_i
-        self.dir_id_j = dir_id_j
-        self.similarity = similarity
+        self.gid_x = gid_x
+        self.gid_y = gid_y
+        self.similarity = len(similarity * 10)
+
 
     def generate_insert_tuple(self):
         """
         """
-        result = (self.dir_id_i, self.dir_id_j, self.similarity)
+        result = (self.gid_x, self.gid_y, self.similarity)
         return result
+
 
 if __name__ == '__main__':
     here()

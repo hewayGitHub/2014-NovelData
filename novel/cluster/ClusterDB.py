@@ -146,6 +146,48 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
+    def get_novelclusterdirinfo_gid(self, gid):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_dir_info')
+        sql = 'SELECT site_id, dir_id, dir_url, gid, book_name, pen_name ' \
+              'FROM novel_cluster_dir_info ' \
+              'WHERE gid = {0}'.format(gid)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        conn.close()
+        return result
+
+
+    def get_novelclusterdirinfo_name(self, key, value):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_dir_info')
+        sql = "SELECT gid FROM novel_cluster_dir_info WHERE {0} = '{1}'".format(key, value)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        conn.close()
+        return result
+
+
     def update_novelclusterdirinfo(self, update_tuple_list):
         """
         """
@@ -191,6 +233,29 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
+    def get_novelclusterchapterinfo_gid(self, gid):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_chapter_info')
+        sql = 'SELECT dir_id, chapter_id, chapter_title ' \
+              'FROM novel_cluster_chapter_info{0} ' \
+              'WHERE gid = {1}'.format(gid % 256, gid)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        conn.close()
+        return result
+
+
+
     def insert_novelclusterchapterinfo(self, table_id, insert_tuple_list):
         """
         """
@@ -232,30 +297,32 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def delete_novelclusteredgeinfo(self):
+    def delete_novelclusteredgeinfo(self, gid):
         """
         """
         conn = self.buid_connection('novel_cluster_edge_info')
-        for table_id in xrange(0, 256):
-            sql = 'DELETE FROM novel_cluster_edge_info{0}'.format(table_id)
-            try:
-                cursor = conn.cursor()
-                cursor.execute(sql)
-                conn.commit()
-            except Exception, e:
-                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-                continue
-            cursor.close()
+        sql = 'DELETE FROM novel_cluster_edge_info ' \
+              'WHERE gid_x = {0}'.format(gid)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            conn.commit()
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+
+        cursor.close()
         conn.close()
+        return True
 
 
-    def insert_novelclusteredgeinfo_list(self, dir_id, tuple_list):
+    def insert_novelclusteredgeinfo(self, insert_tuple_list):
         """
         """
         conn = self.buid_connection('novel_cluster_edge_info')
-        sql = 'INSERT IGNORE INTO novel_cluster_edge_info{0} ' \
-              '(dir_id_i, dir_id_j, similarity) ' \
-              'VALUES {1}'.format(dir_id % 256, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in tuple_list))
+        sql = 'INSERT IGNORE INTO novel_cluster_edge_info ' \
+              '(gid_x, gid_y, similarity) ' \
+              'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
