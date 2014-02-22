@@ -125,11 +125,10 @@ class ClusterEdgeModule(object):
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:
                 continue
-            self.logger.info('started process gid: {0}'.format(gid))
-            self.logger.info('book_name: {0}, pen_name: {1}'.format(cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK')))
 
             related_gid_list = self.related_gid_collection(cluster_node)
-            self.logger.info('related gid list length: {0}'.format(len(related_gid_list)))
+            self.logger.info('-------------------------')
+            self.logger.info('[{0}, {1}, {2}, {3}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK'), len(related_gid_list)))
 
             related_edge_list = []
             for related_gid in related_gid_list:
@@ -140,7 +139,7 @@ class ClusterEdgeModule(object):
                 if cluster_similarity >= 0.6:
                     cluster_edge = ClusterEdgeInfo(cluster_node.gid, related_cluster_node.gid, cluster_similarity)
                     related_edge_list.append(cluster_edge)
-                    self.logger.info('book_name: {0}, pen_name: {1}'.format(related_cluster_node.book_name.encode('GBK'), related_cluster_node.pen_name.encode('GBK')))
+                    self.logger.info('[{0}, {1}, {2}, {3}]'.format(related_cluster_node.gid, related_cluster_node.book_name.encode('GBK'), related_cluster_node.pen_name.encode('GBK'), cluster_edge.similarity))
 
         return True
 
