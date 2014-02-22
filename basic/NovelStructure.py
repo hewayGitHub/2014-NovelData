@@ -121,7 +121,7 @@ class ClusterEdgeInfo(object):
         """
         self.gid_x = gid_x
         self.gid_y = gid_y
-        self.similarity = len(similarity * 10)
+        self.similarity = int(similarity * 10)
 
 
     def generate_insert_tuple(self):
