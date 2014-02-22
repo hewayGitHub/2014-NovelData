@@ -37,8 +37,8 @@ def cluster_edge_module():
     """
     """
     novel_module = ClusterEdgeModule()
+    novel_module.init()
     novel_module.run()
-    novel_module.exit()
 
 
 if __name__ == '__main__':
@@ -46,4 +46,4 @@ if __name__ == '__main__':
     init_log('err')
 
     #cluster_node_module()
-    cluster_edge_module()
+    #cluster_edge_module()

@@ -132,7 +132,6 @@ class ClusterEdgeModule(object):
                     related_edge_list.append(cluster_edge)
                     self.logger.info('book_name: {0}, pen_name: {1}'.format(related_cluster_node.book_name.encode('GBK'), related_cluster_node.pen_name.encode('GBK')))
 
-
         return True
 
 
