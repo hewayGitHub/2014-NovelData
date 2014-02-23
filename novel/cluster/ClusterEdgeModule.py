@@ -107,8 +107,10 @@ class ClusterEdgeModule(object):
     def cluster_edge_update(self, gid, cluster_edge_list):
         """
         """
-        cluster_db = ClusterDBModule()
+        if len(cluster_edge_list) == 0:
+            return
 
+        cluster_db = ClusterDBModule()
         cluster_db.delete_novelclusteredgeinfo(gid)
         cluster_db.insert_novelclusteredgeinfo([edge.generate_insert_tuple() for edge in cluster_edge_list])
 
