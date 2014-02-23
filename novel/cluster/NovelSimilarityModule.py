@@ -43,7 +43,7 @@ class NovelSimilarityModule(object):
                 continue
             for index_y, chapter_y in enumerate(long_list):
                 chapter_similarity = self.novel_chapter_similarity_calculation(chapter_x, chapter_y)
-                if chapter_similarity >= 0.8:
+                if chapter_similarity >= 0.7:
                     similarity_matirx[index_x].append(index_y)
 
         match = BipartiteGraph()
@@ -73,7 +73,6 @@ class NovelSimilarityModule(object):
         match_number = match.bipartite_graph_max_match(len(short_list), len(long_list), similarity_matrix)
         similarity = match_number * 1.0 / len(short_list)
 
-        debug_cluster_similarity(novel_cluster_x, novel_cluster_y, match_number)
         return similarity
 
 

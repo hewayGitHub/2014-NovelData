@@ -135,10 +135,11 @@ class ClusterEdgeModule(object):
                 if not related_cluster_node:
                     continue
                 cluster_similarity = similarity.novel_cluster_similarity_calculation(cluster_node, related_cluster_node)
-                if cluster_similarity >= 0.6:
+                if cluster_similarity >= 0.7:
                     cluster_edge = ClusterEdgeInfo(cluster_node.gid, related_cluster_node.gid, cluster_similarity)
                     related_edge_list.append(cluster_edge)
                     self.logger.info('[{0}, {1}, {2}, {3}]'.format(related_cluster_node.gid, related_cluster_node.book_name.encode('GBK'), related_cluster_node.pen_name.encode('GBK'), cluster_edge.similarity))
+            self.cluster_edge_update(gid, related_edge_list)
 
         return True
 
