@@ -9,6 +9,7 @@ from collections import defaultdict
 from basic.NovelStructure import *
 from public.BasicStringMethod import *
 from public.BipartiteGraph import *
+from tools.debug import *
 
 def here():
     print('PrimeMusic')
@@ -47,7 +48,7 @@ class NovelSimilarityModule(object):
 
         match = BipartiteGraph()
         match_number = match.bipartite_graph_max_match(len(short_list), len(long_list), similarity_matirx)
-        similarity = match_number / len(short_list)
+        similarity = match_number * 1.0 / len(short_list)
         return similarity
 
 
@@ -70,7 +71,9 @@ class NovelSimilarityModule(object):
 
         match = BipartiteGraph()
         match_number = match.bipartite_graph_max_match(len(short_list), len(long_list), similarity_matrix)
-        similarity = match_number / len(short_list)
+        similarity = match_number * 1.0 / len(short_list)
+
+        debug_cluster_similarity(novel_cluster_x, novel_cluster_y, match_number)
         return similarity
 
 

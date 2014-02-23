@@ -57,7 +57,7 @@ class ClusterEdgeModule(object):
 
         chapter_dict = defaultdict(list)
         for (dir_id, chapter_id, chapter_title) in chapter_info_list:
-            chapter = NovelChapterInfo(chapter_id = chapter_id, chapter_title = chapter_title)
+            chapter = NovelChapterInfo(chapter_id = chapter_id, chapter_title = chapter_title.decode('GBK', 'ignore'))
             chapter_dict[dir_id].append(chapter)
 
         cluster_node.novel_node_list = []
@@ -127,8 +127,7 @@ class ClusterEdgeModule(object):
                 continue
 
             related_gid_list = self.related_gid_collection(cluster_node)
-            self.logger.info('-------------------------')
-            self.logger.info('[{0}, {1}, {2}, {3}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK'), len(related_gid_list)))
+            self.logger.info('[{0}, {1}, {2}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK')))
 
             related_edge_list = []
             for related_gid in related_gid_list:
