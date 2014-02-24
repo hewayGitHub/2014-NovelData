@@ -54,4 +54,7 @@ if __name__ == '__main__':
         sql = 'SELECT rid FROM novel_cluster_dir_info WHERE id = {0}'.format(id)
         cursor.execute(sql)
         (rid, ) = cursor.fetchone()
+        print()
+        print()
+        print('rid: {0}'.format(rid))
         get_cluster_node(cursor, rid)
