@@ -50,7 +50,7 @@ class DisjointSet(object):
         """
         cluster_node = self.cluster_node_dict[gid]
         if cluster_node.parent != cluster_node.gid:
-            cluster_node.parent = self.cluster_node_dict[cluster_node.parent]
+            cluster_node.parent = self.get_father(cluster_node.parent)
         return cluster_node.parent
 
 
