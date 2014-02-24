@@ -13,14 +13,15 @@ def here():
 class ClusterNode(object):
     """
     """
-    def __init__(self, gid = 0):
+    def __init__(self, gid = 0, rid = 0):
         """
         """
         self.gid = gid
+        self.rid = rid
         self.parent = gid
 
-        self.rank = 0
-
+        self.node_number = 0
+        self.authority_node_number = 0
 
 
 class DisjointSet(object):
@@ -34,54 +35,64 @@ class DisjointSet(object):
         self.cluster_node_dict = {}
 
 
-    def add_novel_node(self, gid = 0, rank = 10):
+    def add_novel_node(self, gid = 0, rid = 0, site_status = 0):
         """
         """
         if not self.cluster_node_dict.has_key(gid):
-            self.cluster_node_dict[gid] = ClusterNode(gid)
-        self.cluster_node_dict[gid].rank += rank
+            self.cluster_node_dict[gid] = ClusterNode(gid, rid)
+        self.cluster_node_dict[gid].node_number += 1
+        self.cluster_node_dict[gid].authority_node_number += site_status
 
 
     def get_father(self, gid):
         """
             路径压缩
         """
-        node = self.cluster_node_dict[gid]
-        if node.parent != node.gid:
-            node.parent = self.cluster_node_dict(node.parent)
-        return node.parent
+        cluster_node = self.cluster_node_dict[gid]
+        if cluster_node.parent != cluster_node.gid:
+            cluster_node.parent = self.cluster_node_dict[cluster_node.parent]
+        return cluster_node.parent
 
 
-    def check_rank(self, nodex, nodey):
+    def check_rank(self, cluster_node_x, cluster_node_y):
         """
             比较两个点大小
         """
-        if nodex.rank > nodey.rank:
+        if cluster_node_x.node_number > cluster_node_y.node_number:
             return True
-        else:
-            if nodex.rank == nodey.rank and nodex.gid < nodey.gid:
-                return True
+        if cluster_node_x.node_number < cluster_node_y.node_number:
             return False
+        if cluster_node_x.authority_node_number > cluster_node_y.authority_node_number:
+            return True
+        return False
 
 
-    def merge(self, gidx, gidy):
+    def merge(self, gid_x, gid_y):
         """
             按秩合并
         """
-        gidx = self.get_father(gidx)
-        gidy = self.get_father(gidy)
-
-        if gidx == gidy:
+        gid_x = self.get_father(gid_x)
+        gid_y = self.get_father(gid_y)
+        if gid_x == gid_y:
             return
 
-        nodex = self.cluster_node_dict[gidx]
-        nodey = self.cluster_node_dict[gidy]
-
-        if self.check_rank(nodex, nodey):
-            nodey.parent = nodex.parent
+        cluster_node_x = self.cluster_node_dict[gid_x]
+        cluster_node_y = self.cluster_node_dict[gid_y]
+        if self.check_rank(cluster_node_x, cluster_node_y):
+            cluster_node_y.parent = cluster_node_x.parent
         else:
-            nodex.parent = nodey.parent
+            cluster_node_x.parent = cluster_node_y.parent
 
+
+    def generate_update_tuple_list(self):
+        """
+        """
+        result = []
+        for (gid, cluster_node) in self.cluster_node_dict.items():
+            rid = self.get_father(gid)
+            if cluster_node.rid != rid:
+                result.append((rid, gid))
+        return result
 
 
 if __name__ == '__main__':

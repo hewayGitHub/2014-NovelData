@@ -7,6 +7,7 @@ __date__ = '2014-02-05 13:15'
 import logging
 from novel.cluster.ClusterNodeModule import *
 from novel.cluster.ClusterEdgeModule import *
+from novel.cluster.ClusterModule import *
 
 def here():
     print('PrimeMusic')
@@ -41,9 +42,17 @@ def cluster_edge_module():
     novel_module.run()
 
 
+def cluster_module():
+    """
+    """
+    novel_modoule = ClusterModule()
+    novel_modoule.run()
+
+
 if __name__ == '__main__':
     init_log('novel')
     init_log('err')
 
     #cluster_node_module()
     #cluster_edge_module()
+    cluster_module()

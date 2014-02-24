@@ -83,7 +83,7 @@ class ClusterEdgeModule(object):
         """
         """
         cluster_db = ClusterDBModule()
-        result = cluster_db.get_novelclusterdirinfo_all(['gid'])
+        result = cluster_db.get_noveldata_all('novel_cluster_dir_info', ['gid'])
 
         g = lambda gid: gid % 256 <= self.end_gid_id and gid % 256 >= self.start_gid_id
         return {}.fromkeys(filter(g, [row[0] for row in result])).keys()
@@ -111,8 +111,25 @@ class ClusterEdgeModule(object):
             return
 
         cluster_db = ClusterDBModule()
-        cluster_db.delete_novelclusteredgeinfo(gid)
-        cluster_db.insert_novelclusteredgeinfo([edge.generate_insert_tuple() for edge in cluster_edge_list])
+        result = cluster_db.get_novelclusteredgeinfo_gid(gid)
+        related_gid_set = set([gid_y for (gid_y, similarity) in result])
+        current_gid_set = set([edge.gid_y for edge in cluster_edge_list])
+
+        insert_edge_list = []
+        for cluster_edge in cluster_edge_list:
+            if cluster_edge.gid_y in related_gid_set:
+                continue
+            insert_edge_list.append(cluster_edge.generate_insert_tuple())
+        if len(insert_edge_list) > 0:
+            cluster_db.insert_novelclusteredgeinfo(insert_edge_list)
+
+        delete_edge_list = []
+        for (gid_y, similarity) in result:
+            if gid_y in current_gid_set:
+                continue
+            delete_edge_list.append(gid_y)
+        if len(delete_edge_list) > 0:
+            cluster_db.delete_novelclusteredgeinfo(gid, delete_edge_list)
 
 
     def run(self):
@@ -121,14 +138,13 @@ class ClusterEdgeModule(object):
         similarity = NovelSimilarityModule()
 
         process_gid_list = self.process_gid_collection()
-        self.logger.info('process gid list length: {0}'.format(len(process_gid_list)))
-
-        for gid in process_gid_list:
+        for index, gid in enumerate(process_gid_list):
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:
                 continue
 
             related_gid_list = self.related_gid_collection(cluster_node)
+            self.logger.info('current: {0}, total: {1}'.format(index, len(process_gid_list)))
             self.logger.info('[{0}, {1}, {2}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK')))
 
             related_edge_list = []

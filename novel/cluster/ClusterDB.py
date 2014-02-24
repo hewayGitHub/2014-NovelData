@@ -13,6 +13,54 @@ class ClusterDBModule(MySQLModule):
     """
         封装聚类模块中用到的数据库操作
     """
+    def get_noveldata_all(self, table_name, field_list):
+        """
+        """
+        conn = self.buid_connection(table_name)
+        cursor = conn.cursor()
+
+        sql = 'SELECT max(id) AS id FROM {0}'.format(table_name)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+        max_id = cursor.fetchone()[0]
+
+        sql = 'SELECT min(id) AS id FROM {0}'.format(table_name)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+        min_id = cursor.fetchone()[0]
+
+        result = []
+        while True:
+            if min_id > max_id:
+                break
+
+            start_id = min_id
+            end_id = min_id + 10000
+            if end_id > max_id:
+                end_id = max_id
+
+            sql = 'SELECT {0} FROM {1} ' \
+                  'WHERE id >= {2} AND id <= {3}'.format(', '.join(field_list), table_name, start_id, end_id)
+            try:
+                cursor.execute(sql)
+            except Exception, e:
+                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+                break
+            for row in cursor.fetchall():
+                result.append(row)
+            min_id = end_id + 1
+
+        cursor.close()
+        conn.close()
+        return result
+
+
     def get_dirfmtinfo_id_list(self, site_id, update_time):
         """
         """
@@ -98,54 +146,6 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def get_novelclusterdirinfo_all(self, field_list):
-        """
-        """
-        conn = self.buid_connection('novel_cluster_dir_info')
-        cursor = conn.cursor()
-
-        sql = 'SELECT max(id) AS id FROM novel_cluster_dir_info'
-        try:
-            cursor.execute(sql)
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return False
-        max_id = cursor.fetchone()[0]
-
-        sql = 'SELECT min(id) AS id FROM novel_cluster_dir_info'
-        try:
-            cursor.execute(sql)
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return False
-        min_id = cursor.fetchone()[0]
-
-        result = []
-        while True:
-            if min_id > max_id:
-                break
-
-            start_id = min_id
-            end_id = min_id + 10000
-            if end_id > max_id:
-                end_id = max_id
-
-            sql = 'SELECT {0} FROM novel_cluster_dir_info ' \
-                  'WHERE id >= {1} AND id <= {2}'.format(', '.join(field_list), start_id, end_id)
-            try:
-                cursor.execute(sql)
-            except Exception, e:
-                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-                break
-            for row in cursor.fetchall():
-                result.append(row)
-            min_id = end_id + 1
-
-        cursor.close()
-        conn.close()
-        return result
-
-
     def get_novelclusterdirinfo_gid(self, gid):
         """
         """
@@ -203,8 +203,30 @@ class ClusterDBModule(MySQLModule):
             except Exception, e:
                 self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
                 continue
-
         conn.commit()
+
+        cursor.close()
+        conn.close()
+        return True
+
+
+    def update_novelclusterdirinfo_gid(self, update_tuple_list):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_dir_info')
+        cursor = conn.cursor()
+        sql_prefix = "UPDATE novel_cluster_dir_info " \
+                     "SET rid = '%d' " \
+                     "WHERE gid = '%d'"
+        for update_tuple in update_tuple_list:
+            sql = sql_prefix % update_tuple
+            try:
+                cursor.execute(sql)
+            except Exception, e:
+                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+                continue
+        conn.commit()
+
         cursor.close()
         conn.close()
         return True
@@ -297,12 +319,32 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def delete_novelclusteredgeinfo(self, gid):
+    def get_novelclusteredgeinfo_gid(self, gid):
+        """
+        """
+        conn = self.buid_connection('novel_cluster_edge_info')
+        sql = 'SELECT gid_y, similarity FROM novel_cluster_edge_info WHERE gid_x = {0}'.format(gid)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        conn.close()
+        return result
+
+
+    def delete_novelclusteredgeinfo(self, gid, gid_list):
         """
         """
         conn = self.buid_connection('novel_cluster_edge_info')
         sql = 'DELETE FROM novel_cluster_edge_info ' \
-              'WHERE gid_x = {0}'.format(gid)
+              'WHERE gid_x = {0} AND gid_y IN ({1})'.format(gid, ', '.join('%d' % gid_y for gid_y in gid_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -331,29 +373,6 @@ class ClusterDBModule(MySQLModule):
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
             return False
 
-        cursor.close()
-        conn.close()
-        return True
-
-
-    def get_novelclusteredgeinfo_list(self, table_id, similarity):
-        """
-        """
-        conn = self.buid_connection('novel_cluster_edge_info')
-        sql = 'SELECT dir_id_i, dir_id_j ' \
-              'FROM novel_cluster_edge_info{0} ' \
-              'WHERE similarity = {1}'.format(table_id, similarity)
-        try:
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            conn.commit()
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return []
-
-        result = []
-        for row in cursor.fetchall():
-            result.append(row)
         cursor.close()
         conn.close()
         return True

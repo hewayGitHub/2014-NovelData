@@ -20,65 +20,58 @@ class ClusterModule(object):
     def __init__(self):
         """
         """
-        self.novel_node_list = []
-
-        parser = SafeConfigParser()
-        parser.read('./conf/NovelClusterModule')
-
-        self.authority_site_list = map(int, parser.get('cluster_module', 'authority_site').split(','))
+        self.logger = logging.getLogger('novel.cluster')
+        self.err = logging.getLogger('err.cluster')
 
 
-    def cluster_edge_generate(self, table_id, similarity):
+    def novel_node_collection(self):
         """
         """
         cluster_db = ClusterDBModule()
-        result = cluster_db.get_novelclusteredgeinfo_list(table_id, similarity)
-        return result
+        novel_node_list = cluster_db.get_noveldata_all('novel_cluster_dir_info', ['gid', 'rid', 'site_status'])
+        self.logger.info('novel node number: {0}'.format(len(novel_node_list)))
+
+        disjoint_set = DisjointSet()
+        for (gid, rid, site_status) in novel_node_list:
+            disjoint_set.add_novel_node(gid, rid, site_status)
 
 
-    def cluster_node_generate(self):
+    def novel_edge_collection(self):
         """
         """
         cluster_db = ClusterDBModule()
-        disjoint_set = DisjointSet()
-
-        for table_id in xrange(0, 256):
-            result = cluster_db.get_novelclusterdirinfo_list(table_id, 'gid, site_id')
-            for (dir_id, gid, site_id) in result:
-                self.novel_node_list.append((dir_id, gid, site_id))
-
-                rank = 10
-                if site_id in self.authority_site_list:
-                    rank += 2
-                disjoint_set.add_novel_node(gid, rank)
-
-
-    def cluster_info_update(self):
-        """
-        """
-        cluster_rid_dict = defaultdict(list)
+        novel_edge_list = cluster_db.get_noveldata_all('novel_cluster_edge_info', ['gid_x', 'gid_y'])
+        self.logger.info('novel edge number: {0}'.format(len(novel_edge_list)))
 
         disjoint_set = DisjointSet()
+        for (gid_x, gid_y) in novel_edge_list:
+            disjoint_set.merge(gid_x, gid_y)
 
-        for (dir_id, cluster_node) in self.cluster_node_dict.items():
-            parent = disjoint_set.get_father(cluster_node)
-            cluster_rid_dict[parent].append(cluster_node)
+
+    def novel_cluster_update(self):
+        """
+        """
+        disjoint_set = DisjointSet()
+        update_tuple_list = disjoint_set.generate_update_tuple_list()
+
+        self.logger.info('novel cluster update number: {0}'.format(len(update_tuple_list)))
+        for (rid, gid) in update_tuple_list:
+            self.logger.info('gid: {0}, rid: {1}'.format(gid, rid))
+
+        cluster_db = ClusterDBModule()
+        cluster_db.update_novelclusterdirinfo_gid(update_tuple_list)
 
 
     def run(self):
         """
         """
-        self.cluster_node_generate()
+        self.logger.info('novel cluster module start')
 
-        disjoint_set = DisjointSet()
+        self.novel_node_collection()
+        self.novel_edge_collection()
+        self.novel_cluster_update()
 
-        for similarity in xrange(20, 16, -1):
-            for table_id in xrange(0, 256, 1):
-                cluster_edge_list = self.cluster_edge_generate(table_id, similarity)
-
-
-        self.cluster_info_update()
-
+        return True
 
 
 if __name__ == '__main__':
