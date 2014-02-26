@@ -12,7 +12,8 @@ def here():
 
 
 if __name__ == '__main__':
-
+    a = 'abcdefg'
+    print(a[2: 200])
     for index in xrange(0, 256):
         print('alter table novel_data{0} add word_sum int(10) not null;'.format(index))
         #print('drop table if exists novel_cluster_rid_info{0};'.format(index))

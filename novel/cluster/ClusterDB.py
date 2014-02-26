@@ -323,7 +323,9 @@ class ClusterDBModule(MySQLModule):
         """
         """
         conn = self.buid_connection('novel_cluster_edge_info')
-        sql = 'SELECT gid_y, similarity FROM novel_cluster_edge_info WHERE gid_x = {0}'.format(gid)
+        sql = 'SELECT gid_x, gid_y, similarity ' \
+              'FROM novel_cluster_edge_info ' \
+              'WHERE gid_x = {0} OR gid_y = {1}'.format(gid, gid)
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -339,12 +341,12 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def delete_novelclusteredgeinfo(self, gid, gid_list):
+    def delete_novelclusteredgeinfo(self, key_tuple, gid, gid_list):
         """
         """
         conn = self.buid_connection('novel_cluster_edge_info')
         sql = 'DELETE FROM novel_cluster_edge_info ' \
-              'WHERE gid_x = {0} AND gid_y IN ({1})'.format(gid, ', '.join('%d' % gid_y for gid_y in gid_list))
+              'WHERE {0} = {1} AND {2} IN ({3})'.format(key_tuple[0], gid, key_tuple[1], ', '.join('%d' % gid_y for gid_y in gid_list))
         try:
             cursor = conn.cursor()
             cursor.execute(sql)

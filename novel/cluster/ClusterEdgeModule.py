@@ -100,7 +100,7 @@ class ClusterEdgeModule(object):
         if cluster_node.pen_name:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('pen_name', cluster_node.pen_name.encode('GBK', 'ignore')))
 
-        g = lambda gid: gid > cluster_node.gid
+        g = lambda gid: gid != cluster_node.gid
         return {}.fromkeys(filter(g, [row[0] for row in related_list])).keys()
 
 
@@ -112,8 +112,13 @@ class ClusterEdgeModule(object):
 
         cluster_db = ClusterDBModule()
         result = cluster_db.get_novelclusteredgeinfo_gid(gid)
-        related_gid_set = set([gid_y for (gid_y, similarity) in result])
-        current_gid_set = set([edge.gid_y for edge in cluster_edge_list])
+        related_gid_set = set()
+        for (gid_x, gid_y, similarity) in result:
+            related_gid_set.add(gid_x)
+            related_gid_set.add(gid_y)
+        current_gid_set = set()
+        for cluster_edge in cluster_edge_list:
+            current_gid_set.add(cluster_edge.gid_y)
 
         insert_edge_list = []
         for cluster_edge in cluster_edge_list:
@@ -123,21 +128,28 @@ class ClusterEdgeModule(object):
         if len(insert_edge_list) > 0:
             cluster_db.insert_novelclusteredgeinfo(insert_edge_list)
 
-        delete_edge_list = []
-        for (gid_y, similarity) in result:
-            if gid_y in current_gid_set:
+        delete_edge_list_x = []
+        delete_edge_list_y = []
+        for (gid_x, gid_y, similarity) in result:
+            if gid_y in current_gid_set or gid_x in current_gid_set:
                 continue
-            delete_edge_list.append(gid_y)
-        if len(delete_edge_list) > 0:
-            cluster_db.delete_novelclusteredgeinfo(gid, delete_edge_list)
+            if gid_x == gid:
+                delete_edge_list_y.append(gid_x)
+            if gid_y == gid:
+                delete_edge_list_x.append(gid_y)
+        if len(delete_edge_list_x) > 0:
+            cluster_db.delete_novelclusteredgeinfo(('gid_y', 'gid_x'), gid, delete_edge_list_x)
+        if len(delete_edge_list_y) > 0:
+            cluster_db.delete_novelclusteredgeinfo(('gid_x', 'gid_y'), gid, delete_edge_list_y)
 
 
-    def run(self):
+    def run(self, process_gid_list = []):
         """
         """
         similarity = NovelSimilarityModule()
 
-        process_gid_list = self.process_gid_collection()
+        if len(process_gid_list) == 0:
+            process_gid_list = self.process_gid_collection()
         for index, gid in enumerate(process_gid_list):
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:

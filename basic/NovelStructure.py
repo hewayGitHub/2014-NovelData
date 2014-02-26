@@ -127,7 +127,7 @@ class ClusterEdgeInfo(object):
     def generate_insert_tuple(self):
         """
         """
-        result = (self.gid_x, self.gid_y, self.similarity)
+        result = (min(self.gid_x, self.gid_y), max(self.gid_x, self.gid_y), self.similarity)
         return result
 
 

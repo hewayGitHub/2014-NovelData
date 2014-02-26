@@ -6,6 +6,7 @@ create table `novel_cluster_edge_info` (
     `similarity` int(10) not null,
     `update_time` timestamp(12) not null default current_timestamp on update current_timestamp,
     primary key (`id`),
-    unique key `gid` (`gid_x`, `gid_y`),
+    unique key `gid_x` (`gid_x`, `gid_y`),
+    key `gid_y` (`gid_y`, `gid_x`),
     key `similarity` (`similarity`)
 ) engine=InnoDB default charset=gbk;

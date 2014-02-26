@@ -76,7 +76,7 @@ class NovelCleanModule(object):
             chapter.chapter_title = self.number_char_format(chapter.chapter_title)
 
 
-    def common_prefix_generate(self, chapter_list):
+    def strong_common_prefix_generate(self, chapter_list):
         """
         """
         trie = Trie()
@@ -84,28 +84,52 @@ class NovelCleanModule(object):
             trie.insert_string(chapter.chapter_title)
 
         count = int(len(chapter_list) * 0.7) + 1
-        common_prefix = trie.find_common_prefix(trie.root, count, '')
-        return common_prefix
+        common_prefix_list = trie.find_common_prefix(trie.root, count, '')
+        return common_prefix_list
+
+
+    def weak_common_prefix_generate(self, chapter_list):
+        """
+        """
+        trie = Trie()
+        for chapter in chapter_list:
+            trie.insert_string(chapter.chapter_title)
+
+        common_prefix_list = trie.find_common_prefix(trie.root, 10, '')
+        return common_prefix_list
 
 
     def common_prefix_filter(self, chapter_list):
         """
             公共前缀过滤：
             1.  用chapter_title建立Trie树
-            2.  在Trie树中选择出现次数大于70%的最长公共前缀
+            2.  在Trie树中找出chapter_title的强公共前缀（覆盖70%以上），进行弱过滤（前缀子串）
+            3.  在Trie树中找出chapter_title的弱公共前缀（出现10次以上），进行强过滤（完全匹配）
         """
         if len(chapter_list) == 1:
             return
-        common_prefix = self.common_prefix_generate(chapter_list)
 
-        for chapter in chapter_list:
-            index = 0
-            for char in common_prefix:
-                if index >= len(chapter.chapter_title):
-                    break
-                if chapter.chapter_title[index] == char:
-                    index += 1
-            chapter.chapter_title = chapter.chapter_title[index : ]
+        strong_common_prefix_list = self.strong_common_prefix_generate(chapter_list)
+        for common_prefix in strong_common_prefix_list:
+            for chapter in chapter_list:
+                index = 0
+                for char in common_prefix:
+                    if index >= len(chapter.chapter_title):
+                        break
+                    if chapter.chapter_title[index] == char:
+                        index += 1
+                chapter.chapter_title = chapter.chapter_title[index : ]
+
+        weak_common_prefix_list = self.weak_common_prefix_generate(chapter_list)
+        for common_prefix in weak_common_prefix_list:
+            length = len(common_prefix)
+            if length == 0 or length > 5:
+                continue
+            for chapter in chapter_list:
+                if len(chapter.chapter_title) - length < 2:
+                    continue
+                if chapter.chapter_title[0 : length] == common_prefix:
+                    chapter.chapter_title = chapter.chapter_title[length : ]
 
 
     def number_char_recover(self, chapter_title, raw_chapter_title):

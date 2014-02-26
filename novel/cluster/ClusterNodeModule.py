@@ -11,6 +11,7 @@ from collections import defaultdict
 from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
 from novel.cluster.NovelCleanModule import *
+from novel.cluster.ClusterEdgeModule import *
 from public.BasicStringMethod import *
 
 
@@ -55,6 +56,8 @@ class ClusterNodeModule(object):
         self.init_conf_info()
         self.init_time_info()
         self.logger.info('novel cluster node module init successful')
+
+        self.novel_gid_list = []
 
 
     def novel_node_collection(self, site_id, novel_id):
@@ -154,6 +157,7 @@ class ClusterNodeModule(object):
 
             self.novel_node_integrate(novel_node)
             table_id = novel_node.gid % 256
+            self.novel_gid_list.append(novel_node.gid)
             current_novel_node_dict[table_id].append(novel_node)
 
             current_novel_node_list = current_novel_node_dict[table_id]
@@ -167,7 +171,7 @@ class ClusterNodeModule(object):
         return True
 
 
-    def run(self):
+    def run(self, update_edge = False):
         """
         """
         self.logger.info('novel cluster node module start')
@@ -175,6 +179,13 @@ class ClusterNodeModule(object):
         for site_id in xrange(self.start_site_id, self.end_site_id + 1):
             update_time = self.proc_time_dict['dir_fmt_info{0}'.format(site_id)]
             self.novel_node_generate(site_id, update_time)
+            self.novel_gid_list = {}.fromkeys(self.novel_gid_list).keys()
+
+        if update_edge is True:
+            cluster_edge_module = ClusterEdgeModule()
+            cluster_edge_module.init()
+            cluster_edge_module.run(self.novel_gid_list)
+
         return True
 
 

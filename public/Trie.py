@@ -60,14 +60,20 @@ class Trie(object):
         """
             在Trie树上找到出现次数大于等于count的最长公共前缀
         """
+        prefix_list = []
         prefix += node.char
-        current_prefix = prefix
+
+        flag = False
         for (char, child_node) in node.child.items():
             if child_node.count >= count:
-                string = self.find_common_prefix(child_node, count, current_prefix)
-                if len(string) > len(prefix):
-                    prefix = string
-        return prefix
+                flag = True
+                child_prefix_list = self.find_common_prefix(child_node, count, prefix)
+                prefix_list.extend(child_prefix_list)
+        if not flag:
+            prefix_list.append(prefix)
+
+        return prefix_list
+
 
 
 if __name__ == '__main__':
