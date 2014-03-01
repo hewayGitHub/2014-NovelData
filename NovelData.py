@@ -5,6 +5,8 @@ __author__ = 'sunhaowen'
 __date__ = '2014-02-05 13:15'
 
 import logging
+import sys
+import os
 from novel.cluster.ClusterNodeModule import *
 from novel.cluster.ClusterEdgeModule import *
 from novel.cluster.ClusterModule import *
@@ -26,11 +28,35 @@ def init_log(name):
     logger.info('{0} log init successful!'.format(name))
 
 
+def set_status_file(self):
+    """
+    """
+    if os.path.exists('./data/status'):
+        return False
+    try:
+        f = open('./data/status', 'w')
+        f.write('{0}'.format(os.getpgid()))
+        f.close()
+    except Exception, e:
+        return False
+
+    return True
+
+
+def remove_status_file(self):
+    """
+    """
+    try:
+        os.remove('./data/status')
+    except Exception, e:
+        return True
+    return True
+
+
 def cluster_node_module():
     """
     """
     novel_module = ClusterNodeModule()
-    novel_module.init()
     novel_module.run()
 
 
@@ -38,8 +64,14 @@ def cluster_edge_module():
     """
     """
     novel_module = ClusterEdgeModule()
-    novel_module.init()
     novel_module.run()
+
+
+def cluster_update_module():
+    """
+    """
+    novel_module = ClusterNodeModule()
+    novel_module.run(True)
 
 
 def cluster_module():
@@ -53,6 +85,26 @@ if __name__ == '__main__':
     init_log('novel')
     init_log('err')
 
-    #cluster_node_module()
-    #cluster_edge_module()
-    #cluster_module()
+    if len(sys.argv) != 2:
+        print('no module selected !')
+        exit()
+
+    module = sys.argv[1]
+    if module not in ['node', 'edge', 'cluster', 'update']:
+        print('no module selected !')
+        exit()
+
+    if not set_status_file():
+        print('some process is running !')
+        exit()
+
+    if module == 'node':
+        cluster_node_module()
+    if module == 'edge':
+        cluster_edge_module()
+    if module == 'cluster':
+        cluster_module()
+    if module == 'update':
+        cluster_update_module()
+
+    remove_status_file()

@@ -37,7 +37,7 @@ class ClusterEdgeModule(object):
         self.err = logging.getLogger('err.cluster.edge')
 
 
-    def init(self):
+    def __init__(self):
         """
             初始化操作
         """
@@ -95,9 +95,9 @@ class ClusterEdgeModule(object):
         cluster_db = ClusterDBModule()
 
         related_list = []
-        if cluster_node.book_name:
+        if cluster_node.book_name not in [u'', u'未知']:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('book_name', cluster_node.book_name.encode('GBK', 'ignore')))
-        if cluster_node.pen_name:
+        if cluster_node.pen_name not in [u'', u'未知', u'匿名']:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('pen_name', cluster_node.pen_name.encode('GBK', 'ignore')))
 
         g = lambda gid: gid != cluster_node.gid

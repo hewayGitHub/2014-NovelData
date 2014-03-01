@@ -10,7 +10,7 @@ create table `novel_cluster_chapter_info` (
     `chapter_sort` int(10) not null,
     `chapter_status` tinyint(3) not null,
     `word_sum` int(10) not null,
-    `update_time` timestamp(12) not null default current_timestamp on update current_timestamp,
+    `update_time` timestamp not null default current_timestamp on update current_timestamp,
     primary key (`id`),
     unique key `dir_id` (`dir_id`, `chapter_sort`),
     key `gid` (`gid`),

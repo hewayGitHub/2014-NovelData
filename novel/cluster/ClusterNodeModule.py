@@ -48,7 +48,7 @@ class ClusterNodeModule(object):
         self.end_site_id = parser.getint('cluster_node_module', 'proc_end_site_id')
 
 
-    def init(self):
+    def __init__(self):
         """
             初始化基础信息，加载配置
         """
@@ -58,6 +58,14 @@ class ClusterNodeModule(object):
         self.logger.info('novel cluster node module init successful')
 
         self.novel_gid_list = []
+
+
+    def __del__(self):
+        """
+        """
+        with open('./data/NovelClusterModule.time', "w") as f:
+            for (table, update_time) in self.proc_time_dict.iteritems():
+                f.write("{0}:{1}\n".format(table, update_time))
 
 
     def novel_node_collection(self, site_id, novel_id):
@@ -90,6 +98,11 @@ class ClusterNodeModule(object):
         """
         clean = NovelCleanModule()
         clean.novel_chapter_clean(novel_node)
+
+        if novel_node.site_status == 0:
+            novel_node.site_status = 1
+        if novel_node.site_status == 2:
+            novel_node.site_status = 0
         return True
 
 
@@ -183,7 +196,6 @@ class ClusterNodeModule(object):
 
         if update_edge is True:
             cluster_edge_module = ClusterEdgeModule()
-            cluster_edge_module.init()
             cluster_edge_module.run(self.novel_gid_list)
 
         return True
