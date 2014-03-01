@@ -8,6 +8,7 @@ from basic.NovelStructure import *
 
 import types
 import MySQLdb
+import MySQLdb.connections
 import logging
 from ConfigParser import SafeConfigParser
 
@@ -95,7 +96,7 @@ class MySQLModule(object):
         """
         try:
             conn = MySQLdb.connect(*args, **kwargs)
-            conn.conn_init(conn)
+            conn.conn_init()
             conn.conn_args = {'args': args, 'kwargs': kwargs}
         except Exception as e:
             conn = False

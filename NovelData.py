@@ -28,7 +28,7 @@ def init_log(name):
     logger.info('{0} log init successful!'.format(name))
 
 
-def set_status_file(self):
+def set_status_file():
     """
     """
     if os.path.exists('./data/status'):
@@ -43,7 +43,7 @@ def set_status_file(self):
     return True
 
 
-def remove_status_file(self):
+def remove_status_file():
     """
     """
     try:
