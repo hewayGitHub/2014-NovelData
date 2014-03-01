@@ -99,6 +99,7 @@ class MySQLModule(object):
             conn.conn_init()
             conn.conn_args = {'args': args, 'kwargs': kwargs}
         except Exception as e:
+            self.err.warning('[connect error: {0}]'.format(e))
             conn = False
 
         return conn
