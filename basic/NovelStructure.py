@@ -71,12 +71,13 @@ class NovelChapterInfo(object):
     """
         一个章节的基础信息，章节信息作为聚类点的一个特征
     """
-    def __init__(self, gid = 0, dir_id = 0, chapter_id = 0, chapter_sort = 0,
-                 chapter_url = "", chapter_title = "", chapter_status = 0, word_sum = 0):
+    def __init__(self, gid = 0, site_id = 0, dir_id = 0, chapter_sort = 0,
+                 chapter_id = 0, chapter_url = "", chapter_title = "", chapter_status = 0, word_sum = 0):
         self.gid = gid
+        self.site_id = site_id
         self.dir_id = dir_id
-        self.chapter_id = chapter_id
         self.chapter_sort = chapter_sort
+        self.chapter_id = chapter_id
         self.chapter_url = chapter_url
         self.chapter_title = chapter_title
         self.raw_chapter_title = chapter_title
@@ -88,7 +89,7 @@ class NovelChapterInfo(object):
         """
         """
         result = (
-            self.gid, self.dir_id, self.chapter_id, self.chapter_sort,
+            self.gid, self.site_id, self.dir_id, self.chapter_sort, self.chapter_id,
             self.chapter_url, string_format(self.chapter_title), string_format(self.raw_chapter_title),
             self.chapter_status, self.word_sum
         )

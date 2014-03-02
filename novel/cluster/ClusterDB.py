@@ -288,7 +288,7 @@ class ClusterDBModule(MySQLModule):
         """
         """
         sql = 'INSERT IGNORE INTO novel_cluster_chapter_info{0} ' \
-              '(gid, dir_id, chapter_id, chapter_sort, ' \
+              '(gid, site_id, dir_id, chapter_sort, chapter_id, ' \
               'chapter_url, chapter_title, raw_chapter_title, ' \
               'chapter_status, word_sum) ' \
               'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
@@ -303,11 +303,11 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def delete_novelclusterchapterinfo(self, table_id, dir_id_list):
+    def delete_novelclusterchapterinfo(self, table_id, site_id, dir_id_list):
         """
         """
         sql = 'DELETE FROM novel_cluster_chapter_info{0} ' \
-              'WHERE dir_id IN ({1})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+              'WHERE site_id = {1} AND dir_id IN ({2})'.format(table_id, site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('novel_cluster_chapter_info')
             cursor.execute(sql)

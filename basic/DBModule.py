@@ -47,7 +47,7 @@ def reconnect(self):
         return False
 
     if callable(getattr(self, 'conn_init', None)):
-        getattr(self, 'conn_init')(self)
+        getattr(self, 'conn_init')()
 
     return True
 

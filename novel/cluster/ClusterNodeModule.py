@@ -87,7 +87,7 @@ class ClusterNodeModule(object):
             return False
         for (dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status) in result:
             chapter_title = chapter_title.decode('GBK', 'ignore')
-            chapter = NovelChapterInfo(gid, dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status)
+            chapter = NovelChapterInfo(gid, site_id, dir_id, chapter_sort, chapter_id, chapter_url, chapter_title, chapter_status)
             novel_node.chapter_list.append(chapter)
         return novel_node
 
@@ -128,14 +128,14 @@ class ClusterNodeModule(object):
             cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
 
 
-    def novel_node_chapter_update(self, table_id, current_novel_node_list):
+    def novel_node_chapter_update(self, site_id, table_id, current_novel_node_list):
         """
         """
         cluster_db = ClusterDBModule()
 
         dir_id_list = [novel_node.dir_id for novel_node in current_novel_node_list]
 
-        cluster_db.delete_novelclusterchapterinfo(table_id, dir_id_list)
+        cluster_db.delete_novelclusterchapterinfo(table_id, site_id, dir_id_list)
         insert_tuple_list = []
         for novel_node in current_novel_node_list:
             for chapter in novel_node.chapter_list:
@@ -143,14 +143,14 @@ class ClusterNodeModule(object):
         cluster_db.insert_novelclusterchapterinfo(table_id, insert_tuple_list)
 
 
-    def novel_node_update(self, table_id, current_novel_node_list):
+    def novel_node_update(self, site_id, table_id, current_novel_node_list):
         """
         """
         if len(current_novel_node_list) == 0:
             return True
 
         self.novel_node_dir_update(current_novel_node_list)
-        self.novel_node_chapter_update(table_id, current_novel_node_list)
+        self.novel_node_chapter_update(site_id, table_id, current_novel_node_list)
         current_novel_node_list = []
         return True
 
@@ -175,12 +175,12 @@ class ClusterNodeModule(object):
 
             current_novel_node_list = current_novel_node_dict[table_id]
             if len(current_novel_node_list) == 100:
-                self.novel_node_update(table_id, current_novel_node_list)
+                self.novel_node_update(site_id, table_id, current_novel_node_list)
             if index % 100 == 0:
                 self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
 
         for (table_id, current_novel_node_list) in current_novel_node_dict.items():
-            self.novel_node_update(table_id, current_novel_node_list)
+            self.novel_node_update(site_id, table_id, current_novel_node_list)
         return True
 
 

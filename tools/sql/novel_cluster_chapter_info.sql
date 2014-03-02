@@ -2,17 +2,18 @@ drop table if exists novel_cluster_chapter_info;
 create table `novel_cluster_chapter_info` (
     `id` bigint(20) unsigned not null auto_increment,
     `gid` bigint(20) unsigned not null,
+    `site_id` int(10) not null,
     `dir_id` bigint(20) unsigned not null,
+    `chapter_sort` int(10) not null,
     `chapter_id` bigint(20) unsigned not null,
     `chapter_url` varchar(512) not null,
     `chapter_title` varchar(128) not null,
     `raw_chapter_title` varchar(128) not null,
-    `chapter_sort` int(10) not null,
     `chapter_status` tinyint(3) not null,
     `word_sum` int(10) not null,
     `update_time` timestamp not null default current_timestamp on update current_timestamp,
     primary key (`id`),
-    unique key `dir_id` (`dir_id`, `chapter_sort`),
+    unique key `dir_id` (`site_id`, dir_id`, `chapter_sort`),
     key `gid` (`gid`),
     key `chapter_id` (`chapter_id`)
 ) engine=InnoDB default charset=gbk;
