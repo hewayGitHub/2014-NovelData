@@ -35,7 +35,8 @@ def set_status_file():
         return False
     try:
         f = open('./data/status', 'w')
-        f.write('{0}'.format(os.getgid()))
+        pid = os.getgid()
+        f.write('{0}'.format(pid))
         f.close()
     except Exception, e:
         return False

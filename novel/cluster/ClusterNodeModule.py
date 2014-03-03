@@ -151,7 +151,6 @@ class ClusterNodeModule(object):
 
         self.novel_node_dir_update(current_novel_node_list)
         self.novel_node_chapter_update(site_id, table_id, current_novel_node_list)
-        current_novel_node_list = []
         return True
 
 
@@ -176,6 +175,7 @@ class ClusterNodeModule(object):
             current_novel_node_list = current_novel_node_dict[table_id]
             if len(current_novel_node_list) == 100:
                 self.novel_node_update(site_id, table_id, current_novel_node_list)
+                current_novel_node_dict[table_id] = []
             if index % 100 == 0:
                 self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
 
