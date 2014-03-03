@@ -106,13 +106,13 @@ class ClusterNodeModule(object):
         return True
 
 
-    def novel_node_dir_update(self, current_novel_node_list):
+    def novel_node_dir_update(self, site_id, current_novel_node_list):
         """
         """
         cluster_db = ClusterDBModule()
 
         dir_id_list = [novel_node.dir_id for novel_node in current_novel_node_list]
-        result = cluster_db.get_novelclusterdirinfo_list(dir_id_list)
+        result = cluster_db.get_novelclusterdirinfo_list(site_id, dir_id_list)
 
         dir_id_dict = dict((dir_id, True) for dir_id in result)
         insert_tuple_list = []

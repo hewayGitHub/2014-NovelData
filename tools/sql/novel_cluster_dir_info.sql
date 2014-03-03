@@ -15,7 +15,7 @@ create table `novel_cluster_dir_info` (
     `chapter_word_sum` int(10) not null,
     `update_time` timestamp not null default current_timestamp on update current_timestamp,
     primary key (`id`),
-    unique key `dir_id` (`dir_id`),
+    unique key `site_id` (`site_id`, dir_id`),
     key `gid` (`gid`),
     key `rid` (`rid`),
     key `book_name` (`book_name`),
