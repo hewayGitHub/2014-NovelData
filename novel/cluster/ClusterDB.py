@@ -307,7 +307,7 @@ class ClusterDBModule(MySQLModule):
         """
         """
         sql = 'DELETE FROM novel_cluster_chapter_info{0} ' \
-              'WHERE dir_id IN ({2})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+              'WHERE dir_id IN ({1})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('novel_cluster_chapter_info')
             cursor.execute(sql)
