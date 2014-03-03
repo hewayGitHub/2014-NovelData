@@ -61,7 +61,7 @@ class NovelNodeInfo(object):
         """
         """
         result = (
-            self.gid, string_format(self.book_name), string_format(self.pen_name), self.site_id, self.dir_id
+            self.gid, string_format(self.book_name), string_format(self.pen_name), self.dir_id
         )
         return result
 

@@ -148,11 +148,11 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def get_novelclusterdirinfo_list(self, site_id, dir_id_list):
+    def get_novelclusterdirinfo_list(self, dir_id_list):
         """
         """
         sql = 'SELECT dir_id FROM novel_cluster_dir_info ' \
-              'WHERE site_id = {0} AND dir_id IN ({0})'.format(site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+              'WHERE dir_id IN ({0})'.format(', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('novel_cluster_dir_info')
             cursor.execute(sql)
@@ -211,7 +211,7 @@ class ClusterDBModule(MySQLModule):
         cursor = self.get_cursor('novel_cluster_dir_info')
         sql_prefix = "UPDATE novel_cluster_dir_info " \
                      "SET gid = '%d', book_name = '%s', pen_name = '%s' " \
-                     "WHERE site_id = '%d' AND dir_id = '%d'"
+                     "WHERE dir_id = '%d'"
         for update_tuple in update_tuple_list:
             sql = sql_prefix % update_tuple
             try:
@@ -303,11 +303,11 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def delete_novelclusterchapterinfo(self, table_id, site_id, dir_id_list):
+    def delete_novelclusterchapterinfo(self, table_id, dir_id_list):
         """
         """
         sql = 'DELETE FROM novel_cluster_chapter_info{0} ' \
-              'WHERE site_id = {1} AND dir_id IN ({2})'.format(table_id, site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+              'WHERE dir_id IN ({2})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('novel_cluster_chapter_info')
             cursor.execute(sql)
