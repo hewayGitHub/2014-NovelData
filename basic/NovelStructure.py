@@ -132,6 +132,19 @@ class ClusterEdgeInfo(object):
         return result
 
 
+class NovelContentInfo(object):
+    """
+        一本小说的章节信息
+    """
+    def __init__(self, rid = 0, chapter_id = 0, chapter_url = '', content = ''):
+        """
+        """
+        self.rid = rid
+        self.chapter_id = chapter_id
+        self.chapter_url = chapter_url
+        self.content = content
+
+
 if __name__ == '__main__':
     here()
 
