@@ -45,7 +45,25 @@ class ChapterDBModule(MySQLModule):
         return cursor
 
 
-    def get_novelauthoritydir_list(self, ):
+    def get_novelauthoritydir_list(self, rid):
+        """
+        """
+        cursor = self.get_cursor('novel_authority_dir')
+        sql = 'SELECT rid, align_id, chapter_id, chapter_url ' \
+              'FROM novel_authority_dir{0} ' \
+              'WHERE rid = {1}'.format(rid % 256, rid)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
 
 if __name__ == '__main__':
     here()    

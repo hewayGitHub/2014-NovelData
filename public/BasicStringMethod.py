@@ -4,6 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-03 16:39'
 
+import re
 import Levenshtein
 
 def here():
@@ -84,6 +85,17 @@ def string_filter(string):
     """
     string = ''.join(is_legal(char) and char or '' for char in string)
     return string
+
+
+def html_filter(content):
+    """
+        过滤正文中的html信息,过滤符号杂质
+    """
+    content = re.sub('<[^>]*>', '', content)
+    content = string_Q2B(content)
+    content = string_filter(content)
+    return content
+
 
 def string_format(string):
     """
