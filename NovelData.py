@@ -10,6 +10,7 @@ import os
 from novel.cluster.ClusterNodeModule import *
 from novel.cluster.ClusterEdgeModule import *
 from novel.cluster.ClusterModule import *
+from novel.chapter.ContentFeatureModule import *
 
 def here():
     print('PrimeMusic')
@@ -82,6 +83,15 @@ def cluster_module():
     novel_modoule.run()
 
 
+def debug():
+    """
+    """
+    novel_module = ContentFeatureModule()
+    novel_module.novel_content_generate(3994882921)
+
+    remove_status_file()
+
+
 if __name__ == '__main__':
     init_log('novel')
     init_log('err')
@@ -91,7 +101,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['node', 'edge', 'cluster', 'update']:
+    if module not in ['node', 'edge', 'cluster', 'update', 'test']:
         print('no module selected !')
         exit()
 
@@ -107,5 +117,7 @@ if __name__ == '__main__':
         cluster_module()
     if module == 'update':
         cluster_update_module()
+    if module == 'test':
+        debug()
 
     remove_status_file()

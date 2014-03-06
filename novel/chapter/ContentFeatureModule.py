@@ -61,6 +61,9 @@ class ContentFeatureModule(object):
         for (rid, align_id, chapter_id, chapter_url) in result:
             chapter_content = silk_server.get(src = chapter_url, pageid = '{0}|{1}'.format(rid, align_id))
             chapter_content = self.chapter_content_generate(chapter_content)
+            if chapter_content is False:
+                self.err.warning('[rid: {0}, align_id: {1}, chapter_url: {2}]'.format(rid, align_id, chapter_url))
+                continue
             content += chapter_content
         try:
             file = open('./data/{0}'.format(rid), 'w')
