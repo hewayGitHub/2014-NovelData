@@ -23,13 +23,21 @@ class ClusterNodeModule(object):
     """
         将各个站点的小说信息整合后更新到点集合中
     """
-    def init_time_info(self):
+    def init_data_info(self):
         """
         """
         self.proc_time_dict = {}
         for line in open('./data/NovelClusterModule.time', 'r').readlines():
             (table, update_time) = line.strip().split(':')
             self.proc_time_dict[table] = int(update_time)
+
+        self.site_dict = {}
+        for line in open('./data/site', 'r').readlines():
+            (site_id, site) = line.strip().split(':')
+            if site == 'null':
+                continue
+            site_id = int(site_id)
+            self.site_dict[site_id] = site
 
 
     def init_log_info(self):
@@ -54,7 +62,7 @@ class ClusterNodeModule(object):
         """
         self.init_log_info()
         self.init_conf_info()
-        self.init_time_info()
+        self.init_data_info()
         self.logger.info('novel cluster node module init successful')
 
         self.novel_gid_list = []
@@ -190,6 +198,8 @@ class ClusterNodeModule(object):
         self.logger.info('novel cluster node module start')
 
         for site_id in xrange(self.start_site_id, self.end_site_id + 1):
+            if not self.site_dict.has_key(site_id):
+                continue
             update_time = self.proc_time_dict['dir_fmt_info{0}'.format(site_id)]
             self.novel_node_generate(site_id, update_time)
             self.novel_gid_list = {}.fromkeys(self.novel_gid_list).keys()

@@ -10,6 +10,7 @@ from basic.NovelStructure import *
 from basic.SilkServerModule import *
 from novel.chapter.ChapterDB import *
 from public.BasicStringMethod import *
+from public.GrandTrie import *
 
 def here():
     print('PrimeMusic')
@@ -25,6 +26,40 @@ class ContentFeatureModule(object):
         """
         self.logger = logging.getLogger('novel.chapter.feature')
         self.err = logging.getLogger('err.chapter.feature')
+
+
+    def trie_tree_generate(self, content = ''):
+        """
+            用给定的文本建立trie树
+        """
+        trie = Trie()
+        trie.set_total_count(len(content))
+
+        for index, char in enumerate(content):
+            for length in xrange(0, 5):
+                if content[index + length] == '*':
+                    break
+                if index + length + 1 > len(content):
+                    break
+
+                word = content[index : index + length + 1]
+                pre_char = '*'
+                if index > 0:
+                    pre_char = content[index - 1]
+                suf_char = '*'
+                if index + length + 1 < len(content):
+                    suf_char = content[index + length + 1]
+                trie.insert_word_tuple(word, pre_char, suf_char)
+
+
+
+
+
+    def feature_words_generate(self, content = ''):
+        """
+            计算得出一段文本的特征词
+        """
+
 
 
     def chapter_content_generate(self, chapter_content):

@@ -12,6 +12,12 @@ def here():
 
 
 if __name__ == '__main__':
+
+    s = 'abababab'
+    for index, char in enumerate(s):
+        print(index, char)
+    print(s[1 : 2])
+
     print('use novels')
     for index in xrange(0, 256):
         print('alter table novel_data{0} add sub_category varchar(128) not null;'.format(index))
