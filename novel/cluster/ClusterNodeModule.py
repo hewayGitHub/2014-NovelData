@@ -194,7 +194,7 @@ class ClusterNodeModule(object):
             self.novel_node_generate(site_id, update_time)
             self.novel_gid_list = {}.fromkeys(self.novel_gid_list).keys()
 
-        if update_edge is True:
+        if update_edge is True and len(self.novel_gid_list) > 0:
             cluster_edge_module = ClusterEdgeModule()
             cluster_edge_module.run(self.novel_gid_list)
 
