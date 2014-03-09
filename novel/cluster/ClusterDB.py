@@ -108,32 +108,32 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def get_dirfmtinfo_info(self, site_id, novel_id):
+    def get_dirfmtinfo_info(self, site_id, novel_id_list):
         """
         """
         sql = 'SELECT site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name, update_time ' \
               'FROM dir_fmt_info{0} ' \
-              'WHERE id = {1}'.format(site_id, novel_id)
+              'WHERE id IN ({1})'.format(site_id, ', '.join("'%d'" % novel_id for novel_id in novel_id_list))
         try:
             cursor = self.get_cursor('dir_fmt_info')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return False
+            return []
 
-        result = cursor.fetchone()
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
         cursor.close()
         return result
 
 
-    def get_chapteroriinfo_list(self, site_id, dir_id):
+    def get_chapteroriinfo_list(self, site_id, dir_id_list):
         """
         """
         sql = 'SELECT dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status ' \
               'FROM chapter_ori_info{0} ' \
-              'WHERE dir_id = {1} ' \
-              'ORDER BY chapter_sort ' \
-              'LIMIT {2}'.format(site_id, dir_id, 60)
+              'WHERE dir_id IN ({1}) AND chapter_sort <= 100'.format(site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('chapter_ori_info{0}'.format(site_id % 2))
             cursor.execute(sql)
