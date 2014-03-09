@@ -86,10 +86,9 @@ def cluster_module():
 def debug():
     """
     """
+    remove_status_file()
     novel_module = ContentFeatureModule()
     novel_module.novel_content_generate(3994882921)
-
-    remove_status_file()
 
 
 if __name__ == '__main__':

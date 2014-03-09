@@ -111,7 +111,7 @@ class ClusterDBModule(MySQLModule):
     def get_dirfmtinfo_info(self, site_id, novel_id):
         """
         """
-        sql = 'SELECT site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name ' \
+        sql = 'SELECT site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name, update_time ' \
               'FROM dir_fmt_info{0} ' \
               'WHERE id = {1}'.format(site_id, novel_id)
         try:
@@ -133,7 +133,7 @@ class ClusterDBModule(MySQLModule):
               'FROM chapter_ori_info{0} ' \
               'WHERE dir_id = {1} ' \
               'ORDER BY chapter_sort ' \
-              'LIMIT {2}'.format(site_id, dir_id, 100)
+              'LIMIT {2}'.format(site_id, dir_id, 60)
         try:
             cursor = self.get_cursor('chapter_ori_info{0}'.format(site_id % 2))
             cursor.execute(sql)
@@ -151,7 +151,8 @@ class ClusterDBModule(MySQLModule):
     def get_novelclusterdirinfo_list(self, dir_id_list):
         """
         """
-        sql = 'SELECT dir_id FROM novel_cluster_dir_info ' \
+        sql = 'SELECT dir_id, gid, chapter_count ' \
+              'FROM novel_cluster_dir_info ' \
               'WHERE dir_id IN ({0})'.format(', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('novel_cluster_dir_info')
@@ -210,7 +211,7 @@ class ClusterDBModule(MySQLModule):
         """
         cursor = self.get_cursor('novel_cluster_dir_info')
         sql_prefix = "UPDATE novel_cluster_dir_info " \
-                     "SET gid = '%d', book_name = '%s', pen_name = '%s' " \
+                     "SET gid = '%d', book_name = '%s', pen_name = '%s', chapter_count = '%d' " \
                      "WHERE dir_id = '%d'"
         for update_tuple in update_tuple_list:
             sql = sql_prefix % update_tuple

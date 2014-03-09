@@ -67,11 +67,10 @@ class NovelCleanModule(object):
     def chapter_title_format(self, chapter_list):
         """
             章节标题归一化：
-            1.  全角转半角，去除空格
+            1.  去除空格
             2.  把数字的字符统一归一化为0，连续多个合并
         """
         for chapter in chapter_list:
-            chapter.chapter_title = string_Q2B(chapter.chapter_title)
             chapter.chapter_title = re.sub(r'\s+', '', chapter.chapter_title)
             chapter.chapter_title = self.number_char_format(chapter.chapter_title)
 
@@ -227,6 +226,7 @@ class NovelCleanModule(object):
             3.  过滤chapter_title中的无用的后缀
         """
         for chapter in novel_node.chapter_list:
+            chapter.chapter_title = string_Q2B(chapter.chapter_title)
             chapter.chapter_title = chapter.chapter_title.replace(novel_node.book_name, u'')
             chapter.chapter_title = chapter.chapter_title.replace(novel_node.pen_name, u'')
 

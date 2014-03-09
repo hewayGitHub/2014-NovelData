@@ -85,14 +85,23 @@ class ClusterNodeModule(object):
         result = cluster_db.get_dirfmtinfo_info(site_id, novel_id)
         if not result:
             return False
-        (site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name) = result
+
+        (site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name, update_time) = result
         book_name = book_name.decode('GBK', 'ignore')
+        book_name = string_Q2B(book_name)
+        book_name = string_filter(book_name)
         pen_name = pen_name.decode('GBK', 'ignore')
+        pen_name = string_Q2B(pen_name)
+        pen_name = string_filter(pen_name)
         novel_node = NovelNodeInfo(site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name)
+
+        table_name = 'dir_fmt_info'.format(site_id)
+        self.proc_time_dict[table_name] = max(self.proc_time_dict[table_name], update_time)
 
         result = cluster_db.get_chapteroriinfo_list(site_id, dir_id)
         if len(result) <= 1:
             return False
+        novel_node.chapter_count = len(result)
         for (dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status) in result:
             chapter_title = chapter_title.decode('GBK', 'ignore')
             chapter = NovelChapterInfo(gid, site_id, dir_id, chapter_sort, chapter_id, chapter_url, chapter_title, chapter_status)
@@ -114,51 +123,64 @@ class ClusterNodeModule(object):
         return True
 
 
-    def novel_node_dir_update(self, current_novel_node_list):
+    def novel_node_dir_update(self, dir_id_dict, current_novel_node_list):
         """
         """
         cluster_db = ClusterDBModule()
 
-        dir_id_list = [novel_node.dir_id for novel_node in current_novel_node_list]
-        result = cluster_db.get_novelclusterdirinfo_list(dir_id_list)
-
-        dir_id_dict = dict((dir_id, True) for dir_id in result)
         insert_tuple_list = []
         update_tuple_list = []
         for novel_node in current_novel_node_list:
             if dir_id_dict.has_key(novel_node.dir_id):
-                update_tuple_list.append(novel_node.generate_update_tuple())
+                (gid, chapter_count) = dir_id_dict[novel_node.dir_id]
+                if novel_node.gid == gid and novel_node.chapter_count == chapter_count:
+                    continue
+                else:
+                    update_tuple_list.append(novel_node.generate_update_tuple())
             else:
                 insert_tuple_list.append(novel_node.generate_insert_tuple())
+            self.novel_gid_list.append(novel_node.gid)
+
         if len(update_tuple_list):
             cluster_db.update_novelclusterdirinfo(update_tuple_list)
         if len(insert_tuple_list):
             cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
 
 
-    def novel_node_chapter_update(self, table_id, current_novel_node_list):
+    def novel_node_chapter_update(self, dir_id_dict, current_novel_node_list):
         """
         """
         cluster_db = ClusterDBModule()
 
-        dir_id_list = [novel_node.dir_id for novel_node in current_novel_node_list]
-
-        cluster_db.delete_novelclusterchapterinfo(table_id, dir_id_list)
-        insert_tuple_list = []
         for novel_node in current_novel_node_list:
+            if dir_id_dict.has_key(novel_node.dir_id):
+                (gid, chapter_count) = dir_id_dict[novel_node.dir_id]
+                if novel_node.gid == gid and novel_node.chapter_count == chapter_count:
+                    continue
+
+            cluster_db.delete_novelclusterchapterinfo(novel_node.gid % 256, [novel_node.dir_id, ])
+            insert_tuple_list = []
             for chapter in novel_node.chapter_list:
                 insert_tuple_list.append(chapter.generate_insert_tuple())
-        cluster_db.insert_novelclusterchapterinfo(table_id, insert_tuple_list)
+            cluster_db.insert_novelclusterchapterinfo(novel_node.gid % 256, insert_tuple_list)
 
 
-    def novel_node_update(self, table_id, current_novel_node_list):
+    def novel_node_update(self, current_novel_node_list):
         """
         """
         if len(current_novel_node_list) == 0:
             return True
 
-        self.novel_node_dir_update(current_novel_node_list)
-        self.novel_node_chapter_update(table_id, current_novel_node_list)
+        cluster_db = ClusterDBModule()
+        dir_id_list = [novel_node.dir_id for novel_node in current_novel_node_list]
+
+        result = cluster_db.get_novelclusterdirinfo_list(dir_id_list)
+        dir_id_dict = {}
+        for (dir_id, gid, chapter_count) in result:
+            dir_id_dict[dir_id] = (gid, chapter_count)
+
+        self.novel_node_dir_update(dir_id_dict, current_novel_node_list)
+        self.novel_node_chapter_update(dir_id_dict, current_novel_node_list)
         return True
 
 
@@ -169,26 +191,22 @@ class ClusterNodeModule(object):
         cluster_db = ClusterDBModule()
         novel_id_list = cluster_db.get_dirfmtinfo_id_list(site_id, update_time)
 
-        current_novel_node_dict = defaultdict(list)
+        current_novel_node_list = []
         for index, novel_id in enumerate(novel_id_list):
             novel_node = self.novel_node_collection(site_id, novel_id)
             if not novel_node:
                 continue
 
             self.novel_node_integrate(novel_node)
-            table_id = novel_node.gid % 256
-            self.novel_gid_list.append(novel_node.gid)
-            current_novel_node_dict[table_id].append(novel_node)
+            current_novel_node_list.append(novel_node)
 
-            current_novel_node_list = current_novel_node_dict[table_id]
             if len(current_novel_node_list) == 100:
-                self.novel_node_update(table_id, current_novel_node_list)
-                current_novel_node_dict[table_id] = []
-            if index % 100 == 0:
+                self.novel_node_update(current_novel_node_list)
                 self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
+                current_novel_node_list = []
 
-        for (table_id, current_novel_node_list) in current_novel_node_dict.items():
-            self.novel_node_update(table_id, current_novel_node_list)
+        if len(current_novel_node_list) > 0:
+            self.novel_node_update(current_novel_node_list)
         return True
 
 
@@ -202,8 +220,8 @@ class ClusterNodeModule(object):
                 continue
             update_time = self.proc_time_dict['dir_fmt_info{0}'.format(site_id)]
             self.novel_node_generate(site_id, update_time)
-            self.novel_gid_list = {}.fromkeys(self.novel_gid_list).keys()
 
+        self.novel_gid_list = {}.fromkeys(self.novel_gid_list).keys()
         if update_edge is True and len(self.novel_gid_list) > 0:
             cluster_edge_module = ClusterEdgeModule()
             cluster_edge_module.run(self.novel_gid_list)
