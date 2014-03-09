@@ -58,9 +58,9 @@ def deploy_unit(unit):
     """
     if os.path.exists("./{0}".format(unit["id"])):
         os.system("rm -rf {0}".format(unit["id"]))
-    res = os.system("cp -r dataframe {0}".format(unit["id"]))
+    res = os.system("cp -r NovelData {0}".format(unit["id"]))
     if res != 0:
-        print "Failed to cp dataframe to {0}".format(unit["id"])
+        print "Failed to cp NovelData to {0}".format(unit["id"])
         return False
 
     if not set_module_conf_file(unit):
