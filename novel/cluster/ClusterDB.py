@@ -162,8 +162,8 @@ class ClusterDBModule(MySQLModule):
             return []
 
         result = []
-        for (dir_id, ) in cursor.fetchall():
-            result.append(dir_id)
+        for row in cursor.fetchall():
+            result.append(row)
         cursor.close()
         return result
 
