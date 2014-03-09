@@ -1,4 +1,3 @@
-use novels;
 drop table if exists novel_cluster_chapter_info;
 create table `novel_cluster_chapter_info` (
     `id` bigint(20) unsigned not null auto_increment,
