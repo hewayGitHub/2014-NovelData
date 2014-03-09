@@ -133,7 +133,7 @@ class ClusterDBModule(MySQLModule):
         """
         sql = 'SELECT dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status ' \
               'FROM chapter_ori_info{0} ' \
-              'WHERE dir_id IN ({1}) AND chapter_sort <= 100'.format(site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+              'WHERE dir_id IN ({1}) AND chapter_sort <= 60'.format(site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
             cursor = self.get_cursor('chapter_ori_info{0}'.format(site_id % 2))
             cursor.execute(sql)
