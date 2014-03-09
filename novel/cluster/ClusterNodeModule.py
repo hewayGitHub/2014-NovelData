@@ -208,16 +208,18 @@ class ClusterNodeModule(object):
         current_novel_node_dict = defaultdict(list)
         for index, novel_id in enumerate(novel_id_list):
             current_novel_id_list.append(novel_id)
-            if len(current_novel_id_list) <= 100 and index < len(novel_id_list) - 1:
+            if len(current_novel_id_list) <= 1000 and index < len(novel_id_list) - 1:
                 continue
-            self.logger('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
+            self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
 
             current_novel_node_list = self.novel_node_collection(site_id, current_novel_id_list)
             current_novel_id_list = []
 
             for novel_node in current_novel_node_list:
                 table_id = novel_node.gid % 256
+                self.novel_node_integrate(novel_node)
                 current_novel_node_dict[table_id].append(novel_node)
+
                 if len(current_novel_node_dict[table_id]) == 100:
                     self.novel_node_update(table_id, current_novel_node_dict[table_id])
                     current_novel_node_dict[table_id] = []
