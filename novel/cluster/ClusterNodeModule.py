@@ -95,7 +95,7 @@ class ClusterNodeModule(object):
         pen_name = string_filter(pen_name)
         novel_node = NovelNodeInfo(site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name)
 
-        table_name = 'dir_fmt_info'.format(site_id)
+        table_name = 'dir_fmt_info{0}'.format(site_id)
         self.proc_time_dict[table_name] = max(self.proc_time_dict[table_name], update_time)
 
         result = cluster_db.get_chapteroriinfo_list(site_id, dir_id)
