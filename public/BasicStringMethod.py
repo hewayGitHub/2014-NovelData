@@ -105,6 +105,14 @@ def string_format(string):
     string = string.encode("GBK", "ignore")
     return string
 
+
+def url_format(url):
+    """
+    """
+    url = url.replace("'", "")
+    return url
+
+
 def string_similarity(string_x, string_y):
     """
     """

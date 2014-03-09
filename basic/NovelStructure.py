@@ -50,7 +50,7 @@ class NovelNodeInfo(object):
         """
         result = (
             self.site_id, self.site, self.site_status,
-            self.dir_id, self.dir_url,
+            self.dir_id, url_format(self.dir_url),
             self.gid, self.rid, string_format(self.book_name), string_format(self.pen_name),
             self.chapter_count, self.valid_chapter_count, self.chapter_word_sum
         )
@@ -90,7 +90,7 @@ class NovelChapterInfo(object):
         """
         result = (
             self.gid, self.site_id, self.dir_id, self.chapter_sort, self.chapter_id,
-            self.chapter_url, string_format(self.chapter_title), string_format(self.raw_chapter_title),
+            url_format(self.chapter_url), string_format(self.chapter_title), string_format(self.raw_chapter_title),
             self.chapter_status, self.word_sum
         )
         return result
