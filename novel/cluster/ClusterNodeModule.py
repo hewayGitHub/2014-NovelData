@@ -201,7 +201,7 @@ class ClusterNodeModule(object):
 
         start_time = time.time()
         self.novel_node_chapter_update(table_id, dir_id_dict, current_novel_node_list)
-        self.logger.info('update chapter time: {1}'.format(time.time() - start_time))
+        self.logger.info('update chapter time: {0}'.format(time.time() - start_time))
         return True
 
 
