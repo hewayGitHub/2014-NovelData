@@ -233,7 +233,9 @@ class ClusterNodeModule(object):
         for (table_id, current_novel_node_list) in current_novel_node_dict.items():
             if len(current_novel_node_list) == 0:
                 continue
+            start_time = time.time()
             self.novel_node_update(table_id, current_novel_node_list)
+            self.logger.info('update and insert time: {0}'.format(time.time() - start_time))
 
         return True
 
