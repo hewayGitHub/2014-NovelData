@@ -173,7 +173,6 @@ class ClusterNodeModule(object):
             for chapter in novel_node.chapter_list:
                 insert_tuple_list.append(chapter.generate_insert_tuple())
 
-        self.logger.info('[dir number: {0}, chapter number: {1}]'.format(len(delete_id_list), len(insert_tuple_list)))
         if len(delete_id_list):
             cluster_db.delete_novelclusterchapterinfo(table_id, delete_id_list)
         if len(insert_tuple_list):
@@ -187,15 +186,22 @@ class ClusterNodeModule(object):
             return True
 
         cluster_db = ClusterDBModule()
+        start_time = time.time()
         dir_id_list = [novel_node.dir_id for novel_node in current_novel_node_list]
+        self.logger.info('collection time: {0}'.format(time.time() - start_time))
 
         result = cluster_db.get_novelclusterdirinfo_list(dir_id_list)
         dir_id_dict = {}
         for (dir_id, gid, chapter_count) in result:
             dir_id_dict[dir_id] = (gid, chapter_count)
 
+        start_time = time.time()
         self.novel_node_dir_update(dir_id_dict, current_novel_node_list)
+        self.logger.info('update dir time: {0}'.format(time.time() - start_time))
+
+        start_time = time.time()
         self.novel_node_chapter_update(table_id, dir_id_dict, current_novel_node_list)
+        self.logger.info('update chapter time: {1}'.format(time.time() - start_time))
         return True
 
 
@@ -214,10 +220,8 @@ class ClusterNodeModule(object):
                 continue
             self.logger.info('[site_id: {0}, current_count: {1}, total_count: {2}]'.format(site_id, index, len(novel_id_list)))
 
-            start_time = time.time()
             current_novel_node_list = self.novel_node_collection(site_id, current_novel_id_list)
             current_novel_id_list = []
-            self.logger.info('collection time: {0}'.format(time.time() - start_time))
 
             for novel_node in current_novel_node_list:
                 table_id = novel_node.gid % 256
@@ -225,17 +229,13 @@ class ClusterNodeModule(object):
                 current_novel_node_dict[table_id].append(novel_node)
 
                 if len(current_novel_node_dict[table_id]) == 50:
-                    start_time = time.time()
                     self.novel_node_update(table_id, current_novel_node_dict[table_id])
                     current_novel_node_dict[table_id] = []
-                    self.logger.info('update and insert time: {0}'.format(time.time() - start_time))
 
         for (table_id, current_novel_node_list) in current_novel_node_dict.items():
             if len(current_novel_node_list) == 0:
                 continue
-            start_time = time.time()
             self.novel_node_update(table_id, current_novel_node_list)
-            self.logger.info('update and insert time: {0}'.format(time.time() - start_time))
 
         return True
 
