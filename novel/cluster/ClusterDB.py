@@ -304,6 +304,25 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
+    def replace_novelclusterchapterinfo(self, table_id, insert_tuple_list):
+        """
+        """
+        sql = 'REPLACE INTO novel_cluster_chapter_info{0} ' \
+              '(gid, site_id, dir_id, chapter_sort, chapter_id, ' \
+              'chapter_url, chapter_title, raw_chapter_title, ' \
+              'chapter_status, word_sum) ' \
+              'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
+        try:
+            cursor = self.get_cursor('novel_cluster_chapter_info')
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+
+        cursor.close()
+        return True
+
+
     def delete_novelclusterchapterinfo(self, table_id, dir_id_list):
         """
         """

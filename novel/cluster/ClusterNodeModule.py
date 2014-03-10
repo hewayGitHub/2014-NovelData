@@ -173,17 +173,14 @@ class ClusterNodeModule(object):
             for chapter in novel_node.chapter_list:
                 insert_tuple_list.append(chapter.generate_insert_tuple())
 
-        self.logger.info('delete dir number: {0}, insert tuple number: {1}'.format(len(delete_id_list), len(insert_tuple_list)))
-
-        start_time = time.time()
+        if len(insert_tuple_list):
+            cluster_db.replace_novelclusterchapterinfo(table_id, insert_tuple_list)
+        """
         if len(delete_id_list):
             cluster_db.delete_novelclusterchapterinfo(table_id, delete_id_list)
-        self.logger.info('delete time: {0}'.format(time.time() - start_time))
-
-        start_time = time.time()
         if len(insert_tuple_list):
             cluster_db.insert_novelclusterchapterinfo(table_id, insert_tuple_list)
-        self.logger.info('insert time: {0}'.format(time.time() - start_time))
+        """
 
 
     def novel_node_update(self, table_id, current_novel_node_list):
@@ -200,8 +197,13 @@ class ClusterNodeModule(object):
         for (dir_id, gid, chapter_count) in result:
             dir_id_dict[dir_id] = (gid, chapter_count)
 
+        start_time = time.time()
         self.novel_node_dir_update(dir_id_dict, current_novel_node_list)
+        self.logger.info('dir time: {0}'.format(time.time() - start_time))
+
+        start_time = time.time()
         self.novel_node_chapter_update(table_id, dir_id_dict, current_novel_node_list)
+        self.logger.info('chapter time: {0}'.format(time.time() - start_time))
         return True
 
 
