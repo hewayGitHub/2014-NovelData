@@ -4,6 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-04 02:10'
 
+import time
 from collections import defaultdict
 
 
@@ -13,11 +14,9 @@ def here():
 
 if __name__ == '__main__':
 
-    s = 'abababab'
-    for index, char in enumerate(s):
-        print(index, char)
-    print(s[1 : 2])
-
+    start_time = time.time()
+    time.sleep(1.0)
+    print(time.time() - start_time)
     print('use novels')
     for index in xrange(0, 256):
         print('alter table novel_data{0} add sub_category varchar(128) not null;'.format(index))
