@@ -1,6 +1,6 @@
 [
     {
-        "host": "dbl-wise-xs11.dbl01.baidu.com",
+        "host": "cq02-mco-wise96.cq02.baidu.com",
         "proc_table_num": 256,
         "proc_table_name": "dir_fmt_info",
         "units": [
@@ -113,6 +113,244 @@
                 "id": 15,
                 "proc_start_site_id": "75",
                 "proc_end_site_id": "79",
+                "proc_start_gid_id": "120",
+                "proc_end_gid_id": "127"
+            }
+        ]
+    },
+    {
+        "host": "cq02-mco-wise97.cq02.baidu.com",
+        "proc_table_num": 256,
+        "proc_table_name": "dir_fmt_info",
+        "units": [
+            {
+                "id": 0,
+                "proc_start_site_id": "80",
+                "proc_end_site_id": "84",
+                "proc_start_gid_id": "128",
+                "proc_end_gid_id": "135"
+            },
+            {
+                "id": 1,
+                "proc_start_site_id": "85",
+                "proc_end_site_id": "89",
+                "proc_start_gid_id": "136",
+                "proc_end_gid_id": "143"
+            },
+            {
+                "id": 2,
+                "proc_start_site_id": "90",
+                "proc_end_site_id": "94",
+                "proc_start_gid_id": "144",
+                "proc_end_gid_id": "151"
+            },
+            {
+                "id": 3,
+                "proc_start_site_id": "95",
+                "proc_end_site_id": "99",
+                "proc_start_gid_id": "152",
+                "proc_end_gid_id": "159"
+            },
+            {
+                "id": 4,
+                "proc_start_site_id": "100",
+                "proc_end_site_id": "104",
+                "proc_start_gid_id": "160",
+                "proc_end_gid_id": "167"
+            },
+            {
+                "id": 5,
+                "proc_start_site_id": "105",
+                "proc_end_site_id": "109",
+                "proc_start_gid_id": "168",
+                "proc_end_gid_id": "175"
+            },
+            {
+                "id": 6,
+                "proc_start_site_id": "110",
+                "proc_end_site_id": "114",
+                "proc_start_gid_id": "176",
+                "proc_end_gid_id": "183"
+            },
+            {
+                "id": 7,
+                "proc_start_site_id": "115",
+                "proc_end_site_id": "119",
+                "proc_start_gid_id": "184",
+                "proc_end_gid_id": "191"
+            },
+            {
+                "id": 8,
+                "proc_start_site_id": "120",
+                "proc_end_site_id": "124",
+                "proc_start_gid_id": "192",
+                "proc_end_gid_id": "199"
+            },
+            {
+                "id": 9,
+                "proc_start_site_id": "125",
+                "proc_end_site_id": "129",
+                "proc_start_gid_id": "200",
+                "proc_end_gid_id": "207"
+            },
+            {
+                "id": 10,
+                "proc_start_site_id": "130",
+                "proc_end_site_id": "134",
+                "proc_start_gid_id": "208",
+                "proc_end_gid_id": "215"
+            },
+            {
+                "id": 11,
+                "proc_start_site_id": "135",
+                "proc_end_site_id": "139",
+                "proc_start_gid_id": "216",
+                "proc_end_gid_id": "223"
+            },
+            {
+                "id": 12,
+                "proc_start_site_id": "140",
+                "proc_end_site_id": "144",
+                "proc_start_gid_id": "224",
+                "proc_end_gid_id": "231"
+            },
+            {
+                "id": 13,
+                "proc_start_site_id": "145",
+                "proc_end_site_id": "149",
+                "proc_start_gid_id": "232",
+                "proc_end_gid_id": "239"
+            },
+            {
+                "id": 14,
+                "proc_start_site_id": "150",
+                "proc_end_site_id": "154",
+                "proc_start_gid_id": "240",
+                "proc_end_gid_id": "247"
+            },
+            {
+                "id": 15,
+                "proc_start_site_id": "155",
+                "proc_end_site_id": "159",
+                "proc_start_gid_id": "248",
+                "proc_end_gid_id": "255"
+            }
+        ]
+    },
+    {
+        "host": "cq02-mco-wise98.cq02.baidu.com",
+        "proc_table_num": 256,
+        "proc_table_name": "dir_fmt_info",
+        "units": [
+            {
+                "id": 0,
+                "proc_start_site_id": "160",
+                "proc_end_site_id": "164",
+                "proc_start_gid_id": "0",
+                "proc_end_gid_id": "7"
+            },
+            {
+                "id": 1,
+                "proc_start_site_id": "165",
+                "proc_end_site_id": "169",
+                "proc_start_gid_id": "8",
+                "proc_end_gid_id": "15"
+            },
+            {
+                "id": 2,
+                "proc_start_site_id": "170",
+                "proc_end_site_id": "174",
+                "proc_start_gid_id": "16",
+                "proc_end_gid_id": "23"
+            },
+            {
+                "id": 3,
+                "proc_start_site_id": "175",
+                "proc_end_site_id": "179",
+                "proc_start_gid_id": "24",
+                "proc_end_gid_id": "31"
+            },
+            {
+                "id": 4,
+                "proc_start_site_id": "180",
+                "proc_end_site_id": "184",
+                "proc_start_gid_id": "32",
+                "proc_end_gid_id": "39"
+            },
+            {
+                "id": 5,
+                "proc_start_site_id": "185",
+                "proc_end_site_id": "189",
+                "proc_start_gid_id": "40",
+                "proc_end_gid_id": "47"
+            },
+            {
+                "id": 6,
+                "proc_start_site_id": "190",
+                "proc_end_site_id": "194",
+                "proc_start_gid_id": "48",
+                "proc_end_gid_id": "55"
+            },
+            {
+                "id": 7,
+                "proc_start_site_id": "195",
+                "proc_end_site_id": "199",
+                "proc_start_gid_id": "56",
+                "proc_end_gid_id": "63"
+            },
+            {
+                "id": 8,
+                "proc_start_site_id": "200",
+                "proc_end_site_id": "204",
+                "proc_start_gid_id": "64",
+                "proc_end_gid_id": "71"
+            },
+            {
+                "id": 9,
+                "proc_start_site_id": "205",
+                "proc_end_site_id": "209",
+                "proc_start_gid_id": "72",
+                "proc_end_gid_id": "79"
+            },
+            {
+                "id": 10,
+                "proc_start_site_id": "210",
+                "proc_end_site_id": "214",
+                "proc_start_gid_id": "80",
+                "proc_end_gid_id": "87"
+            },
+            {
+                "id": 11,
+                "proc_start_site_id": "215",
+                "proc_end_site_id": "219",
+                "proc_start_gid_id": "88",
+                "proc_end_gid_id": "95"
+            },
+            {
+                "id": 12,
+                "proc_start_site_id": "220",
+                "proc_end_site_id": "224",
+                "proc_start_gid_id": "96",
+                "proc_end_gid_id": "103"
+            },
+            {
+                "id": 13,
+                "proc_start_site_id": "225",
+                "proc_end_site_id": "229",
+                "proc_start_gid_id": "104",
+                "proc_end_gid_id": "111"
+            },
+            {
+                "id": 14,
+                "proc_start_site_id": "230",
+                "proc_end_site_id": "234",
+                "proc_start_gid_id": "112",
+                "proc_end_gid_id": "119"
+            },
+            {
+                "id": 15,
+                "proc_start_site_id": "235",
+                "proc_end_site_id": "239",
                 "proc_start_gid_id": "120",
                 "proc_end_gid_id": "127"
             }
