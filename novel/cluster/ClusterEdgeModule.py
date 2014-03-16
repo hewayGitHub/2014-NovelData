@@ -97,7 +97,7 @@ class ClusterEdgeModule(object):
         related_list = []
         if cluster_node.book_name not in [u'', u'未知']:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('book_name', cluster_node.book_name.encode('GBK', 'ignore')))
-        if cluster_node.pen_name not in [u'', u'未知', u'匿名', u'作者']:
+        if cluster_node.pen_name not in [u'', u'未知', u'匿名', u'作者', u'feiku', u'发表评论']:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('pen_name', cluster_node.pen_name.encode('GBK', 'ignore')))
 
         g = lambda gid: gid != cluster_node.gid
@@ -141,6 +141,7 @@ class ClusterEdgeModule(object):
             cluster_db.delete_novelclusteredgeinfo(('gid_y', 'gid_x'), gid, delete_edge_list_x)
         if len(delete_edge_list_y) > 0:
             cluster_db.delete_novelclusteredgeinfo(('gid_x', 'gid_y'), gid, delete_edge_list_y)
+        self.logger.info('[{0}, insert: {1}, delete: {2}]'.format(gid, len(insert_edge_list), len(delete_edge_list_x) + len(delete_edge_list_y)))
 
 
     def run(self, process_gid_list = []):
@@ -157,7 +158,7 @@ class ClusterEdgeModule(object):
 
             related_gid_list = self.related_gid_collection(cluster_node)
             self.logger.info('current: {0}, total: {1}'.format(index, len(process_gid_list)))
-            self.logger.info('[{0}, {1}, {2}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK')))
+            self.logger.info('[{0}, {1}, {2}, {3}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK'), len(related_gid_list)))
 
             related_edge_list = []
             for related_gid in related_gid_list:
