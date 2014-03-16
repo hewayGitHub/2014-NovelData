@@ -342,20 +342,30 @@ class ClusterDBModule(MySQLModule):
     def get_novelclusteredgeinfo_gid(self, gid):
         """
         """
+        result = []
         sql = 'SELECT gid_x, gid_y, similarity ' \
               'FROM novel_cluster_edge_info ' \
-              'WHERE gid_x = {0} OR gid_y = {1}'.format(gid, gid)
+              'WHERE gid_x = {0}'.format(gid)
         try:
             cursor = self.get_cursor('novel_cluster_edge_info')
             cursor.execute(sql)
+            for row in cursor.fetchall():
+                result.append(row)
+            cursor.close()
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return []
 
-        result = []
-        for row in cursor.fetchall():
-            result.append(row)
-        cursor.close()
+        sql = 'SELECT gid_x, gid_y, similarity ' \
+              'FROM novel_cluster_edge_info ' \
+              'WHERE gid_y = {0}'.format(gid)
+        try:
+            cursor = self.get_cursor('novel_cluster_edge_info')
+            cursor.execute(sql)
+            for row in cursor.fetchall():
+                result.append(row)
+            cursor.close()
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
         return result
 
 

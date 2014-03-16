@@ -114,8 +114,11 @@ class ClusterEdgeModule(object):
         result = cluster_db.get_novelclusteredgeinfo_gid(gid)
         related_gid_set = set()
         for (gid_x, gid_y, similarity) in result:
-            related_gid_set.add(gid_x)
-            related_gid_set.add(gid_y)
+            if gid == gid_x:
+                related_gid_set.add(gid_y)
+            if gid == gid_y:
+                related_gid_set.add(gid_x)
+
         current_gid_set = set()
         for cluster_edge in cluster_edge_list:
             current_gid_set.add(cluster_edge.gid_y)
