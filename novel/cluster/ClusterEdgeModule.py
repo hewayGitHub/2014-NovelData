@@ -185,8 +185,7 @@ class ClusterEdgeModule(object):
             pen_name = cluster_node.book_name.encode('GBK')
             self.logger.info('index: {0}/{1}, gid: {2}, '
                              'book_name: {3}, pen_name: {4}, '
-                             'related_gid_num: {5}, related_edge_num: {6}'
-                             'insert_edge_num: {7}, delete_edge_num: {8}'.format(
+                             'related_num: {5}/{6}, update_edge_num: {7}/{8}'.format(
                 index, len(process_gid_list), gid,
                 book_name, pen_name,
                 len(related_gid_list), len(related_edge_list),
