@@ -108,7 +108,7 @@ class ClusterEdgeModule(object):
         """
         """
         if len(cluster_edge_list) == 0:
-            return
+            return (0, 0)
 
         cluster_db = ClusterDBModule()
         result = cluster_db.get_novelclusteredgeinfo_gid(gid)
@@ -144,7 +144,13 @@ class ClusterEdgeModule(object):
             cluster_db.delete_novelclusteredgeinfo(('gid_y', 'gid_x'), gid, delete_edge_list_x)
         if len(delete_edge_list_y) > 0:
             cluster_db.delete_novelclusteredgeinfo(('gid_x', 'gid_y'), gid, delete_edge_list_y)
-        self.logger.info('[{0}, insert: {1}, delete: {2}]'.format(gid, len(insert_edge_list), len(delete_edge_list_x) + len(delete_edge_list_y)))
+
+        for gid_x in delete_edge_list_x:
+            self.err.warning('gid_x: {0}, gid_y: {1}'.format(gid_x, gid))
+        for gid_y in delete_edge_list_y:
+            self.err.warning('gid_x: {0}, gid_y: {1}'.format(gid, gid_y))
+
+        return (len(insert_edge_list), len(delete_edge_list_x) + len(delete_edge_list_y))
 
 
     def run(self, process_gid_list = []):
@@ -154,15 +160,13 @@ class ClusterEdgeModule(object):
 
         if len(process_gid_list) == 0:
             process_gid_list = self.process_gid_collection()
+
         for index, gid in enumerate(process_gid_list):
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:
                 continue
 
             related_gid_list = self.related_gid_collection(cluster_node)
-            self.logger.info('current: {0}, total: {1}'.format(index, len(process_gid_list)))
-            self.logger.info('[{0}, {1}, {2}, {3}]'.format(cluster_node.gid, cluster_node.book_name.encode('GBK'), cluster_node.pen_name.encode('GBK'), len(related_gid_list)))
-
             related_edge_list = []
             for related_gid in related_gid_list:
                 related_cluster_node = self.cluster_node_collection(related_gid)
@@ -172,8 +176,22 @@ class ClusterEdgeModule(object):
                 if cluster_similarity >= 0.7:
                     cluster_edge = ClusterEdgeInfo(cluster_node.gid, related_cluster_node.gid, cluster_similarity)
                     related_edge_list.append(cluster_edge)
-                    self.logger.info('[{0}, {1}, {2}, {3}]'.format(related_cluster_node.gid, related_cluster_node.book_name.encode('GBK'), related_cluster_node.pen_name.encode('GBK'), cluster_edge.similarity))
-            self.cluster_edge_update(gid, related_edge_list)
+                    book_name = related_cluster_node.book_name.encode('GBK')
+                    pen_name = related_cluster_node.pen_name.encode('GBK')
+                    self.logger.info('book_name: {0}, pen_name: {1}'.format(book_name, pen_name))
+            (insert_num, delete_num) = self.cluster_edge_update(gid, related_edge_list)
+
+            book_name = cluster_node.book_name.encode('GBK')
+            pen_name = cluster_node.book_name.encode('GBK')
+            self.logger.info('index: {0}/{1}, gid: {2}, '
+                             'book_name: {3}, pen_name: {4}, '
+                             'related_gid_num: {5}, related_edge_num: {6}'
+                             'insert_edge_num: {7}, delete_edge_num: {8}'.format(
+                index, len(process_gid_list), gid,
+                book_name, pen_name,
+                len(related_gid_list), len(related_edge_list),
+                insert_num, delete_num
+            ))
 
         return True
 

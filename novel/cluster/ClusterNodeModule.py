@@ -175,12 +175,6 @@ class ClusterNodeModule(object):
 
         if len(insert_tuple_list):
             cluster_db.replace_novelclusterchapterinfo(table_id, insert_tuple_list)
-        """
-        if len(delete_id_list):
-            cluster_db.delete_novelclusterchapterinfo(table_id, delete_id_list)
-        if len(insert_tuple_list):
-            cluster_db.insert_novelclusterchapterinfo(table_id, insert_tuple_list)
-        """
 
 
     def novel_node_update(self, table_id, current_novel_node_list):
@@ -197,13 +191,8 @@ class ClusterNodeModule(object):
         for (dir_id, gid, chapter_count) in result:
             dir_id_dict[dir_id] = (gid, chapter_count)
 
-        start_time = time.time()
         self.novel_node_dir_update(dir_id_dict, current_novel_node_list)
-        self.logger.info('dir time: {0}'.format(time.time() - start_time))
-
-        start_time = time.time()
         self.novel_node_chapter_update(table_id, dir_id_dict, current_novel_node_list)
-        self.logger.info('chapter time: {0}'.format(time.time() - start_time))
         return True
 
 
@@ -258,6 +247,7 @@ class ClusterNodeModule(object):
             cluster_edge_module = ClusterEdgeModule()
             cluster_edge_module.run(self.novel_gid_list)
 
+        self.logger.info('novel cluster node module end')
         return True
 
 
