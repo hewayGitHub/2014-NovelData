@@ -10,7 +10,7 @@ import os
 from novel.cluster.ClusterNodeModule import *
 from novel.cluster.ClusterEdgeModule import *
 from novel.cluster.ClusterModule import *
-from novel.chapter.ContentFeatureModule import *
+from novel.chapter.ChapterFeatureModule import *
 
 def here():
     print('PrimeMusic')

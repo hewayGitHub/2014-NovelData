@@ -14,7 +14,7 @@ def is_chinese(char):
     """
         判断char是否为中文，char为unicode
     """
-    if char >= u'\u4e00' and char <= u'\u9f5a':
+    if char >= u'\u4e00' and char <= u'\u9fa5':
         return True
     else:
         return False
