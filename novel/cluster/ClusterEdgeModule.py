@@ -114,11 +114,8 @@ class ClusterEdgeModule(object):
         result = cluster_db.get_novelclusteredgeinfo_gid(gid)
         related_gid_set = set()
         for (gid_x, gid_y, similarity) in result:
-            if gid == gid_x:
-                related_gid_set.add(gid_y)
-            if gid == gid_y:
-                related_gid_set.add(gid_x)
-
+            related_gid_set.add(gid_y)
+            related_gid_set.add(gid_x)
         current_gid_set = set()
         for cluster_edge in cluster_edge_list:
             current_gid_set.add(cluster_edge.gid_y)
@@ -137,9 +134,9 @@ class ClusterEdgeModule(object):
             if gid_y in current_gid_set or gid_x in current_gid_set:
                 continue
             if gid_x == gid:
-                delete_edge_list_y.append(gid_x)
+                delete_edge_list_y.append(gid_y)
             if gid_y == gid:
-                delete_edge_list_x.append(gid_y)
+                delete_edge_list_x.append(gid_x)
         if len(delete_edge_list_x) > 0:
             cluster_db.delete_novelclusteredgeinfo(('gid_y', 'gid_x'), gid, delete_edge_list_x)
         if len(delete_edge_list_y) > 0:
@@ -183,13 +180,12 @@ class ClusterEdgeModule(object):
 
             book_name = cluster_node.book_name.encode('GBK')
             pen_name = cluster_node.book_name.encode('GBK')
-            self.logger.info('index: {0}/{1}, gid: {2}, '
-                             'book_name: {3}, pen_name: {4}, '
+            self.logger.info('gid: {0}, '
+                             'index: {1}/{2}, book_info: {3}/{4}, '
                              'related_num: {5}/{6}, update_edge_num: {7}/{8}'.format(
-                index, len(process_gid_list), gid,
-                book_name, pen_name,
-                len(related_gid_list), len(related_edge_list),
-                insert_num, delete_num
+                gid,
+                index, len(process_gid_list), book_name, pen_name,
+                len(related_gid_list), len(related_edge_list), insert_num, delete_num
             ))
 
         return True
