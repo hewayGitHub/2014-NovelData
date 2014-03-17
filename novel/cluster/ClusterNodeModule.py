@@ -173,8 +173,10 @@ class ClusterNodeModule(object):
             for chapter in novel_node.chapter_list:
                 insert_tuple_list.append(chapter.generate_insert_tuple())
 
+        if len(delete_id_list):
+            cluster_db.delete_novelclusterchapterinfo(table_id, delete_id_list)
         if len(insert_tuple_list):
-            cluster_db.replace_novelclusterchapterinfo(table_id, insert_tuple_list)
+            cluster_db.insert_novelclusterchapterinfo(table_id, insert_tuple_list)
 
 
     def novel_node_update(self, table_id, current_novel_node_list):
