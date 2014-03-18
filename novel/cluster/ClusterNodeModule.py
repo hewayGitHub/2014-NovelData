@@ -192,6 +192,7 @@ class ClusterNodeModule(object):
         result = cluster_db.get_novelclusterdirinfo_list(dir_id_list)
         dir_id_dict = {}
         for (dir_id, gid, chapter_count, last_chapter_title) in result:
+            last_chapter_title = last_chapter_title.decode('GBK', 'ignore')
             dir_id_dict[dir_id] = (gid, chapter_count, last_chapter_title)
 
         self.novel_node_dir_update(dir_id_dict, current_novel_node_list)
