@@ -179,7 +179,7 @@ class ClusterEdgeModule(object):
             (insert_num, delete_num) = self.cluster_edge_update(gid, related_edge_list)
 
             book_name = cluster_node.book_name.encode('GBK')
-            pen_name = cluster_node.book_name.encode('GBK')
+            pen_name = cluster_node.pen_name.encode('GBK')
             self.logger.info('gid: {0}, '
                              'index: {1}/{2}, book_info: {3}/{4}, '
                              'related_num: {5}/{6}, update_edge_num: {7}/{8}'.format(
