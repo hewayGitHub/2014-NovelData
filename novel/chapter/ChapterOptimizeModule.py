@@ -76,6 +76,8 @@ class ChapterOptimizeModule(object):
             chapter = self.chapter_content_generate(chapter)
             if not chapter:
                 continue
+            print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
+                chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
             candidate_chapter_list.append(chapter)
         return candidate_chapter_list
 
@@ -101,7 +103,6 @@ class ChapterOptimizeModule(object):
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index) in aggregate_dir_list:
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
-            self.candidate_chapter_filter(candidate_chapter_list)
             if chapter_index > 100:
                 break
 
