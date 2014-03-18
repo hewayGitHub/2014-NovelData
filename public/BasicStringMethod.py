@@ -92,8 +92,6 @@ def html_filter(content):
         过滤正文中的html信息,过滤符号杂质
     """
     content = re.sub('<[^>]*>', '', content)
-    content = string_Q2B(content)
-    content = string_filter(content)
     return content
 
 

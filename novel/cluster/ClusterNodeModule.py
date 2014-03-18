@@ -113,6 +113,7 @@ class ClusterNodeModule(object):
         for (dir_id, novel_node) in current_novel_node_dict.items():
             novel_node.chapter_list = sorted(novel_node.chapter_list, lambda a, b: cmp(a.chapter_sort, b.chapter_sort))
             novel_node.chapter_count = len(novel_node.chapter_list)
+            novel_node.last_chapter_title = novel_node.chapter_list[-1].chapter_title
             if novel_node.chapter_count > 1:
                 current_novel_node_list.append(novel_node)
 
@@ -142,8 +143,8 @@ class ClusterNodeModule(object):
         update_tuple_list = []
         for novel_node in current_novel_node_list:
             if dir_id_dict.has_key(novel_node.dir_id):
-                (gid, chapter_count) = dir_id_dict[novel_node.dir_id]
-                if novel_node.gid == gid and novel_node.chapter_count == chapter_count:
+                (gid, chapter_count, last_chapter_title) = dir_id_dict[novel_node.dir_id]
+                if novel_node.gid == gid and novel_node.chapter_count == chapter_count and novel_node.last_chapter_title == last_chapter_title:
                     continue
                 else:
                     update_tuple_list.append(novel_node.generate_update_tuple())
@@ -166,8 +167,8 @@ class ClusterNodeModule(object):
         insert_tuple_list = []
         for novel_node in current_novel_node_list:
             if dir_id_dict.has_key(novel_node.dir_id):
-                (gid, chapter_count) = dir_id_dict[novel_node.dir_id]
-                if novel_node.gid == gid and novel_node.chapter_count == chapter_count:
+                (gid, chapter_count, last_chapter_title) = dir_id_dict[novel_node.dir_id]
+                if novel_node.gid == gid and novel_node.chapter_count == chapter_count and novel_node.last_chapter_title == last_chapter_title:
                     continue
             delete_id_list.append(novel_node.dir_id)
             for chapter in novel_node.chapter_list:
@@ -190,8 +191,8 @@ class ClusterNodeModule(object):
 
         result = cluster_db.get_novelclusterdirinfo_list(dir_id_list)
         dir_id_dict = {}
-        for (dir_id, gid, chapter_count) in result:
-            dir_id_dict[dir_id] = (gid, chapter_count)
+        for (dir_id, gid, chapter_count, last_chapter_title) in result:
+            dir_id_dict[dir_id] = (gid, chapter_count, last_chapter_title)
 
         self.novel_node_dir_update(dir_id_dict, current_novel_node_list)
         self.novel_node_chapter_update(table_id, dir_id_dict, current_novel_node_list)

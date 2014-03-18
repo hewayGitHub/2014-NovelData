@@ -151,7 +151,7 @@ class ClusterDBModule(MySQLModule):
     def get_novelclusterdirinfo_list(self, dir_id_list):
         """
         """
-        sql = 'SELECT dir_id, gid, chapter_count ' \
+        sql = 'SELECT dir_id, gid, chapter_count, last_chapter_title ' \
               'FROM novel_cluster_dir_info ' \
               'WHERE dir_id IN ({0})'.format(', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
@@ -211,7 +211,8 @@ class ClusterDBModule(MySQLModule):
         """
         cursor = self.get_cursor('novel_cluster_dir_info')
         sql_prefix = "UPDATE novel_cluster_dir_info " \
-                     "SET gid = '%d', book_name = '%s', pen_name = '%s', chapter_count = '%d' " \
+                     "SET gid = '%d', book_name = '%s', pen_name = '%s', " \
+                     "chapter_count = '%d', last_chapter_title = '%s' " \
                      "WHERE dir_id = '%d'"
         for update_tuple in update_tuple_list:
             sql = sql_prefix % update_tuple
@@ -251,7 +252,7 @@ class ClusterDBModule(MySQLModule):
               '(site_id, site, site_status, ' \
               'dir_id, dir_url, ' \
               'gid, rid, book_name, pen_name, ' \
-              'chapter_count, valid_chapter_count, chapter_word_sum) ' \
+              'chapter_count, chapter_word_sum, last_chapter_title) ' \
               'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
             cursor = self.get_cursor('novel_cluster_dir_info')

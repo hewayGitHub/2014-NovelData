@@ -49,9 +49,50 @@ class ChapterDBModule(MySQLModule):
         """
         """
         cursor = self.get_cursor('novel_authority_dir')
-        sql = 'SELECT rid, align_id, chapter_id, chapter_url ' \
+        sql = 'SELECT align_id, chapter_index, chapter_status ' \
               'FROM novel_authority_dir{0} ' \
-              'WHERE rid = {1}'.format(rid % 256, rid)
+              'WHERE rid = {1} ' \
+              'ORDER BY chapter_index'.format(rid % 256, rid)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
+
+    def get_novelclusterdirinfo_list(self, rid):
+        """
+        """
+        cursor = self.get_cursor('novel_cluster_dir_info')
+        sql = 'SELECT book_name, pen_name, dir_url ' \
+              'FROM novel_cluster_dir_info ' \
+              'WHERE rid = {0}'.format(rid)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
+
+    def get_integratechapterinfo_list(self, rid, align_id):
+        """
+        """
+        cursor = self.get_cursor('integrate_chapter_info')
+        sql = 'SELECT chapter_id, chapter_url, chapter_title ' \
+              'FROM integrate_chapter_info{0} ' \
+              'WHERE rid = {1} AND align_id = {2}'.format(rid % 256, rid, align_id)
         try:
             cursor.execute(sql)
         except Exception, e:

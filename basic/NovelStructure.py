@@ -29,7 +29,7 @@ class NovelNodeInfo(object):
     def __init__(self, site_id = 0, site = "", site_status = 0,
                  dir_id = 0, dir_url = "",
                  gid = 0, book_name = "", pen_name = "",
-                 chapter_count = 0, valid_chapter_count = 0, chapter_word_sum = 0):
+                 chapter_count = 0, chapter_word_sum = 0, last_chapter_title = ''):
         self.site_id = site_id
         self.site = site
         self.site_status = site_status
@@ -40,8 +40,8 @@ class NovelNodeInfo(object):
         self.book_name = book_name
         self.pen_name = pen_name
         self.chapter_count = chapter_count
-        self.valid_chapter_count = valid_chapter_count
         self.chapter_word_sum = chapter_word_sum
+        self.last_chapter_title = last_chapter_title
         self.chapter_list = []
 
 
@@ -52,7 +52,7 @@ class NovelNodeInfo(object):
             self.site_id, self.site, self.site_status,
             self.dir_id, url_format(self.dir_url),
             self.gid, self.rid, string_format(self.book_name), string_format(self.pen_name),
-            self.chapter_count, self.valid_chapter_count, self.chapter_word_sum
+            self.chapter_count, self.chapter_word_sum, string_format(self.last_chapter_title)
         )
         return result
 
@@ -61,7 +61,10 @@ class NovelNodeInfo(object):
         """
         """
         result = (
-            self.gid, string_format(self.book_name), string_format(self.pen_name), self.chapter_count, self.dir_id
+            self.gid,
+            string_format(self.book_name), string_format(self.pen_name),
+            self.chapter_count, string_format(self.last_chapter_title),
+            self.dir_id
         )
         return result
 
@@ -136,20 +139,21 @@ class NovelContentInfo(object):
     """
         一本小说的章节信息
     """
-    def __init__(self, rid = 0, align_id = 0, chapter_id = 0, chapter_url = ''):
+    def __init__(self, rid = 0, align_id = 0, chapter_id = 0, chapter_url = '', chapter_title = ''):
         """
         """
         self.rid = rid
         self.align_id = align_id
         self.chapter_id = chapter_id
         self.chapter_url = chapter_url
+        self.chapter_title = chapter_title
+
+        self.chapter_page = ''
+
+        self.chapter_content = ''
+        self.raw_chapter_content = ''
 
 
-    def set_content(self, content = ''):
-        """
-        """
-        self.content = content
-        self.raw_content = content
 
 
 if __name__ == '__main__':
