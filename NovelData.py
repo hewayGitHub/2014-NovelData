@@ -10,7 +10,7 @@ import os
 from novel.cluster.ClusterNodeModule import *
 from novel.cluster.ClusterEdgeModule import *
 from novel.cluster.ClusterModule import *
-from novel.chapter.ChapterFeatureModule import *
+from novel.chapter.ChapterOptimizeModule import *
 
 def here():
     print('PrimeMusic')
@@ -87,8 +87,8 @@ def debug():
     """
     """
     remove_status_file()
-    novel_module = ContentFeatureModule()
-    novel_module.novel_content_generate(3994882921)
+    novel_module = ChapterOptimizeModule()
+    novel_module.run()
 
 
 if __name__ == '__main__':

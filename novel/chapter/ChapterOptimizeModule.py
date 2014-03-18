@@ -38,13 +38,13 @@ class ChapterOptimizeModule(object):
         return aggregate_dir_list
 
 
-    def chapter_content_generate(self, content):
+    def chapter_content_generate(self, chapter):
         """
             获取一个章节的正文信息
         """
         silk_server = SilkServer()
 
-        chapter_page = silk_server.get(src = content.chapter_url)
+        chapter_page = silk_server.get(src = chapter.chapter_url)
         if not chapter_page:
             return False
         if not chapter_page.has_key('blocks'):
@@ -58,9 +58,9 @@ class ChapterOptimizeModule(object):
         if len(raw_chapter_content) < 50:
             return False
 
-        content.chapter_page = chapter_page
-        content.raw_chapter_content = raw_chapter_content
-        return content
+        chapter.chapter_page = chapter_page
+        chapter.raw_chapter_content = raw_chapter_content
+        return chapter
 
 
     def candidate_chapter_generate(self, rid, align_id):
@@ -72,20 +72,20 @@ class ChapterOptimizeModule(object):
 
         candidate_chapter_list = []
         for (chapter_id, chapter_url, chapter_title) in result:
-            content = NovelContentInfo(rid, align_id, chapter_id, chapter_url, chapter_title)
-            content = self.chapter_content_generate(content)
-            if not content:
+            chapter = NovelContentInfo(rid, align_id, chapter_id, chapter_url, chapter_title)
+            chapter = self.chapter_content_generate(chapter)
+            if not chapter:
                 continue
-            candidate_chapter_list.append(content)
+            candidate_chapter_list.append(chapter)
         return candidate_chapter_list
 
 
     def candidate_chapter_filter(self, candidate_chapter_list):
         """
         """
-        for content in candidate_chapter_list:
+        for chapter in candidate_chapter_list:
             print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
-                content.chapter_title, content.chapter_url, len(content.raw_chapter_content)))
+                chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
 
 
     def novel_chapter_optimize(self, rid):
