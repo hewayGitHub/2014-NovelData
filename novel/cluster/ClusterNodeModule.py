@@ -113,8 +113,8 @@ class ClusterNodeModule(object):
         for (dir_id, novel_node) in current_novel_node_dict.items():
             novel_node.chapter_list = sorted(novel_node.chapter_list, lambda a, b: cmp(a.chapter_sort, b.chapter_sort))
             novel_node.chapter_count = len(novel_node.chapter_list)
-            novel_node.last_chapter_title = novel_node.chapter_list[-1].chapter_title
             if novel_node.chapter_count > 1:
+                novel_node.last_chapter_title = novel_node.chapter_list[-1].chapter_title
                 current_novel_node_list.append(novel_node)
 
         return current_novel_node_list
