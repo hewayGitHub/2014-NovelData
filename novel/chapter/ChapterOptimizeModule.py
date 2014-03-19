@@ -85,6 +85,11 @@ class ChapterOptimizeModule(object):
             dir_id_dict[dir_id] = (site, site_id, site_status)
         for chapter in candidate_chapter_list:
             dir_id = chapter.dir_id
+            if not dir_id_dict.has_key(dir_id):
+                print('dir_id: {0}, chapter_id: {1}, chapter_url: {2}'.format(dir_id, chapter.chapter_id, chapter.chapter_url))
+                chapter.site_id = -1
+                chapter.site_status = 0
+                continue
             (site, site_id, site_status) = dir_id_dict[dir_id]
             chapter.site_id = site_id
             chapter.site_status = site_status
