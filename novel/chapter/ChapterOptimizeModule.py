@@ -120,7 +120,7 @@ class ChapterOptimizeModule(object):
                 break
         if len(candidate_chapter_list) > 5:
             return candidate_chapter_list
-        for (site_id, chapter_list) in authority_chapter_dict.items():
+        for (site_id, chapter_list) in pirate_chapter_dict.items():
             for chapter in chapter_list:
                 chapter = self.chapter_content_generate(chapter)
                 if not chapter:
