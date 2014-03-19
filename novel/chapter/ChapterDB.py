@@ -66,7 +66,7 @@ class ChapterDBModule(MySQLModule):
         return result
 
 
-    def get_novelclusterdirinfo_list(self, rid):
+    def get_novelclusterdirinfo_rid(self, rid):
         """
         """
         cursor = self.get_cursor('novel_cluster_dir_info')
@@ -86,11 +86,31 @@ class ChapterDBModule(MySQLModule):
         return result
 
 
+    def get_novelclusterdirinfo_dir(self, dir_id_list):
+        """
+        """
+        cursor = self.get_cursor('novel_cluster_dir_info')
+        sql = 'SELECT dir_id, site, site_id, site_status ' \
+              'FROM novel_cluster_dir_info ' \
+              'WHERE dir_id IN ({0})'.format(', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
+
     def get_integratechapterinfo_list(self, rid, align_id):
         """
         """
         cursor = self.get_cursor('integrate_chapter_info')
-        sql = 'SELECT chapter_id, chapter_url, chapter_title ' \
+        sql = 'SELECT dir_id, chapter_id, chapter_url, chapter_title ' \
               'FROM integrate_chapter_info{0} ' \
               'WHERE rid = {1} AND align_id = {2}'.format(rid % 256, rid, align_id)
         try:

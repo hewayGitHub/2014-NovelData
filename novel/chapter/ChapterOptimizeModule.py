@@ -5,6 +5,7 @@ __author__ = 'sunhaowen'
 __date__ = '2014-03-17 16:36'
 
 import logging
+from collections import defaultdict
 
 from basic.NovelStructure import *
 from basic.SilkServerModule import *
@@ -33,8 +34,7 @@ class ChapterOptimizeModule(object):
 
         aggregate_dir_list = []
         for (align_id, chapter_index, chapter_status) in result:
-            if chapter_status >= 0:
-                aggregate_dir_list.append((align_id, chapter_index))
+            aggregate_dir_list.append((align_id, chapter_index))
         return aggregate_dir_list
 
 
@@ -63,28 +63,70 @@ class ChapterOptimizeModule(object):
         return chapter
 
 
-    def candidate_chapter_generate(self, rid, align_id):
+    def candidate_chapter_collecion(self, rid, align_id):
         """
-            获取一章的所有候选章节
+            获取一个章节的所有候选章节的基础信息
         """
         chapter_db = ChapterDBModule()
-        result = chapter_db.get_integratechapterinfo_list(rid, align_id)
 
         candidate_chapter_list = []
-        for (chapter_id, chapter_url, chapter_title) in result:
-            chapter = NovelContentInfo(rid, align_id, chapter_id, chapter_url, chapter_title)
-            chapter = self.chapter_content_generate(chapter)
+        result = chapter_db.get_integratechapterinfo_list(rid, align_id)
+        for (dir_id, chapter_id, chapter_url, chapter_title) in result:
+            chapter = NovelContentInfo(rid, align_id, dir_id, chapter_id, chapter_url, chapter_title)
             if not chapter:
                 continue
-            print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
-                chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
             candidate_chapter_list.append(chapter)
+
+        dir_id_list = [chapter.dir_id for chapter in candidate_chapter_list]
+        result = chapter_db.get_novelclusterdirinfo_dir(dir_id_list)
+
+        dir_id_dict = {}
+        for (dir_id, site, site_id, site_status) in result:
+            dir_id_dict[dir_id] = (site, site_id, site_status)
+        for chapter in candidate_chapter_list:
+            dir_id = chapter.dir_id
+            (site, site_id, site_status) = dir_id_dict[dir_id]
+            chapter.site_id = site_id
+            chapter.site_status = site_status
+        return candidate_chapter_list
+
+
+    def candidate_chapter_generate(self, rid, align_id):
+        """
+        """
+        candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
+
+        authority_chapter_dict = defaultdict(list)
+        pirate_chapter_dict = defaultdict(list)
+        for chapter in candidate_chapter_list:
+            site_id = chapter.site_id
+            if chapter.site_status == 1:
+                authority_chapter_dict[site_id].append(chapter)
+            if chapter.site_status == 0:
+                pirate_chapter_dict[site_id].append(chapter)
+
+        candidate_chapter_list = []
+        for (site_id, chapter_list) in authority_chapter_dict.items():
+            for chapter in chapter_list:
+                chapter = self.chapter_content_generate(chapter)
+                if not chapter:
+                    candidate_chapter_list.append(chapter)
+                    break
+        if len(candidate_chapter_list) > 5:
+            return candidate_chapter_list
+        for (site_id, chapter_list) in authority_chapter_dict.items():
+            for chapter in chapter_list:
+                chapter = self.chapter_content_generate(chapter)
+                if not chapter:
+                    candidate_chapter_list.append(chapter)
+                    break
         return candidate_chapter_list
 
 
     def candidate_chapter_filter(self, candidate_chapter_list):
         """
         """
+        print('*****************************************************************************')
         for chapter in candidate_chapter_list:
             print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
                 chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
@@ -96,14 +138,15 @@ class ChapterOptimizeModule(object):
         """
         chapter_db = ChapterDBModule()
 
-        result = chapter_db.get_novelclusterdirinfo_list(rid)
+        result = chapter_db.get_novelclusterdirinfo_rid(rid)
         if len(result) <= 1:
             return
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index) in aggregate_dir_list:
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
-            if chapter_index > 100:
+            self.candidate_chapter_filter(candidate_chapter_list)
+            if chapter_index > 10:
                 break
 
 

@@ -139,17 +139,20 @@ class NovelContentInfo(object):
     """
         一本小说的章节信息
     """
-    def __init__(self, rid = 0, align_id = 0, chapter_id = 0, chapter_url = '', chapter_title = ''):
+    def __init__(self, rid = 0, align_id = 0, dir_id = 0, chapter_id = 0, chapter_url = '', chapter_title = ''):
         """
         """
         self.rid = rid
         self.align_id = align_id
+        self.dir_id = dir_id
         self.chapter_id = chapter_id
         self.chapter_url = chapter_url
         self.chapter_title = chapter_title
 
-        self.chapter_page = ''
+        self.site_id = 0
+        self.site_status = 0
 
+        self.chapter_page = ''
         self.chapter_content = ''
         self.raw_chapter_content = ''
 
