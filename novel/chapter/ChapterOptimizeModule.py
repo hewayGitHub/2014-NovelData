@@ -115,6 +115,8 @@ class ChapterOptimizeModule(object):
             for chapter in chapter_list:
                 chapter = self.chapter_content_generate(chapter)
                 if not chapter:
+                    print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
+                        chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
                     candidate_chapter_list.append(chapter)
                     break
         if len(candidate_chapter_list) > 5:
@@ -123,6 +125,8 @@ class ChapterOptimizeModule(object):
             for chapter in chapter_list:
                 chapter = self.chapter_content_generate(chapter)
                 if not chapter:
+                    print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
+                        chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
                     candidate_chapter_list.append(chapter)
                     break
         return candidate_chapter_list
