@@ -58,7 +58,7 @@ class NovelChapterFilter(object):
         chapter_feature_list = sorted(chapter_feature_dict.items(), key = lambda x: (x[1][1], x[1][2]))
         for (sentence, (site_id, site_count, total_count)) in chapter_feature_list:
             print('sentence: {0}, site_id: {1}, site_count: {2}, total_count: {3}'.format(
-                sentence, site_id, site_count, total_count
+                sentence.encode('GBK'), site_id, site_count, total_count
             ))
 
 
