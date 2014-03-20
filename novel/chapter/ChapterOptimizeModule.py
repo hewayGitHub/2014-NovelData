@@ -5,12 +5,15 @@ __author__ = 'sunhaowen'
 __date__ = '2014-03-17 16:36'
 
 import logging
+import random
 from collections import defaultdict
 
 from basic.NovelStructure import *
 from basic.SilkServerModule import *
 from public.BasicStringMethod import *
 from novel.chapter.ChapterDB import *
+from novel.chapter.NovelBasicFilter import *
+from novel.chapter.NovelChapterFilter import *
 
 def here():
     print('PrimeMusic')
@@ -59,6 +62,7 @@ class ChapterOptimizeModule(object):
             return False
 
         chapter.chapter_page = chapter_page
+        chapter.chapter_content = raw_chapter_content
         chapter.raw_chapter_content = raw_chapter_content
         return chapter
 
@@ -99,34 +103,22 @@ class ChapterOptimizeModule(object):
     def candidate_chapter_generate(self, rid, align_id):
         """
         """
-        candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
-
-        authority_chapter_dict = defaultdict(list)
-        pirate_chapter_dict = defaultdict(list)
-        for chapter in candidate_chapter_list:
-            site_id = chapter.site_id
-            if chapter.site_status == 1:
-                authority_chapter_dict[site_id].append(chapter)
-            if chapter.site_status == 0:
-                pirate_chapter_dict[site_id].append(chapter)
+        total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
+        random.shuffle(total_candidate_chapter_list)
 
         candidate_chapter_list = []
-        for (site_id, chapter_list) in authority_chapter_dict.items():
-            for chapter in chapter_list:
+        site_id_dict = {}
+        for index, chapter in enumerate(total_candidate_chapter_list):
+            site_id = chapter.site_id
+            site_status = chapter.site_status
+            if site_id_dict.has_key(site_id):
+                continue
+            if site_status == 1 or len(candidate_chapter_list) < 10:
                 chapter = self.chapter_content_generate(chapter)
                 if not chapter:
                     continue
                 candidate_chapter_list.append(chapter)
-                break
-        if len(candidate_chapter_list) > 5:
-            return candidate_chapter_list
-        for (site_id, chapter_list) in pirate_chapter_dict.items():
-            for chapter in chapter_list:
-                chapter = self.chapter_content_generate(chapter)
-                if not chapter:
-                    continue
-                candidate_chapter_list.append(chapter)
-                break
+                site_id_dict[site_id] = True
         return candidate_chapter_list
 
 
@@ -137,6 +129,8 @@ class ChapterOptimizeModule(object):
         for chapter in candidate_chapter_list:
             print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
                 chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
+        novel_chapter_filter = NovelChapterFilter()
+        novel_chapter_filter.filter(candidate_chapter_list)
 
 
     def novel_chapter_optimize(self, rid):
