@@ -147,7 +147,7 @@ class ChapterOptimizeModule(object):
         for (align_id, chapter_index) in aggregate_dir_list:
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
             self.candidate_chapter_filter(candidate_chapter_list)
-            if chapter_index > 10:
+            if chapter_index > 100:
                 break
 
 
