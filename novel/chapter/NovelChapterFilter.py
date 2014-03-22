@@ -114,7 +114,7 @@ class NovelChapterFilter(object):
             if count > max_count:
                 max_count = count
                 candidate_chapter = chapter_x
-        print('max_cluster_count: {0}/{1}'.format(max_count)/len(candidate_chapter_list))
+        print('max_cluster_count: {0}/{1}'.format(max_count, len(candidate_chapter_list)))
         if max_count < 2:
             return candidate_chapter_list
 
