@@ -128,7 +128,7 @@ class ChapterOptimizeModule(object):
         print('******************************************************************')
         for chapter in candidate_chapter_list:
             print('chapter_title: {0}, chapter_url: {1}'.format(
-                chapter.chapter_title.encode('GBK'),
+                chapter.chapter_title,
                 chapter.chapter_url
             ))
 
@@ -140,7 +140,7 @@ class ChapterOptimizeModule(object):
         print('**************************************')
         for chapter in candidate_chapter_list:
             print('chapter_title: {0}, chapter_url: {1}, nosiy_point: {2}'.format(
-                chapter.chapter_title.encode('GBK'),
+                chapter.chapter_title,
                 chapter.chapter_url,
                 chapter.nosiy_point
             ))
