@@ -70,7 +70,7 @@ class NovelChapterFilter(object):
                 chapter_feature_dict[sentence] = (site_id, site_count, total_count)
 
         chapter_feature_list = sorted(chapter_feature_dict.items(), key = lambda x: (x[1][1], x[1][2]))
-        for (sentence, (site_id, site_count, total_count)) in reversed(chapter_feature_list)[0: 50]:
+        for (sentence, (site_id, site_count, total_count)) in chapter_feature_list[::-1][0: 50]:
             print('sentence: {0}, site_count: {1}'.format(sentence.encode('GBK'), site_count))
             for chapter in candidate_chapter_list:
                 if sentence in chapter.sentence_set:

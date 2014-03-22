@@ -23,7 +23,10 @@ class dd(object):
 
 if __name__ == '__main__':
 
-    for index in xrange(0, 256):
+    a = [1, 2, 3, 4, 5]
+    print(a[::-1][0:50])
+
+    for index in xrange(0, 0):
         print('alter table novel_data{0} add sub_category varchar(128) not null;'.format(index))
         #print('select sleep(30);')
         #print('drop table if exists novel_cluster_rid_info{0};'.format(index))
