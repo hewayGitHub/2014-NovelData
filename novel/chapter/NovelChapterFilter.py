@@ -121,6 +121,7 @@ class NovelChapterFilter(object):
         candidate_chapter_cluster = []
         for index, similarity in enumerate(candidate_chapter.edge_list):
             if similarity < 0.9:
+                print('filter chapter url: {0}'.format(candidate_chapter_list[index].chapter_url))
                 continue
             chapter = candidate_chapter_list[index]
             candidate_chapter_cluster.append(chapter)
