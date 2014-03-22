@@ -95,7 +95,7 @@ class NovelChapterFilter(object):
         count_y = sum(vector_y)
         count = sum([vector_x[index] * vector_y[index] for index in xrange(0, len(vector_x))])
 
-        return 1.0 * count * count / (count_x * count_y)
+        return 1.0 * count * count / (count_x * count_y + 1)
 
 
     def chapter_cluster_generate(self, candidate_chapter_list):
