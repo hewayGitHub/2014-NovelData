@@ -125,12 +125,28 @@ class ChapterOptimizeModule(object):
     def candidate_chapter_filter(self, candidate_chapter_list):
         """
         """
-        print('*****************************************************************************')
+        print('******************************************************************')
         for chapter in candidate_chapter_list:
-            print('chapter_title: {0}, chapter_url: {1}, chapter_word_sum: {2}'.format(
-                chapter.chapter_title, chapter.chapter_url, len(chapter.raw_chapter_content)))
-        novel_chapter_filter = NovelChapterFilter()
-        novel_chapter_filter.filter(candidate_chapter_list)
+            print('chapter_title: {0}, chapter_url: {1}'.format(
+                chapter.chapter_title.encode('GBK'),
+                chapter.chapter_url
+            ))
+
+        chapter_filter = NovelChapterFilter()
+        basic_filter = NovelBasicFilter()
+        candidate_chapter_list = chapter_filter.filter(candidate_chapter_list)
+        candidate_chapter_list = basic_filter.filter(candidate_chapter_list)
+
+        print('**************************************')
+        for chapter in candidate_chapter_list:
+            print('chapter_title: {0}, chapter_url: {1}, nosiy_point: {2}'.format(
+                chapter.chapter_title.encode('GBK'),
+                chapter.chapter_url,
+                chapter.nosiy_point
+            ))
+            print(chapter.feature_list)
+
+        return candidate_chapter_list[0]
 
 
     def novel_chapter_optimize(self, rid):
@@ -149,7 +165,7 @@ class ChapterOptimizeModule(object):
                 continue
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
             self.candidate_chapter_filter(candidate_chapter_list)
-            if chapter_index > 150:
+            if chapter_index > 200:
                 break
 
 

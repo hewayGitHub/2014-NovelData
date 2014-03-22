@@ -24,6 +24,7 @@ class NovelBasicFilter(object):
     def filter(self, candidate_chapter_list):
         """
         """
+        return candidate_chapter_list
 
 
 if __name__ == '__main__':
