@@ -125,17 +125,10 @@ class ChapterOptimizeModule(object):
     def candidate_chapter_filter(self, candidate_chapter_list):
         """
         """
-        print('******************************************************************')
-        for chapter in candidate_chapter_list:
-            print('chapter_title: {0}, chapter_url: {1}'.format(
-                chapter.chapter_title,
-                chapter.chapter_url
-            ))
-
         chapter_filter = NovelChapterFilter()
         basic_filter = NovelBasicFilter()
-        candidate_chapter_list = chapter_filter.filter(candidate_chapter_list)
         candidate_chapter_list = basic_filter.filter(candidate_chapter_list)
+        candidate_chapter_list = chapter_filter.filter(candidate_chapter_list)
 
         print('**************************************')
         for chapter in candidate_chapter_list:
@@ -172,7 +165,7 @@ class ChapterOptimizeModule(object):
     def run(self):
         """
         """
-        self.novel_chapter_optimize(3994882921)
+        self.novel_chapter_optimize(3961103225)
 
 
 
