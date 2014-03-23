@@ -184,7 +184,7 @@ class ChapterOptimizeModule(object):
                 if is_chinese(char):
                     chapter.chinese_count += 1
             chapter.chinese_rate = 1.0 * chapter.chinese_count / len(chapter.chapter_content)
-            if chapter.chinese_rate > rate:
+            if chapter.chinese_rate > rate + 0.1:
                 rate = chapter.chinese_rate
                 selected_chapter = chapter
 
