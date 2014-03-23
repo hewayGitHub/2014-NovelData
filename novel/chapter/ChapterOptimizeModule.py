@@ -209,11 +209,14 @@ class ChapterOptimizeModule(object):
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index) in aggregate_dir_list:
+            print('chapter_index: {0}'.format(chapter_index))
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
+            if len(candidate_chapter_list) == 0:
+                continue
+
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
-            print(chapter.chapter_title)
-            print(chapter.chapter_url)
+            print('chapter_title: {0}, chapter_url: {1}'.format(chapter.chapter_title, chapter.chapter_url))
             print(chapter.chapter_content.encode('GBK', 'ignore'))
 
 
