@@ -89,7 +89,6 @@ class ChapterOptimizeModule(object):
         for chapter in candidate_chapter_list:
             dir_id = chapter.dir_id
             if not dir_id_dict.has_key(dir_id):
-                print('dir_id: {0}, chapter_id: {1}, chapter_url: {2}'.format(dir_id, chapter.chapter_id, chapter.chapter_url))
                 chapter.site_id = -1
                 chapter.site_status = 0
                 continue
@@ -119,6 +118,16 @@ class ChapterOptimizeModule(object):
                     continue
                 candidate_chapter_list.append(chapter)
                 site_id_dict[site_id] = True
+
+        self.logger.info('rid: {0}, align_id: {1}, candidate_chapter_length: {2}'.format(
+            rid, align_id, len(candidate_chapter_list)
+        ))
+        for chapter in candidate_chapter_list:
+            self.logger.info('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}'.format(
+                chapter.chapter_title,
+                chapter.chapter_url,
+                len(chapter.chapter_content)
+            ))
         return candidate_chapter_list
 
 
@@ -145,14 +154,6 @@ class ChapterOptimizeModule(object):
         """
             ºòÑ¡ÕÂ½Ú¹ýÂË
         """
-        print('*****************************************************************************************')
-        for chapter in candidate_chapter_list:
-            print('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}'.format(
-                chapter.chapter_title,
-                chapter.chapter_url,
-                len(chapter.chapter_content)
-            ))
-
         if len(candidate_chapter_list) < 3:
             return candidate_chapter_list
 
@@ -160,14 +161,13 @@ class ChapterOptimizeModule(object):
         candidate_chapter_list = self.basic_chapter_filter(candidate_chapter_list)
         candidate_chapter_list = chapter_filter.filter(candidate_chapter_list)
 
-        print('**************************************')
+        self.logger.info('selected_candidate_chapter_length: {0}'.format(len(candidate_chapter_list)))
         for chapter in candidate_chapter_list:
-            print('chapter_title: {0}, chapter_url: {1}, nosiy_point: {2}'.format(
-                chapter.chapter_title,
+            self.logger.info('chapter_url: {0}, feature_point: {1}, nosiy_point: {2}'.format(
                 chapter.chapter_url,
+                sum(chapter.feature_list),
                 chapter.nosiy_point
             ))
-            print(chapter.feature_list)
 
         return candidate_chapter_list
 
@@ -188,8 +188,7 @@ class ChapterOptimizeModule(object):
                 rate = chapter.chinese_rate
                 selected_chapter = chapter
 
-        print('*******************')
-        print('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}/{3}'.format(
+        self.logger.info('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}/{3}'.format(
             selected_chapter.chapter_title,
             selected_chapter.chapter_url,
             selected_chapter.chinese_count,
@@ -215,6 +214,9 @@ class ChapterOptimizeModule(object):
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
+            print(chapter.chapter_title)
+            print(chapter.chapter_url)
+            print(chapter.chapter_content.encode('GBK'))
             if chapter_index > 200:
                 break
 

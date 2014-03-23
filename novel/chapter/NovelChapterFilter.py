@@ -71,7 +71,6 @@ class NovelChapterFilter(object):
 
         chapter_feature_list = sorted(chapter_feature_dict.items(), key = lambda x: (x[1][1], x[1][2]))
         for (sentence, (site_id, site_count, total_count)) in chapter_feature_list[::-1][0: 50]:
-            print('sentence: {0}, site_count: {1}'.format(sentence.encode('GBK'), site_count))
             for chapter in candidate_chapter_list:
                 if sentence in chapter.sentence_set:
                     chapter.feature_list.append(1)
@@ -114,14 +113,14 @@ class NovelChapterFilter(object):
             if count > max_count:
                 max_count = count
                 candidate_chapter = chapter_x
-        print('max_cluster_count: {0}/{1}'.format(max_count, len(candidate_chapter_list)))
+        self.logger.info('max_cluster_count: {0}/{1}'.format(max_count, len(candidate_chapter_list)))
         if max_count < 2:
             return candidate_chapter_list
 
         candidate_chapter_cluster = []
         for index, similarity in enumerate(candidate_chapter.edge_list):
             if similarity < 0.9:
-                print('filter chapter url: {0}'.format(candidate_chapter_list[index].chapter_url))
+                self.logger.info('filter chapter url: {0}'.format(candidate_chapter_list[index].chapter_url))
                 continue
             chapter = candidate_chapter_list[index]
             candidate_chapter_cluster.append(chapter)
