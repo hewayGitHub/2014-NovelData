@@ -12,7 +12,6 @@ from basic.NovelStructure import *
 from basic.SilkServerModule import *
 from public.BasicStringMethod import *
 from novel.chapter.ChapterDB import *
-from novel.chapter.NovelBasicFilter import *
 from novel.chapter.NovelChapterFilter import *
 
 def here():
@@ -102,6 +101,7 @@ class ChapterOptimizeModule(object):
 
     def candidate_chapter_generate(self, rid, align_id):
         """
+            根据rid和align_id获取候选章节
         """
         total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
         random.shuffle(total_candidate_chapter_list)
@@ -122,12 +122,42 @@ class ChapterOptimizeModule(object):
         return candidate_chapter_list
 
 
+    def basic_chapter_filter(self, candidate_chapter_list):
+        """
+            根据基础信息进行一轮过滤
+        """
+        count = sum([len(chapter.chapter_content) for chapter in candidate_chapter_list]) / len(candidate_chapter_list)
+        count = 0.8 * count
+
+        chapter_list = []
+        for chapter in candidate_chapter_list:
+            if len(chapter.chapter_content) < count:
+                continue
+            chapter_list.append(chapter)
+
+        if len(chapter_list) <= len(candidate_chapter_list) / 2:
+            return candidate_chapter_list
+        else:
+            return chapter_list
+
+
     def candidate_chapter_filter(self, candidate_chapter_list):
         """
+            候选章节过滤
         """
+        print('*****************************************************************************************')
+        for chapter in candidate_chapter_list:
+            print('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}'.format(
+                chapter.chapter_title,
+                chapter.chapter_url,
+                len(chapter.chapter_content)
+            ))
+
+        if len(candidate_chapter_list) < 3:
+            return candidate_chapter_list
+
         chapter_filter = NovelChapterFilter()
-        basic_filter = NovelBasicFilter()
-        candidate_chapter_list = basic_filter.filter(candidate_chapter_list)
+        candidate_chapter_list = self.basic_chapter_filter(candidate_chapter_list)
         candidate_chapter_list = chapter_filter.filter(candidate_chapter_list)
 
         print('**************************************')
@@ -139,7 +169,33 @@ class ChapterOptimizeModule(object):
             ))
             print(chapter.feature_list)
 
-        return candidate_chapter_list[0]
+        return candidate_chapter_list
+
+
+    def candidate_chapter_rank(self, candidate_chapter_list):
+        """
+            确定选取一章
+        """
+        rate = 0.0
+        selected_chapter = candidate_chapter_list[0]
+        for chapter in candidate_chapter_list:
+            chapter.chinese_count = 0
+            for char in chapter.chapter_content:
+                if is_chinese(char):
+                    chapter.chinese_count += 1
+            chapter.chinese_rate = chapter.chinese_count / len(chapter.chapter_content)
+            if chapter.chinese_rate > rate:
+                rate = chapter.chinese_rate
+                selected_chapter = chapter
+
+        print('*******************')
+        print('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}/{3}'.format(
+            selected_chapter.chapter_title,
+            selected_chapter.chapter_url,
+            selected_chapter.chinese_count,
+            len(selected_chapter.chapter_content)
+        ))
+        return selected_chapter
 
 
     def novel_chapter_optimize(self, rid):
@@ -157,7 +213,8 @@ class ChapterOptimizeModule(object):
             if chapter_index < 100:
                 continue
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
-            self.candidate_chapter_filter(candidate_chapter_list)
+            candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
+            chapter = self.candidate_chapter_rank(candidate_chapter_list)
             if chapter_index > 200:
                 break
 
