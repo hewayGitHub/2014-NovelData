@@ -216,7 +216,7 @@ class ChapterOptimizeModule(object):
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
             print(chapter.chapter_title)
             print(chapter.chapter_url)
-            print(chapter.chapter_content.encode('GBK'))
+            print(chapter.chapter_content.encode('GBK', 'ignore'))
             if chapter_index > 200:
                 break
 
