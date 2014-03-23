@@ -24,7 +24,7 @@ class ChapterOptimizeModule(object):
         """
         """
         self.logger = logging.getLogger('novel.chapter')
-        self.logger = logging.getLogger('err.chapter')
+        self.err = logging.getLogger('err.chapter')
 
 
     def aggregate_dir_generate(self, rid):
