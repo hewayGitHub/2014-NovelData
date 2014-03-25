@@ -206,7 +206,7 @@ class ChapterOptimizeModule(object):
         """
         """
         if debug:
-            print('rid: {0}, chapter_index: {1}'.format(chapter.rid, chapter.chapter_index))
+            print('rid: {0}'.format(chapter.rid))
             print('chapter_title: {0}, chapter_url: {1}'.format(chapter.chapter_title, chapter.chapter_url))
             print(chapter.chapter_content.encode('GBK', 'ignore'))
             return
@@ -227,6 +227,8 @@ class ChapterOptimizeModule(object):
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index, chapter_status) in aggregate_dir_list:
+            if len(aggregate_dir_list) - chapter_index > 3:
+                continue
             chapter_status = 0
             if chapter_status >= standard_chapter_status:
                 continue
@@ -240,11 +242,81 @@ class ChapterOptimizeModule(object):
 
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
-            self.selected_chapter_update(current_chapter_status, chapter, False)
+            self.selected_chapter_update(current_chapter_status, chapter, True)
 
 
     def run(self):
-        rid_list = [3026113743, ]
+        rid_list = [
+            1303490728,
+            1539155266,
+            930104949,
+            1249061017,
+            3201894686,
+            3637104973,
+            482544407,
+            1443382135,
+            295836265,
+            2133799197,
+            3942291035,
+            1990219975,
+            3950328196,
+            252294427,
+            3154611599,
+            366424310,
+            4275243654,
+            3286819846,
+            535613105,
+            3932761677,
+            3569984348,
+            3901804894,
+            874177376,
+            1887904136,
+            4171762486,
+            882194742,
+            718603797,
+            276090074,
+            1480923513,
+            1812940732,
+            1409127400,
+            1693712639,
+            1256926873,
+            119100508,
+            2984223443,
+            2241230387,
+            4195639829,
+            1705151005,
+            2482826667,
+            78484131,
+            2011959516,
+            398221110,
+            3653858567,
+            1245734015,
+            3507210325,
+            69722659,
+            2323978449,
+            4107825675,
+            3975546549,
+            1402481275,
+            1142258237,
+            2049259839,
+            1335887274,
+            1560088944,
+            531950364,
+            1123649752,
+            953958008,
+            2482413289,
+            1803586372,
+            1210880753,
+            3462597446,
+            1308747528,
+            1995469386,
+            133635115,
+            832887825,
+            3495230350,
+            2066180241,
+            1776565473,
+            3839059857
+        ]
         for rid in rid_list:
             self.novel_chapter_optimize(rid, 20)
 
