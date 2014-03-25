@@ -26,6 +26,11 @@ class ChapterOptimizeModule(object):
         self.logger = logging.getLogger('novel.chapter')
         self.err = logging.getLogger('err.chapter')
 
+        parser = SafeConfigParser()
+        parser.read('./conf/NovelChapterModule.conf')
+        self.start_rid_id = parser.getint('chapter_module', 'proc_start_rid_id')
+        self.end_rid_id = parser.getint('chapter_module', 'proc_end_rid_id')
+
 
     def aggregate_dir_generate(self, rid):
         """
@@ -36,7 +41,7 @@ class ChapterOptimizeModule(object):
 
         aggregate_dir_list = []
         for (align_id, chapter_index, chapter_status) in result:
-            aggregate_dir_list.append((align_id, chapter_index))
+            aggregate_dir_list.append((align_id, chapter_index, chapter_status))
         return aggregate_dir_list
 
 
@@ -135,12 +140,14 @@ class ChapterOptimizeModule(object):
         """
             根据基础信息进行一轮过滤
         """
-        count = sum([len(chapter.chapter_content) for chapter in candidate_chapter_list]) / len(candidate_chapter_list)
-        count = 0.8 * count
+        average_count = 1.0 * sum([len(chapter.chapter_content) for chapter in candidate_chapter_list]) / len(candidate_chapter_list)
+        threshold_count = 0.8 * average_count
 
+        self.logger.info('average chapter length: {0}, chapter length threshold: {1}'.format(average_count, threshold_count))
         chapter_list = []
         for chapter in candidate_chapter_list:
-            if len(chapter.chapter_content) < count:
+            if len(chapter.chapter_content) < threshold_count:
+                self.logger.info('filter chapter url: {0}'.format(chapter.chapter_url))
                 continue
             chapter_list.append(chapter)
 
@@ -176,7 +183,6 @@ class ChapterOptimizeModule(object):
         """
             确定选取一章
         """
-        rate = 0.0
         selected_chapter = candidate_chapter_list[0]
         for chapter in candidate_chapter_list:
             chapter.chinese_count = 0
@@ -184,8 +190,7 @@ class ChapterOptimizeModule(object):
                 if is_chinese(char):
                     chapter.chinese_count += 1
             chapter.chinese_rate = 1.0 * chapter.chinese_count / len(chapter.chapter_content)
-            if chapter.chinese_rate > rate + 0.1:
-                rate = chapter.chinese_rate
+            if chapter.chinese_rate > selected_chapter.chinese_rate + 0.1 or chapter.chinese_count > selected_chapter.chinese_count + 200:
                 selected_chapter = chapter
 
         self.logger.info('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}/{3}'.format(
@@ -197,25 +202,39 @@ class ChapterOptimizeModule(object):
         return selected_chapter
 
 
-    def novel_chapter_optimize(self, rid):
+    def selected_chapter_update(self, current_chapter_status, chapter):
+        """
+        """
+        silk_server = SilkServer()
+        silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
+
+        chapter_db = ChapterDBModule()
+        chapter.chapter_url = "'{0}'".format(url_format(chapter.chapter_url))
+        chapter_db.update_novelaggregationdir_info(current_chapter_status, chapter)
+
+
+    def novel_chapter_optimize(self, rid, cluster_size):
         """
             一本小说章节选取入口
         """
-        chapter_db = ChapterDBModule()
-
-        result = chapter_db.get_novelclusterdirinfo_rid(rid)
-        if len(result) <= 1:
-            return
+        standard_chapter_status = min(len(cluster_size), 20) / 2
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
-        for (align_id, chapter_index) in aggregate_dir_list:
-            print('chapter_index: {0}'.format(chapter_index))
+        for (align_id, chapter_index, chapter_status) in aggregate_dir_list:
+            if chapter_status >= standard_chapter_status:
+                continue
+
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
-            if len(candidate_chapter_list) == 0:
+            current_chapter_status = len(candidate_chapter_list)
+            if chapter_status >= current_chapter_status:
+                continue
+            if current_chapter_status <= 1:
                 continue
 
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
+            self.selected_chapter_update(current_chapter_status, chapter)
+            print('chapter_index: {0}'.format(chapter_index))
             print('chapter_title: {0}, chapter_url: {1}'.format(chapter.chapter_title, chapter.chapter_url))
             print(chapter.chapter_content.encode('GBK', 'ignore'))
 
@@ -223,8 +242,21 @@ class ChapterOptimizeModule(object):
     def run(self):
         """
         """
-        self.novel_chapter_optimize(2543589877)
+        chapter_db = ChapterDBModule()
+        candidate_rid_list = chapter_db.get_noveldata_all('novel_cluster_dir_info', ['rid'])
+        candidate_rid_dict = defaultdict(int)
+        for (rid, ) in candidate_rid_list:
+            if rid % 256 < self.start_rid_id or rid % 256 > self.end_rid_id:
+                continue
+            candidate_rid_dict[rid] += 1
 
+        rid_list = candidate_rid_dict.items()
+        for (index, (rid, cluster_size)) in enumerate(rid_list):
+            if cluster_size <= 2:
+                continue
+            self.logger.info('chapter module rid: {0}/{1}'.format(index, len(rid_list)))
+            self.novel_chapter_optimize(rid, cluster_size)
+        self.logger.info('chapter module end !')
 
 
 if __name__ == '__main__':
