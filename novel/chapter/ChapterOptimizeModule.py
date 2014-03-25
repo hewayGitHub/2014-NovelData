@@ -223,7 +223,7 @@ class ChapterOptimizeModule(object):
         """
             一本小说章节选取入口
         """
-        standard_chapter_status = min(len(cluster_size), 20) / 2
+        standard_chapter_status = min(cluster_size, 20) / 2
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index, chapter_status) in aggregate_dir_list:
