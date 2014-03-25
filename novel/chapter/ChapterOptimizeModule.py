@@ -202,9 +202,15 @@ class ChapterOptimizeModule(object):
         return selected_chapter
 
 
-    def selected_chapter_update(self, current_chapter_status, chapter):
+    def selected_chapter_update(self, current_chapter_status, chapter, debug = False):
         """
         """
+        if debug:
+            print('rid: {0}, chapter_index: {1}'.format(chapter.rid, chapter.chapter_index))
+            print('chapter_title: {0}, chapter_url: {1}'.format(chapter.chapter_title, chapter.chapter_url))
+            print(chapter.chapter_content.encode('GBK', 'ignore'))
+            return
+
         silk_server = SilkServer()
         silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
 
@@ -221,6 +227,7 @@ class ChapterOptimizeModule(object):
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index, chapter_status) in aggregate_dir_list:
+            chapter_status = 0
             if chapter_status >= standard_chapter_status:
                 continue
 
@@ -233,13 +240,16 @@ class ChapterOptimizeModule(object):
 
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
-            self.selected_chapter_update(current_chapter_status, chapter)
-            print('chapter_index: {0}'.format(chapter_index))
-            print('chapter_title: {0}, chapter_url: {1}'.format(chapter.chapter_title, chapter.chapter_url))
-            print(chapter.chapter_content.encode('GBK', 'ignore'))
+            self.selected_chapter_update(current_chapter_status, chapter, False)
 
 
     def run(self):
+        rid_list = [3026113743, ]
+        for rid in rid_list:
+            self.novel_chapter_optimize(rid, 20)
+
+
+    def run_test(self):
         """
         """
         chapter_db = ChapterDBModule()
