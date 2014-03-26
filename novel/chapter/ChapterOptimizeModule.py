@@ -229,8 +229,6 @@ class ChapterOptimizeModule(object):
 
         aggregate_dir_list = self.aggregate_dir_generate(rid)
         for (align_id, chapter_index, chapter_status) in aggregate_dir_list:
-            if len(aggregate_dir_list) - chapter_index > 3:
-                continue
             chapter_status = 0
             if chapter_status >= standard_chapter_status:
                 continue
@@ -244,7 +242,7 @@ class ChapterOptimizeModule(object):
 
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
-            self.selected_chapter_update(current_chapter_status, chapter, True)
+            self.selected_chapter_update(current_chapter_status, chapter)
 
 
     def run(self):
