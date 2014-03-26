@@ -246,14 +246,6 @@ class ChapterOptimizeModule(object):
 
 
     def run(self):
-        rid_list = [
-            3278655874,
-        ]
-        for rid in rid_list:
-            self.novel_chapter_optimize(rid, 20)
-
-
-    def run_test(self):
         """
         """
         chapter_db = ChapterDBModule()
