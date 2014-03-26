@@ -16,6 +16,10 @@ def start(module):
     """
     """
     for unit in xrange(0, process_number):
+        if os.path.exists('./{0}/data/status'.format(unit)):
+            print('failed start [unit: {0}, module: {1}]'.format(unit, module))
+            continue
+
         res = os.system('cd {0} && python NovelData.py {1} &'.format(unit, module))
         if res != 0:
             print('failed start [unit: {0}, module: {1}]'.format(unit, module))
