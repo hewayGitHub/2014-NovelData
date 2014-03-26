@@ -181,7 +181,7 @@ class ChapterDBModule(MySQLModule):
               'optimize_chapter_status = {4}, optimize_chapter_wordsum = {5} ' \
               'WHERE rid = {6} AND align_id = {7}'.format(
             chapter.rid % 256,
-            chapter.size_id, chapter.chapter_id, chapter.chapter_url,
+            chapter.site_id, chapter.chapter_id, chapter.chapter_url,
             current_chapter_status, chapter.chinese_count,
             chapter.rid, chapter.align_id
         )
