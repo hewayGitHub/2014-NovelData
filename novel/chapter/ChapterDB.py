@@ -131,31 +131,10 @@ class ChapterDBModule(MySQLModule):
         return result
 
 
-    def get_novelauthoritydir_list(self, rid):
-        """
-        """
-        cursor = self.get_cursor('novel_authority_dir')
-        sql = 'SELECT align_id, chapter_index, chapter_status ' \
-              'FROM novel_authority_dir{0} ' \
-              'WHERE rid = {1} ' \
-              'ORDER BY chapter_index'.format(rid % 256, rid)
-        try:
-            cursor.execute(sql)
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return []
-
-        result = []
-        for row in cursor.fetchall():
-            result.append(row)
-        cursor.close()
-        return result
-
-
     def get_integratechapterinfo_list(self, rid, align_id):
         """
         """
-        cursor = self.get_cursor('integrate_chapter_info')
+        cursor = self.get_cursor('integrate_chapter_info{0}'.format(rid % 2))
         sql = 'SELECT dir_id, chapter_id, chapter_url, chapter_title ' \
               'FROM integrate_chapter_info{0} ' \
               'WHERE rid = {1} AND align_id = {2}'.format(rid % 256, rid, align_id)
@@ -175,7 +154,7 @@ class ChapterDBModule(MySQLModule):
     def get_novelaggregationdir_list(self, rid):
         """
         """
-        cursor = self.get_cursor('dir_agg_chapter_info')
+        cursor = self.get_cursor('novel_aggregation_dir')
         sql = 'SELECT chapter_index, align_id, optimize_chapter_status ' \
               'FROM dir_agg_chapter_info{0} ' \
               'WHERE rid = {1} ' \
@@ -196,7 +175,7 @@ class ChapterDBModule(MySQLModule):
     def update_novelaggregationdir_info(self, current_chapter_status, chapter):
         """
         """
-        cursor = self.get_cursor('dir_agg_chapter_info')
+        cursor = self.get_cursor('novel_aggregation_dir')
         sql = 'UPDATE dir_agg_chapter_info{0} SET ' \
               'optimize_site_id = {1}, optimize_chapter_id = {2}, optimize_chapter_url = {3}, ' \
               'optimize_chapter_status = {4}, optimize_chapter_wordsum = {5} ' \
