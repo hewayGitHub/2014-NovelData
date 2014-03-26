@@ -4,11 +4,6 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-03-09 16:32'
 
-
-#!/usr/bin/env python
-# -*- coding: GBK
-# author: zhangjianrong
-# desc:
 import json
 import socket
 import os

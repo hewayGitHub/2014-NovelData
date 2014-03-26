@@ -83,6 +83,13 @@ def cluster_module():
     novel_modoule.run()
 
 
+def chapter_module():
+    """
+    """
+    novel_module = ChapterOptimizeModule()
+    novel_module.run()
+
+
 def debug():
     """
     """
@@ -100,7 +107,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['node', 'edge', 'cluster', 'update', 'test']:
+    if module not in ['node', 'edge', 'cluster', 'update', 'chapter', 'test']:
         print('no module selected !')
         exit()
 
@@ -116,6 +123,8 @@ if __name__ == '__main__':
         cluster_module()
     if module == 'update':
         cluster_update_module()
+    if module == 'chapter':
+        chapter_module()
     if module == 'test':
         debug()
 
