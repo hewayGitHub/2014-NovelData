@@ -85,6 +85,8 @@ class ChapterOptimizeModule(object):
                 continue
             candidate_chapter_list.append(chapter)
 
+        if len(candidate_chapter_list) == 0:
+            return candidate_chapter_list
         dir_id_list = [chapter.dir_id for chapter in candidate_chapter_list]
         result = chapter_db.get_novelclusterdirinfo_dir(dir_id_list)
 

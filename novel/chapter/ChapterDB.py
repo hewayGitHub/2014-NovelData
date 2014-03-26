@@ -136,7 +136,7 @@ class ChapterDBModule(MySQLModule):
         """
         cursor = self.get_cursor('integrate_chapter_info{0}'.format(rid % 2))
         sql = 'SELECT dir_id, chapter_id, chapter_url, chapter_title ' \
-              'FROM integrate_chapter_info{0} ' \
+              'FROM chapter_inte_info{0} ' \
               'WHERE rid = {1} AND align_id = {2}'.format(rid % 256, rid, align_id)
         try:
             cursor.execute(sql)
@@ -155,7 +155,7 @@ class ChapterDBModule(MySQLModule):
         """
         """
         cursor = self.get_cursor('novel_aggregation_dir')
-        sql = 'SELECT chapter_index, align_id, optimize_chapter_status ' \
+        sql = 'SELECT align_id, chapter_index, optimize_chapter_status ' \
               'FROM dir_agg_chapter_info{0} ' \
               'WHERE rid = {1} ' \
               'ORDER BY chapter_index'.format(rid % 256, rid)
