@@ -74,6 +74,7 @@ class ChapterAvaliableModule(object):
             chapter_content = self.chapter_content_generate(chapter_url)
             if chapter_content is False:
                 unavaliable_count += 1
+                continue
             chinese_count = 0
             for char in chapter_content:
                 if is_chinese(char):
