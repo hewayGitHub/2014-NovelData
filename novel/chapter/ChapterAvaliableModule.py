@@ -88,7 +88,16 @@ class ChapterAvaliableModule(object):
     def run(self):
         """
         """
-        self.novel_avaliable_generate(1005907485)
+
+        rid_list = []
+        for line in open('./data/rid.txt', 'r').readlines():
+            rid = int(line.strip())
+            rid_list.append(rid)
+
+        for index, rid in enumerate(rid_list):
+            if index % 8 == 0:
+                self.novel_avaliable_generate(rid)
+
         self.logger.info('avaliable: {0}/{1}'.format(self.unavaliable_chapter_count, self.total_chapter_count))
 
 
