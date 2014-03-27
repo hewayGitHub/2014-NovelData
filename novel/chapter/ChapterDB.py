@@ -172,6 +172,27 @@ class ChapterDBModule(MySQLModule):
         return result
 
 
+    def get_novelaggregationdir_all(self, rid):
+        """
+        """
+        cursor = self.get_cursor('novel_aggregation_dir')
+        sql = 'SELECT chapter_index, chapter_id, chapter_url, optimize_chapter_status, optimize_chapter_wordsum ' \
+              'FROM dir_agg_chapter_info{0} ' \
+              'WHERE rid = {1} ' \
+              'ORDER BY chapter_index'.format(rid % 256, rid)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
+
     def update_novelaggregationdir_info(self, current_chapter_status, chapter):
         """
         """
@@ -194,6 +215,25 @@ class ChapterDBModule(MySQLModule):
         cursor.close()
         return True
 
+    def update_novelaggregationdir_wordsum(self, rid, chapter_id, optimize_chapter_status, optimize_chapter_wordsum):
+        """
+        """
+        cursor = self.get_cursor('novel_aggregation_dir')
+        sql = 'UPDATE dir_agg_chapter_info{0} SET ' \
+              'optimize_chapter_status = {1}, optimize_chapter_wordsum = {2} ' \
+              'WHERE rid = {3} AND chapter_id = {4}'.format(
+            rid % 256,
+            optimize_chapter_status, optimize_chapter_wordsum,
+            rid, chapter_id
+        )
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+
+        cursor.close()
+        return True
 
 
 if __name__ == '__main__':

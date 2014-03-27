@@ -110,6 +110,8 @@ class ChapterOptimizeModule(object):
             根据rid和align_id获取候选章节
         """
         total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
+        if len(total_candidate_chapter_list) <= 1:
+            return []
         random.shuffle(total_candidate_chapter_list)
 
         candidate_chapter_list = []
