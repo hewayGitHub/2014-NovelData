@@ -244,6 +244,18 @@ class ChapterOptimizeModule(object):
             self.selected_chapter_update(current_chapter_status, chapter)
 
 
+    def run_test(self):
+        """
+        """
+        rid_list = []
+        for line in open('./data/rid.txt', 'r').readlines():
+            rid = int(line.strip())
+            rid_list.append(rid)
+
+        for rid in rid_list:
+            self.novel_chapter_optimize(rid, 20)
+
+
     def run(self):
         """
         """

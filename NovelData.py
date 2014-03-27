@@ -95,7 +95,7 @@ def debug():
     """
     remove_status_file()
     novel_module = ChapterOptimizeModule()
-    novel_module.run()
+    novel_module.run_test()
 
 
 if __name__ == '__main__':
