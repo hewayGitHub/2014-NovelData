@@ -252,7 +252,11 @@ class ChapterOptimizeModule(object):
             rid = int(line.strip())
             rid_list.append(rid)
 
-        for rid in rid_list:
+        self.start_rid_id -= 192
+        self.end_rid_id -= 192
+        for index, rid in enumerate(rid_list):
+            if index < self.start_rid_id or index > self.end_rid_id:
+                continue
             self.novel_chapter_optimize(rid, 20)
 
 
