@@ -11,6 +11,7 @@ from novel.cluster.ClusterNodeModule import *
 from novel.cluster.ClusterEdgeModule import *
 from novel.cluster.ClusterModule import *
 from novel.chapter.ChapterOptimizeModule import *
+from novel.chapter.ChapterAvaliableModule import *
 
 def here():
     print('PrimeMusic')
@@ -94,8 +95,10 @@ def debug():
     """
     """
     remove_status_file()
-    novel_module = ChapterOptimizeModule()
-    novel_module.run_test()
+    #novel_module = ChapterOptimizeModule()
+    #novel_module.run_test()
+    novel_module = ChapterAvaliableModule()
+    novel_module.run()
 
 
 if __name__ == '__main__':
