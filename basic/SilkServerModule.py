@@ -50,12 +50,12 @@ class SilkServer(object):
         try:
             r = requests.get(path, headers = header, timeout = self._timeout)
             if r.status_code != requests.codes.ok:
-                self.err.warning("Failed to request silkserver.get, status_code:{0}, path:{1}".format(r.status_code, r.url))
+                #self.err.warning("Failed to request silkserver.get, status_code:{0}, path:{1}".format(r.status_code, r.url))
                 return False
             result = r.json()
             return result
         except Exception as e:
-            self.err.warning("Failed to request silkserver.get, exception:{0}".format(e))
+            #self.err.warning("Failed to request silkserver.get, exception:{0}".format(e))
             return False
 
 
