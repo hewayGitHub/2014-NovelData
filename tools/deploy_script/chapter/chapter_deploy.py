@@ -18,18 +18,18 @@ DEPLOY_CONF_FILE = "./chapter_deploy.json"
 MODULE_CONF_FILE = "./{0}/conf/NovelChapterModule.conf"
 
 
-def set_module_conf_file(unit):
+def set_module_conf_file(unit, proc_start_rid_id, proc_end_rid_id):
     """
         修改当前进程的配置信息
     """
     try:
         raw_file = open(MODULE_CONF_FILE.format('NovelData'), 'r')
-        target_file = open(MODULE_CONF_FILE.format(unit['id']), 'w')
+        target_file = open(MODULE_CONF_FILE.format(unit), 'w')
         for line in raw_file:
             if line.find("proc_start_rid_id") >= 0 :
-                target_file.write("proc_start_rid_id: {0}\n".format(unit["proc_start_rid_id"]))
+                target_file.write("proc_start_rid_id: {0}\n".format(proc_start_rid_id))
             elif line.find("proc_end_rid_id") >= 0 :
-                target_file.write("proc_end_rid_id: {0}\n".format(unit["proc_end_rid_id"]))
+                target_file.write("proc_end_rid_id: {0}\n".format(proc_end_rid_id))
             else :
                 target_file.write(line)
         raw_file.close()
@@ -41,18 +41,18 @@ def set_module_conf_file(unit):
     return True
 
 
-def deploy_unit(unit):
+def deploy_unit(unit, proc_start_rid_id, proc_end_rid_id):
     """
         拷贝进程目录
     """
-    if os.path.exists("./{0}".format(unit["id"])):
-        os.system("rm -rf {0}".format(unit["id"]))
-    res = os.system("cp -r NovelData {0}".format(unit["id"]))
+    if os.path.exists("./{0}".format(unit)):
+        os.system("rm -rf {0}".format(unit))
+    res = os.system("cp -r NovelData {0}".format(unit))
     if res != 0:
-        print "Failed to cp NovelData to {0}".format(unit["id"])
+        print "Failed to cp NovelData to {0}".format(unit)
         return False
 
-    if not set_module_conf_file(unit):
+    if not set_module_conf_file(unit, proc_start_rid_id, proc_end_rid_id):
         print "Failed to set module conf file"
         return False
 
@@ -63,9 +63,12 @@ def deploy_units(machine):
     """
         修改模块基础配置信息
     """
-    units = machine["units"]
-    for unit in units:
-        if not deploy_unit(unit):
+    unit_num = machine["unit_num"]
+    proc_start_rid_id = machine["proc_start_rid_id"]
+    proc_end_rid_id = machine["proc_end_rid_id"]
+    rid_segment = (proc_end_rid_id - proc_start_rid_id + 1) / unit_num
+    for unit in xrange(0, unit_num):
+        if not deploy_unit(unit, proc_start_rid_id + unit * rid_segment, proc_start_rid_id + unit * rid_segment - 1):
             print "Failed to deploy unit: {0}".format(unit["id"])
             return False
 
