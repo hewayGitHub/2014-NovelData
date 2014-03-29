@@ -258,11 +258,10 @@ class ChapterOptimizeModule(object):
                 continue
             candidate_rid_dict[rid] += 1
 
-        rid_list = candidate_rid_dict.items()
+        g = lambda size: size > 2
+        rid_list = filter(g, [row[1] for row in candidate_rid_dict.items()])
         for (index, (rid, cluster_size)) in enumerate(rid_list):
-            if cluster_size <= 2:
-                continue
-            self.logger.info('chapter module rid: {0}/{1}'.format(index, len(rid_list)))
+            self.logger.info('chapter module rid: {0}/{1}, cluster_size: {2}'.format(index, len(rid_list), cluster_size))
             self.novel_chapter_optimize(rid, cluster_size)
         self.logger.info('chapter module end !')
 
