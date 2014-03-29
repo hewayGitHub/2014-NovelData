@@ -68,7 +68,7 @@ def deploy_units(machine):
     proc_end_rid_id = machine["proc_end_rid_id"]
     rid_segment = (proc_end_rid_id - proc_start_rid_id + 1) / unit_num
     for unit in xrange(0, unit_num):
-        if not deploy_unit(unit, proc_start_rid_id + unit * rid_segment, proc_start_rid_id + unit * rid_segment - 1):
+        if not deploy_unit(unit, proc_start_rid_id + unit * rid_segment, proc_start_rid_id + (unit + 1) * rid_segment - 1):
             print "Failed to deploy unit: {0}".format(unit["id"])
             return False
 
