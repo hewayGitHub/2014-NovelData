@@ -10,7 +10,7 @@ import sys
 def here():
     print('PrimeMusic')
 
-process_number = 16
+process_number = 32
 
 def start(module):
     """
