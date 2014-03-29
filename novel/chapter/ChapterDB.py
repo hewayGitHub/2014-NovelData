@@ -155,7 +155,7 @@ class ChapterDBModule(MySQLModule):
         """
         """
         cursor = self.get_cursor('novel_aggregation_dir')
-        sql = 'SELECT align_id, chapter_index, optimize_chapter_status ' \
+        sql = 'SELECT align_id, chapter_index, chapter_url, optimize_chapter_status ' \
               'FROM dir_agg_chapter_info{0} ' \
               'WHERE rid = {1} ' \
               'ORDER BY chapter_index'.format(rid % 256, rid)

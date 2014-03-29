@@ -32,19 +32,6 @@ class ChapterOptimizeModule(object):
         self.end_rid_id = parser.getint('chapter_module', 'proc_end_rid_id')
 
 
-    def aggregate_dir_generate(self, rid):
-        """
-            获取一本小说的聚合目录
-        """
-        chapter_db = ChapterDBModule()
-        result = chapter_db.get_novelaggregationdir_list(rid)
-
-        aggregate_dir_list = []
-        for (align_id, chapter_index, chapter_status) in result:
-            aggregate_dir_list.append((align_id, chapter_index, chapter_status))
-        return aggregate_dir_list
-
-
     def chapter_content_generate(self, chapter):
         """
             获取一个章节的正文信息
@@ -110,8 +97,6 @@ class ChapterOptimizeModule(object):
             根据rid和align_id获取候选章节
         """
         total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
-        if len(total_candidate_chapter_list) <= 1:
-            return []
         random.shuffle(total_candidate_chapter_list)
 
         candidate_chapter_list = []
@@ -206,7 +191,7 @@ class ChapterOptimizeModule(object):
         return selected_chapter
 
 
-    def selected_chapter_update(self, current_chapter_status, chapter, debug = False):
+    def selected_chapter_update(self, current_chapter_status, chapter_url, chapter, debug = False):
         """
         """
         if debug:
@@ -215,8 +200,9 @@ class ChapterOptimizeModule(object):
             print(chapter.chapter_content.encode('GBK', 'ignore'))
             return
 
-        silk_server = SilkServer()
-        silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
+        if chapter.chapter_url != chapter_url:
+            silk_server = SilkServer()
+            silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
 
         chapter_db = ChapterDBModule()
         chapter.chapter_url = "'{0}'".format(url_format(chapter.chapter_url))
@@ -227,10 +213,11 @@ class ChapterOptimizeModule(object):
         """
             一本小说章节选取入口
         """
-        standard_chapter_status = min(cluster_size, 20) / 2
+        standard_chapter_status = min(cluster_size, 15) / 2
 
-        aggregate_dir_list = self.aggregate_dir_generate(rid)
-        for (align_id, chapter_index, chapter_status) in aggregate_dir_list:
+        chapter_db = ChapterDBModule()
+        aggregate_dir_list = chapter_db.get_novelaggregationdir_list(rid)
+        for (align_id, chapter_index, chapter_url, chapter_status) in aggregate_dir_list:
             if chapter_status >= standard_chapter_status:
                 continue
 
@@ -238,12 +225,10 @@ class ChapterOptimizeModule(object):
             current_chapter_status = len(candidate_chapter_list)
             if chapter_status >= current_chapter_status:
                 continue
-            if current_chapter_status <= 1:
-                continue
 
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
-            self.selected_chapter_update(current_chapter_status, chapter)
+            self.selected_chapter_update(current_chapter_status, chapter_url, chapter)
 
 
     def run_test(self):
