@@ -44,7 +44,7 @@ def send_get_requests(url):
 def get_gid(gid, nocache, error_count):
     """
     """
-    src = 'http://m.baidu.com/open/dataservice/novel/aggregation/gid?lcid=mco_ds&query={0}&nocache={1}'.format(gid, nocache)
+    src = 'http://10.57.249.19:8080/open/dataservice/novel/aggregation/gid?lcid=mco_ds&query={0}&nocache={1}'.format(gid, nocache)
     result = send_get_requests(src)
 
     if result is False:
@@ -60,7 +60,7 @@ def get_gid(gid, nocache, error_count):
 def get_dirurl(url, nocache, error_count):
     """
     """
-    src = 'http://m.baidu.com/open/dataservice/novel/aggregation/url?lcid=mco_ds&query={0}&nocache={1}'.format(url, nocache)
+    src = 'http://10.57.249.19:8080/open/dataservice/novel/aggregation/url?lcid=mco_ds&query={0}&nocache={1}'.format(url, nocache)
     result = send_get_requests(src)
 
     if result is False:
