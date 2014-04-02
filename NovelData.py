@@ -94,11 +94,11 @@ def chapter_module():
 def debug():
     """
     """
-    remove_status_file()
-    #novel_module = ChapterOptimizeModule()
-    #novel_module.run_test()
-    novel_module = ChapterAvaliableModule()
-    novel_module.run()
+    #remove_status_file()
+    novel_module = ChapterOptimizeModule()
+    novel_module.run_test()
+    #novel_module = ChapterAvaliableModule()
+    #novel_module.run()
 
 
 if __name__ == '__main__':
