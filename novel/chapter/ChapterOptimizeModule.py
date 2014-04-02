@@ -200,13 +200,15 @@ class ChapterOptimizeModule(object):
             print(chapter.chapter_content.encode('GBK', 'ignore'))
             return
 
+        flag = True
         if chapter.chapter_url != chapter_url:
             silk_server = SilkServer()
-            silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
+            flag = silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
 
-        chapter_db = ChapterDBModule()
-        chapter.chapter_url = "'{0}'".format(url_format(chapter.chapter_url))
-        chapter_db.update_novelaggregationdir_info(current_chapter_status, chapter)
+        if flag is True:
+            chapter_db = ChapterDBModule()
+            chapter.chapter_url = "'{0}'".format(url_format(chapter.chapter_url))
+            chapter_db.update_novelaggregationdir_info(current_chapter_status, chapter)
 
 
     def novel_chapter_optimize(self, rid, cluster_size):
@@ -239,12 +241,10 @@ class ChapterOptimizeModule(object):
             rid = int(line.strip())
             rid_list.append(rid)
 
-        self.start_rid_id = self.start_rid_id * 2
-        self.end_rid_id = self.end_rid_id * 2 + 1
         for index, rid in enumerate(rid_list):
             if index < self.start_rid_id or index > self.end_rid_id:
                 continue
-            self.novel_chapter_optimize(rid, 20)
+            self.novel_chapter_optimize(rid, 10)
 
 
     def run(self):
