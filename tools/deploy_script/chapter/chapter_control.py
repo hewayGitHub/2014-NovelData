@@ -50,7 +50,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['stop', 'node', 'edge', 'cluster', 'update', 'chapter']:
+    if module not in ['stop', 'node', 'edge', 'cluster', 'update', 'chapter', 'test']:
         print('no module selected !')
         exit()
 
