@@ -1,25 +1,25 @@
 [
     {
         "host": "cq02-mco-wise96.cq02.baidu.com",
-        "unit_num": 32,
+        "unit_num": 64,
         "proc_start_rid_id": 0,
         "proc_end_rid_id": 63
     },
     {
         "host": "cq02-mco-wise97.cq02.baidu.com",
-        "unit_num": 32,
+        "unit_num": 64,
         "proc_start_rid_id": 64,
         "proc_end_rid_id": 127
     },
     {
         "host": "cq02-mco-wise98.cq02.baidu.com",
-        "unit_num": 32,
+        "unit_num": 64,
         "proc_start_rid_id": 128,
         "proc_end_rid_id": 191
     },
     {
         "host": "cq02-mco-wise99.cq02.baidu.com",
-        "unit_num": 32,
+        "unit_num": 64,
         "proc_start_rid_id": 192,
         "proc_end_rid_id": 255
     }

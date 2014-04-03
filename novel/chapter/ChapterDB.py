@@ -131,26 +131,6 @@ class ChapterDBModule(MySQLModule):
         return result
 
 
-    def get_integratechapterinfo_list(self, rid, align_id):
-        """
-        """
-        cursor = self.get_cursor('integrate_chapter_info{0}'.format(rid % 2))
-        sql = 'SELECT dir_id, chapter_id, chapter_url, chapter_title ' \
-              'FROM chapter_inte_info{0} ' \
-              'WHERE rid = {1} AND align_id = {2}'.format(rid % 256, rid, align_id)
-        try:
-            cursor.execute(sql)
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return []
-
-        result = []
-        for row in cursor.fetchall():
-            result.append(row)
-        cursor.close()
-        return result
-
-
     def get_novelaggregationdir_list(self, rid):
         """
         """
@@ -189,6 +169,24 @@ class ChapterDBModule(MySQLModule):
         result = []
         for row in cursor.fetchall():
             result.append(row)
+        cursor.close()
+        return result
+
+
+    def get_novelaggregationdir_rid(self, table_id):
+        """
+        """
+        cursor = self.get_cursor('novel_aggregation_dir')
+        sql = 'SELECT distinct(rid) FROM dir_agg_chapter_info{0}'.format(table_id)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for (rid, ) in cursor.fetchall():
+            result.append(rid)
         cursor.close()
         return result
 
@@ -234,6 +232,26 @@ class ChapterDBModule(MySQLModule):
 
         cursor.close()
         return True
+
+
+    def get_integratechapterinfo_list(self, rid, align_id):
+        """
+        """
+        cursor = self.get_cursor('integrate_chapter_info{0}'.format(rid % 2))
+        sql = 'SELECT dir_id, chapter_id, chapter_url, chapter_title ' \
+              'FROM chapter_inte_info{0} ' \
+              'WHERE rid = {1} AND align_id = {2}'.format(rid % 256, rid, align_id)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
 
 
 if __name__ == '__main__':

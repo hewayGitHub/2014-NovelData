@@ -92,11 +92,10 @@ class ChapterOptimizeModule(object):
         return candidate_chapter_list
 
 
-    def candidate_chapter_generate(self, rid, align_id):
+    def candidate_chapter_generate(self, rid, align_id, total_candidate_chapter_list):
         """
             根据rid和align_id获取候选章节
         """
-        total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
         random.shuffle(total_candidate_chapter_list)
 
         candidate_chapter_list = []
@@ -211,23 +210,22 @@ class ChapterOptimizeModule(object):
             chapter_db.update_novelaggregationdir_info(current_chapter_status, chapter)
 
 
-    def novel_chapter_optimize(self, rid, cluster_size):
+    def novel_chapter_optimize(self, rid):
         """
             一本小说章节选取入口
         """
-        standard_chapter_status = min(cluster_size, 15) / 2
-
         chapter_db = ChapterDBModule()
         aggregate_dir_list = chapter_db.get_novelaggregationdir_list(rid)
         for (align_id, chapter_index, chapter_url, chapter_status) in aggregate_dir_list:
-            if chapter_status >= standard_chapter_status:
+            if chapter_status >= 5:
                 continue
 
-            candidate_chapter_list = self.candidate_chapter_generate(rid, align_id)
-            current_chapter_status = len(candidate_chapter_list)
+            total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
+            current_chapter_status = len(total_candidate_chapter_list)
             if chapter_status >= current_chapter_status:
                 continue
 
+            candidate_chapter_list = self.candidate_chapter_generate(rid, align_id, total_candidate_chapter_list)
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
             self.selected_chapter_update(current_chapter_status, chapter_url, chapter)
@@ -244,26 +242,24 @@ class ChapterOptimizeModule(object):
         for index, rid in enumerate(rid_list):
             if index < self.start_rid_id or index > self.end_rid_id:
                 continue
-            self.novel_chapter_optimize(rid, 10)
+            self.novel_chapter_optimize(rid)
 
 
     def run(self):
         """
         """
         chapter_db = ChapterDBModule()
-        candidate_rid_list = chapter_db.get_noveldata_all('novel_cluster_dir_info', ['rid'])
-        candidate_rid_dict = defaultdict(int)
-        for (rid, ) in candidate_rid_list:
-            if rid % 256 < self.start_rid_id or rid % 256 > self.end_rid_id:
-                continue
-            candidate_rid_dict[rid] += 1
 
-        g = lambda (rid, cluster_size): cluster_size > 2
-        rid_list = filter(g, [row for row in candidate_rid_dict.items()])
-        for (index, (rid, cluster_size)) in enumerate(rid_list):
-            self.logger.info('chapter module rid: {0}/{1}, cluster_size: {2}'.format(index, len(rid_list), cluster_size))
-            self.novel_chapter_optimize(rid, cluster_size)
+        rid_list = []
+        for table_id in xrange(self.start_rid_id, self.end_rid_id + 1):
+            result = chapter_db.get_novelaggregationdir_rid(table_id)
+            rid_list.extend(result)
+
+        for index, rid in enumerate(rid_list):
+            self.logger.info('chapter module rid: {0}/{1}'.format(index, len(rid_list)))
+            self.novel_chapter_optimize(rid)
         self.logger.info('chapter module end !')
+
 
 
 if __name__ == '__main__':
