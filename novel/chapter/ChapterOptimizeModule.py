@@ -246,6 +246,8 @@ class ChapterOptimizeModule(object):
             if index < self.start_rid_id or index > self.end_rid_id:
                 continue
             self.novel_chapter_optimize(rid)
+        self.logger.info('chapter module end !')
+
 
 
     def run(self):
