@@ -91,6 +91,13 @@ def chapter_module():
     novel_module.run()
 
 
+def avaliable_module():
+    """
+    """
+    novel_module = ChapterAvaliableModule()
+    novel_module.run()
+
+
 def debug():
     """
     """
@@ -110,7 +117,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['node', 'edge', 'cluster', 'update', 'chapter', 'test']:
+    if module not in ['node', 'edge', 'cluster', 'update', 'chapter', 'avaliable', 'test']:
         print('no module selected !')
         exit()
 
@@ -128,6 +135,8 @@ if __name__ == '__main__':
         cluster_update_module()
     if module == 'chapter':
         chapter_module()
+    if module == 'avaliable':
+        avaliable_module()
     if module == 'test':
         debug()
 
