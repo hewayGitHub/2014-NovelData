@@ -46,7 +46,7 @@ class ChapterOptimizeModule(object):
 
         raw_chapter_content = ''
         for block in chapter_page['blocks']:
-            if block['type'] == 'NOVELCONTENT':
+            if block.has_key('type') and block['type'] == 'NOVELCONTENT':
                 raw_chapter_content = block['data_value']
         raw_chapter_content = html_filter(raw_chapter_content)
         if len(raw_chapter_content) < 50:
@@ -200,9 +200,8 @@ class ChapterOptimizeModule(object):
             return
 
         flag = True
-        if chapter.chapter_url != chapter_url:
-            silk_server = SilkServer()
-            flag = silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
+        silk_server = SilkServer()
+        flag = silk_server.save('{0}|{1}'.format(chapter.rid, chapter.align_id), chapter.chapter_page)
 
         if flag is True:
             chapter_db = ChapterDBModule()
@@ -243,6 +242,7 @@ class ChapterOptimizeModule(object):
             rid_list.append(rid)
 
         for index, rid in enumerate(rid_list):
+            index = index / 4
             if index < self.start_rid_id or index > self.end_rid_id:
                 continue
             self.novel_chapter_optimize(rid)
