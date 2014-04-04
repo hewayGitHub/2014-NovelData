@@ -52,6 +52,7 @@ class ChapterAvaliableModule(object):
 
         self.total_chapter_count += len(aggregation_list)
         self.unavaliable_chapter_count += unavaliable_count
+        print('rid: {0}, avaliable: {1}, total: {2}'.format(rid, unavaliable_count, len(aggregation_list)))
         self.logger.info('rid: {0}, avaliable: {1}, total: {2}'.format(rid, unavaliable_count, len(aggregation_list)))
 
 
