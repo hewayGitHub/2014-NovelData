@@ -225,6 +225,8 @@ class ChapterOptimizeModule(object):
                 continue
 
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id, total_candidate_chapter_list)
+            if len(candidate_chapter_list) == 0:
+                continue
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
             self.selected_chapter_update(current_chapter_status, chapter_url, chapter)
