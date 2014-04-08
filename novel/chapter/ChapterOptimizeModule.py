@@ -112,9 +112,6 @@ class ChapterOptimizeModule(object):
                 candidate_chapter_list.append(chapter)
                 site_id_dict[site_id] = True
 
-        self.logger.info('rid: {0}, align_id: {1}, candidate_chapter_length: {2}'.format(
-            rid, align_id, len(candidate_chapter_list)
-        ))
         for chapter in candidate_chapter_list:
             self.logger.info('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}'.format(
                 chapter.chapter_title,
@@ -218,13 +215,16 @@ class ChapterOptimizeModule(object):
         for (align_id, chapter_index, chapter_url, chapter_status) in aggregate_dir_list:
             if chapter_status >= 5:
                 continue
+            self.logger.info('rid: {0}, align_id: {1}, chapter_status: {2}'.format(rid, align_id, chapter_status))
 
             total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
             current_chapter_status = len(total_candidate_chapter_list)
+            self.logger.info('total_candidate_chapter_length: {0}'.format(len(total_candidate_chapter_list)))
             if chapter_status >= current_chapter_status:
                 continue
 
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id, total_candidate_chapter_list)
+            self.logger.info('candidate_chapter_length: {0}'.format(len(candidate_chapter_list)))
             if chapter_status >= len(candidate_chapter_list):
                 continue
 
