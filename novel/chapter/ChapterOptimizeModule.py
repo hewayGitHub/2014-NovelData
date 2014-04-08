@@ -112,6 +112,7 @@ class ChapterOptimizeModule(object):
                 candidate_chapter_list.append(chapter)
                 site_id_dict[site_id] = True
 
+        self.logger.info('candidate_chapter_length: {0}'.format(len(candidate_chapter_list)))
         for chapter in candidate_chapter_list:
             self.logger.info('chapter_title: {0}, chapter_url: {1}, chapter_length: {2}'.format(
                 chapter.chapter_title,
@@ -224,10 +225,6 @@ class ChapterOptimizeModule(object):
                 continue
 
             candidate_chapter_list = self.candidate_chapter_generate(rid, align_id, total_candidate_chapter_list)
-            self.logger.info('candidate_chapter_length: {0}'.format(len(candidate_chapter_list)))
-            if chapter_status >= len(candidate_chapter_list):
-                continue
-
             candidate_chapter_list = self.candidate_chapter_filter(candidate_chapter_list)
             chapter = self.candidate_chapter_rank(candidate_chapter_list)
             self.selected_chapter_update(current_chapter_status, chapter_url, chapter)
