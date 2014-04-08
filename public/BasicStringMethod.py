@@ -91,7 +91,10 @@ def html_filter(content):
     """
         过滤正文中的html信息,过滤符号杂质
     """
-    content = re.sub('<[^>]*>', '', content)
+    try:
+        content = re.sub('<[^>]*>', '', content)
+    except Exception, e:
+        return ''
     return content
 
 
