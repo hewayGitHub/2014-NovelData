@@ -22,11 +22,22 @@ if __name__ == '__main__':
     cursor = conn.cursor()
 
     sql = 'SELECT rid, book_name, rank FROM novel_authority_info limit 10000'
-    cursor.execute(sql)
-    for (rid, book_name, rank) in cursor.fetchall():
+    result = cursor.execute(sql)
+
+    book_name_dict = {}
+    for (rid, book_name, rank) in result:
+        book_name_dict[book_name] = 1
+
+    for (rid, book_name, rank) in result:
+        if len(book_name) <= 4:
+            continue
         if book_name.find("更多") + 4 == len(book_name):
-            print('book_name: {0}'.format(book_name))
-            #book_name = book_name[0 : len(book_name) - 4]
+            book_name = book_name[0 : len(book_name) - 4]
+            if book_name_dict.has_key(book_name):
+                print('book_name: {0}, book_name: {0}更多'.format(book_name))
+            else:
+                print('book_name: {0}更多'.format(book_name))
+
     cursor.close()
     conn.close()
 
