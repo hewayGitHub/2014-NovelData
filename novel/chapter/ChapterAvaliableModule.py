@@ -55,6 +55,7 @@ class ChapterAvaliableModule(object):
 
         avaliable_chapter_num = 0
         for (chapter_index, align_id, chapter_id, chapter_url, chapter_title, optimize_chapter_wordsum) in aggregation_dir_list:
+            self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
             if optimize_chapter_wordsum == 0:
                 continue
             if flag is False:
