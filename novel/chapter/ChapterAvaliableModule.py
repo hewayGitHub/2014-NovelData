@@ -104,7 +104,9 @@ class ChapterAvaliableModule(object):
             rid = int(line.strip())
             rid_list.append(rid)
 
-        self.aggregation_dir_check(rid, True)
+        for index, rid in enumerate(rid_list):
+            self.logger.info('index: {0}, rid: {1}'.format(index, rid))
+            self.aggregation_dir_check(rid, True)
 
         self.logger.info('avaliable module end!')
 
