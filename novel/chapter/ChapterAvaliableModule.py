@@ -25,35 +25,62 @@ class ChapterAvaliableModule(object):
         self.unavaliable_chapter_count = 0
 
 
-    def aggregate_dir_generate(self, rid):
+    def optimize_chapter_check(self, rid, align_id):
         """
-            获取一本小说的聚合目录
+        """
+        silk_server = SilkServer()
+
+        chapter_page = silk_server.get(src = 'http://test.com', pageid = '{0}|{1}'.format(rid, align_id))
+        if not chapter_page:
+            return False
+        if not chapter_page.has_key('blocks'):
+            return False
+
+        raw_chapter_content = ''
+        for block in chapter_page['blocks']:
+            if block.has_key('type') and block['type'] == 'NOVELCONTENT':
+                raw_chapter_content = block['data_value']
+        raw_chapter_content = html_filter(raw_chapter_content)
+        if len(raw_chapter_content) < 50:
+            return False
+
+        return chapter_page
+
+
+    def aggregation_dir_check(self, rid, flag = False):
+        """
         """
         chapter_db = ChapterDBModule()
-        result = chapter_db.get_novelaggregationdir_all(rid)
+        aggregation_dir_list = chapter_db.get_novelaggregationdir_all(rid)
 
-        aggregate_dir_list = []
-        for (chapter_index, chapter_id, chapter_url, optimize_chapter_status, optimize_chapter_wordsum) in result:
-            aggregate_dir_list.append((chapter_index, chapter_id, chapter_url, optimize_chapter_status, optimize_chapter_wordsum))
-        return aggregate_dir_list
-
-
-    def novel_avaliable_generate(self, rid):
-        """
-        """
-        chapter_db = ChapterDBModule()
-
-        unavaliable_count = 0
-        aggregation_list = self.aggregate_dir_generate(rid)
-        for (chapter_index, chapter_id, chapter_url, optimize_chapter_status, optimize_chapter_wordsum) in aggregation_list:
-            if optimize_chapter_wordsum > 0:
+        avaliable_chapter_num = 0
+        for (chapter_index, align_id, chapter_id, chapter_url, chapter_title, optimize_chapter_wordsum) in aggregation_dir_list:
+            if optimize_chapter_wordsum == 0:
                 continue
-            unavaliable_count += 1
+            if flag is False:
+                avaliable_chapter_num += 1
+                continue
 
-        self.total_chapter_count += len(aggregation_list)
-        self.unavaliable_chapter_count += unavaliable_count
-        print('rid: {0}, avaliable: {1}, total: {2}'.format(rid, unavaliable_count, len(aggregation_list)))
-        self.logger.info('rid: {0}, avaliable: {1}, total: {2}'.format(rid, unavaliable_count, len(aggregation_list)))
+            chapter_page = self.optimize_chapter_check(rid, align_id)
+            if chapter_page is False:
+                self.err.warning('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
+                    rid, align_id, chapter_index, chapter_title))
+                continue
+
+            if not chapter_page.has_key('url'):
+                self.logger.info('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
+                    rid, align_id, chapter_index, chapter_title))
+                continue
+
+            if len(chapter_page['url']) < 4:
+                self.logger.info('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
+                    rid, align_id, chapter_index, chapter_title))
+                continue
+
+            avaliable_chapter_num += 1
+
+        self.logger.info('rid: {0}, avaliable: {1}, total: {2}'.format(rid, avaliable_chapter_num, len(aggregation_dir_list)))
+
 
 
     def run(self):
@@ -64,10 +91,9 @@ class ChapterAvaliableModule(object):
             rid = int(line.strip())
             rid_list.append(rid)
 
-        for index, rid in enumerate(rid_list):
-            self.novel_avaliable_generate(rid)
+        self.aggregation_dir_check(rid, True)
 
-        self.logger.info('avaliable: {0}/{1}'.format(self.unavaliable_chapter_count, self.total_chapter_count))
+        self.logger.info('avaliable module end!')
 
 
 if __name__ == '__main__':
