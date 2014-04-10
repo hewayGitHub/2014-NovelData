@@ -47,6 +47,20 @@ class ChapterAvaliableModule(object):
         return chapter_page
 
 
+    def update_chapter_info(self, rid, align_id):
+        """
+        """
+        chapter_db = ChapterDBModule()
+        chapter_db.update_novelaggregationdir_init(rid, align_id)
+
+
+    def update_chapter_content(self, rid, align_id, chapter_page):
+        """
+        """
+        silk_server = SilkServer()
+        silk_server.save('{0}|{1}'.format(rid, align_id), chapter_page)
+
+
     def aggregation_dir_check(self, rid, flag = False):
         """
         """
@@ -66,16 +80,14 @@ class ChapterAvaliableModule(object):
             if chapter_page is False:
                 self.err.warning('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
                     rid, align_id, chapter_index, chapter_title))
-                continue
-
-            if not chapter_page.has_key('url'):
-                self.logger.info('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
-                    rid, align_id, chapter_index, chapter_title))
+                self.update_chapter_info(rid, align_id)
                 continue
 
             if len(chapter_page['url']) < 4:
                 self.logger.info('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
                     rid, align_id, chapter_index, chapter_title))
+                chapter_page['url'] = chapter_url
+                self.update_chapter_content(rid, align_id, chapter_page)
                 continue
 
             avaliable_chapter_num += 1

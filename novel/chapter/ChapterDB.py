@@ -191,6 +191,25 @@ class ChapterDBModule(MySQLModule):
         return result
 
 
+    def update_novelaggregationdir_init(self, rid, align_id):
+        """
+        """
+        cursor = self.get_cursor('novel_aggregation_dir')
+        sql = 'UPDATE dir_agg_chapter_info{0} SET ' \
+              'optimize_chapter_status = {1}, optimize_chapter_wordsum = {2} ' \
+              'WHERE rid = {3} AND align_id = {4}'.format(
+            rid % 256, 0, 0, rid, align_id
+        )
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
+
+        cursor.close()
+        return True
+
+
     def update_novelaggregationdir_info(self, current_chapter_status, chapter):
         """
         """
