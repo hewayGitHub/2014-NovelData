@@ -96,7 +96,7 @@ class ChapterAvaliableModule(object):
         """
         rid_list = []
         for index, line in enumerate(open('./data/rid.txt', 'r').readlines()):
-            index = index / 4
+            index = index / 40
             if index > self.end_rid_id or index < self.start_rid_id:
                 continue
             rid = int(line.strip())
