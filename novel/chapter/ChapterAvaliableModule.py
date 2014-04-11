@@ -21,8 +21,13 @@ class ChapterAvaliableModule(object):
         self.logger = logging.getLogger('novel.chapter.avaliable')
         self.err = logging.getLogger('err.chapter.avaliable')
 
-        self.total_chapter_count = 0
-        self.unavaliable_chapter_count = 0
+        self.total_chapter_number = 0
+        self.total_avaliable_chapter_number = 0
+
+        parser = SafeConfigParser()
+        parser.read('./conf/NovelChapterModule.conf')
+        self.start_rid_id = parser.getint('chapter_module', 'proc_start_rid_id')
+        self.end_rid_id = parser.getint('chapter_module', 'proc_end_rid_id')
 
 
     def optimize_chapter_check(self, rid, align_id):
@@ -61,7 +66,7 @@ class ChapterAvaliableModule(object):
         silk_server.save('{0}|{1}'.format(rid, align_id), chapter_page)
 
 
-    def aggregation_dir_check(self, rid, flag = False):
+    def aggregation_dir_check(self, rid):
         """
         """
         chapter_db = ChapterDBModule()
@@ -72,9 +77,6 @@ class ChapterAvaliableModule(object):
             self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
             if optimize_chapter_wordsum == 0:
                 continue
-            if flag is False:
-                avaliable_chapter_num += 1
-                continue
 
             chapter_page = self.optimize_chapter_check(rid, align_id)
             if chapter_page is False:
@@ -82,32 +84,29 @@ class ChapterAvaliableModule(object):
                     rid, align_id, chapter_index, chapter_title))
                 self.update_chapter_info(rid, align_id)
                 continue
-
-            if len(chapter_page['url']) < 4:
-                self.logger.info('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
-                    rid, align_id, chapter_index, chapter_title))
-                chapter_page['url'] = chapter_url
-                self.update_chapter_content(rid, align_id, chapter_page)
-                continue
-
             avaliable_chapter_num += 1
 
+        self.total_avaliable_chapter_number += avaliable_chapter_num
+        self.total_chapter_number += len(aggregation_dir_list)
         self.logger.info('rid: {0}, avaliable: {1}, total: {2}'.format(rid, avaliable_chapter_num, len(aggregation_dir_list)))
-
 
 
     def run(self):
         """
         """
         rid_list = []
-        for line in open('./data/rid.txt', 'r').readlines():
+        for index, line in enumerate(open('./data/rid.txt', 'r').readlines()):
+            index = index / 4
+            if index > self.end_rid_id or index < self.start_rid_id:
+                continue
             rid = int(line.strip())
             rid_list.append(rid)
 
         for index, rid in enumerate(rid_list):
             self.logger.info('index: {0}, rid: {1}'.format(index, rid))
-            self.aggregation_dir_check(rid, True)
+            self.aggregation_dir_check(rid)
 
+        self.logger.info('avaliable: {0}, total: {1}'.format(self.total_avaliable_chapter_number, self.total_chapter_number))
         self.logger.info('avaliable module end!')
 
 
