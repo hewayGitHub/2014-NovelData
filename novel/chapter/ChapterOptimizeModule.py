@@ -259,6 +259,7 @@ class ChapterOptimizeModule(object):
             result = chapter_db.get_novelaggregationdir_rid(table_id)
             rid_list.extend(result)
 
+        random.shuffle(rid_list)
         for index, rid in enumerate(rid_list):
             self.logger.info('chapter module rid: {0}/{1}'.format(index, len(rid_list)))
             self.novel_chapter_optimize(rid)
