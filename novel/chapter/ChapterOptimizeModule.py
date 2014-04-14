@@ -248,7 +248,6 @@ class ChapterOptimizeModule(object):
         self.logger.info('chapter module end !')
 
 
-
     def run(self):
         """
         """
@@ -264,7 +263,6 @@ class ChapterOptimizeModule(object):
             self.logger.info('chapter module rid: {0}/{1}'.format(index, len(rid_list)))
             self.novel_chapter_optimize(rid)
         self.logger.info('chapter module end !')
-
 
 
 if __name__ == '__main__':

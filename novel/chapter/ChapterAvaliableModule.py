@@ -66,7 +66,7 @@ class ChapterAvaliableModule(object):
         silk_server.save('{0}|{1}'.format(rid, align_id), chapter_page)
 
 
-    def aggregation_dir_check(self, rid):
+    def aggregation_dir_check(self, rid, flag = False):
         """
         """
         chapter_db = ChapterDBModule()
@@ -74,8 +74,13 @@ class ChapterAvaliableModule(object):
 
         avaliable_chapter_num = 0
         for (chapter_index, align_id, chapter_id, chapter_url, chapter_title, optimize_chapter_wordsum) in aggregation_dir_list:
-            self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
+            if flag is True:
+                self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
+
             if optimize_chapter_wordsum == 0:
+                continue
+            if flag is False:
+                avaliable_chapter_num += 1
                 continue
 
             chapter_page = self.optimize_chapter_check(rid, align_id)
@@ -88,7 +93,7 @@ class ChapterAvaliableModule(object):
 
         self.total_avaliable_chapter_number += avaliable_chapter_num
         self.total_chapter_number += len(aggregation_dir_list)
-        self.logger.info('rid: {0}, avaliable: {1}, total: {2}'.format(rid, avaliable_chapter_num, len(aggregation_dir_list)))
+        self.logger.info('rid: {0}, unavaliable: {1}, total: {2}'.format(rid, len(aggregation_dir_list) - avaliable_chapter_num, len(aggregation_dir_list)))
 
 
     def run(self):
@@ -96,7 +101,6 @@ class ChapterAvaliableModule(object):
         """
         rid_list = []
         for index, line in enumerate(open('./data/rid.txt', 'r').readlines()):
-            index = index / 40
             if index > self.end_rid_id or index < self.start_rid_id:
                 continue
             rid = int(line.strip())
