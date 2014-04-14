@@ -220,7 +220,8 @@ class ChapterOptimizeModule(object):
         for (align_id, chapter_index, chapter_url, chapter_status) in aggregate_dir_list:
             if chapter_status >= 5:
                 continue
-            self.logger.info('rid: {0}, align_id: {1}, chapter_status: {2}'.format(rid, align_id, chapter_status))
+            self.logger.info('rid: {0}, index: {1}, align_id: {2}, chapter_status: {3}'.format(
+                rid, chapter_index, align_id, chapter_status))
 
             total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)
             current_chapter_status = len(total_candidate_chapter_list)
