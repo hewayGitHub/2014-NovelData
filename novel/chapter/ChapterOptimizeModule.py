@@ -41,6 +41,8 @@ class ChapterOptimizeModule(object):
         chapter_page = silk_server.get(src = chapter.chapter_url)
         if not chapter_page:
             return False
+        if not chapter_page.has_key('novel_chapter_type') and chapter_page['novel_chapter_type'] != 0:
+            return False
         if not chapter_page.has_key('blocks'):
             return False
 
