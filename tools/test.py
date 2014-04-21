@@ -6,6 +6,7 @@ __date__ = '2014-02-04 02:10'
 
 import time
 import random
+import hashlib
 from collections import defaultdict
 
 
@@ -22,6 +23,12 @@ class dd(object):
 
 
 if __name__ == '__main__':
+
+    book_name = 'Î¨Ò»µÄÐ¡Óî'
+    m = hashlib.md5()
+    m.update(book_name)
+    table_id = int(m.hexdigest(), 16) % 256
+    print(table_id)
 
     for index in xrange(0, 0):
         print('alter table novel_data{0} add sub_category varchar(128) not null;'.format(index))

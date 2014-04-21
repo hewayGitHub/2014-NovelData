@@ -14,41 +14,42 @@ def here():
     print('PrimeMusic')
 
 
-def chapter_clean_debug(conn):
+def chapter_title_debug(conn, gid):
     """
     """
     cursor = conn.cursor()
 
-    novel_node = NovelNodeInfo(book_name = u'ÓÕ³è±¦±´¹Ô¹Ô¹Ô', pen_name = u'ÏÄÒÁ¶ù')
-    novel_node.chapter_list = []
-
-    sql = 'SELECT raw_chapter_title FROM novel_cluster_chapter_info212 WHERE dir_id = 4130465196533952379'
+    dir_list = []
+    sql = 'SELECT site, site_id, dir_id, dir_url FROM novel_cluster_dir_info WHERE gid = {0}'.format(gid)
     cursor.execute(sql)
-    for (raw_chapter_title, ) in cursor.fetchall():
-        chapter = NovelChapterInfo(chapter_title = raw_chapter_title.decode('GBK', 'ignore'))
-        novel_node.chapter_list.append(chapter)
+    for (site, site_id, dir_id, dir_url) in cursor.fetchall():
+        dir_list.append((site, site_id, dir_id, dir_url))
+
+
+    for (site, site_id, dir_id, dir_url) in dir_list:
+        print('site: {0}, site_id, {1}, dir_id: {2}, dir_url: {3}'.format(site_id, site_id, dir_id, dir_url))
+        sql = 'SELECT chapter_sort, chapter_title, raw_chapter_title ' \
+              'FROM novel_cluster_chapter_info{0} ' \
+              'WHERE gid = {1} ' \
+              'ORDER BY chapter_sort'.format(gid % 256, gid)
+        cursor.execute(sql)
+        for (chapter_sort, chapter_title, raw_chapter_title) in cursor.fetchall():
+            print('sort: {0}, title: {1}, raw_title: {2}'.format(chapter_sort, chapter_title, raw_chapter_title))
+        print()
+
     cursor.close()
-
-    novel_clean = NovelCleanModule()
-    novel_clean.novel_chapter_clean(novel_node)
-
-    for chapter in novel_node.chapter_list:
-        print('{chapter_title: {0}, raw_chapter_title: {1}}'.format(chapter.chapter_title.encode('GBK', 'ignore'), chapter.raw_chapter_title.encode('GBK', 'ignore')))
 
 
 if __name__ == '__main__':
 
-    here()
-
     conn = MySQLdb.connect(
-        host = "127.0.0.1",
-        port = 3306,
-        user = "root",
-        passwd = "root",
+        host = "10.46.7.114",
+        port = 6216,
+        user = "novelclu1_w",
+        passwd = "OrEYBymP3gb3D8Ic",
         db = "novels"
     )
-
-    chapter_clean_debug(conn)
+    chapter_title_debug(conn, 534588203)
 
     conn.close()
 
