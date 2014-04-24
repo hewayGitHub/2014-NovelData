@@ -7,9 +7,6 @@ __date__ = '2014-02-12 18:07'
 import MySQLdb
 import random
 
-from basic.NovelStructure import *
-from novel.cluster.NovelCleanModule import *
-
 def here():
     print('PrimeMusic')
 
@@ -30,8 +27,8 @@ def chapter_title_debug(conn, gid):
         print('site: {0}, site_id, {1}, dir_id: {2}, dir_url: {3}'.format(site_id, site_id, dir_id, dir_url))
         sql = 'SELECT chapter_sort, chapter_title, raw_chapter_title ' \
               'FROM novel_cluster_chapter_info{0} ' \
-              'WHERE gid = {1} ' \
-              'ORDER BY chapter_sort'.format(gid % 256, gid)
+              'WHERE dir_id = {1} ' \
+              'ORDER BY chapter_sort'.format(gid % 256, dir_id)
         cursor.execute(sql)
         for (chapter_sort, chapter_title, raw_chapter_title) in cursor.fetchall():
             print('sort: {0}, title: {1}, raw_title: {2}'.format(chapter_sort, chapter_title, raw_chapter_title))

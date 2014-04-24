@@ -40,6 +40,7 @@ def stop():
             print('no need to stop module {0}'.format(unit))
         else:
             os.system('kill -9 {0}'.format(pid))
+            os.system('rm ./{0}/data/status'.format(unit))
             print('stop module {0}'.format(unit))
 
 
