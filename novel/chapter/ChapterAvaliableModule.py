@@ -96,6 +96,18 @@ class ChapterAvaliableModule(object):
         self.logger.info('rid: {0}, unavaliable: {1}, total: {2}'.format(rid, len(aggregation_dir_list) - avaliable_chapter_num, len(aggregation_dir_list)))
 
 
+    def candidate_rid_collection(self):
+        """
+        """
+        chapter_db = ChapterDBModule()
+
+        rid_list = []
+        for table_id in xrange(0, 256):
+            if table_id > self.end_rid_id or table_id < self.start_rid_id:
+                continue
+            result = chapter_db.get_novelaggregationdir_rid(table_id)
+            rid_list.extend(result)
+
     def run(self):
         """
         """

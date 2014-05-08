@@ -218,9 +218,9 @@ class ChapterOptimizeModule(object):
         chapter_db = ChapterDBModule()
         aggregate_dir_list = chapter_db.get_novelaggregationdir_list(rid)
         for (align_id, chapter_index, chapter_url, chapter_status) in aggregate_dir_list:
-            if chapter_status >= 5:
+            if chapter_status >= 8:
                 continue
-            self.logger.info('rid: {0}, index: [{1}/{2}], align_id: {3}, chapter_status: {4}'.format(
+            self.logger.info('rid: {0}, index: {1}/{2}, align_id: {3}, chapter_status: {4}'.format(
                 rid, chapter_index, len(aggregate_dir_list), align_id, chapter_status))
 
             total_candidate_chapter_list = self.candidate_chapter_collecion(rid, align_id)

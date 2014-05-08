@@ -30,8 +30,9 @@ if __name__ == '__main__':
     table_id = int(m.hexdigest(), 16) % 256
     print(table_id)
 
-    for index in xrange(0, 0):
-        print('alter table novel_data{0} add sub_category varchar(128) not null;'.format(index))
+    for index in xrange(0, 64):
+        print('/home/work/opscript/backuplog.sh -P /home/work/primesky/{0}/log -F novel.log,err.log -B /home/work/primesky/{0}/log/bak_log'.format(index))
+        #print('alter table novel_data{0} add sub_category varchar(128) not null;'.format(index))
         #print('select sleep(30);')
         #print('drop table if exists novel_cluster_rid_info{0};'.format(index))
         #print('create table novel_cluster_rid_info{0} like novel_cluster_rid_info;'.format(index))
