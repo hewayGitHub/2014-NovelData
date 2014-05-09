@@ -22,17 +22,19 @@ def chapter_title_debug(conn, gid):
     for (site, site_id, dir_id, dir_url) in cursor.fetchall():
         dir_list.append((site, site_id, dir_id, dir_url))
 
-
     for (site, site_id, dir_id, dir_url) in dir_list:
         print('site: {0}, site_id, {1}, dir_id: {2}, dir_url: {3}'.format(site_id, site_id, dir_id, dir_url))
         sql = 'SELECT chapter_sort, chapter_title, raw_chapter_title ' \
               'FROM novel_cluster_chapter_info{0} ' \
               'WHERE dir_id = {1} ' \
               'ORDER BY chapter_sort'.format(gid % 256, dir_id)
+
+        chapter_title_list = []
         cursor.execute(sql)
         for (chapter_sort, chapter_title, raw_chapter_title) in cursor.fetchall():
-            print('sort: {0}, title: {1}, raw_title: {2}'.format(chapter_sort, chapter_title, raw_chapter_title))
-        print()
+            chapter_title_list.append(chapter_title)
+        print(', '.join('%s' % chapter_title for chapter_title in chapter_title_list))
+        print('')
 
     cursor.close()
 
