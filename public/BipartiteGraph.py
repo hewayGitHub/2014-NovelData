@@ -51,6 +51,9 @@ class BipartiteGraph(object):
     def bipartite_graph_max_match(self, n, m, edge):
         """
             求二分图的最大匹配
+            返回：
+                最大匹配个数
+                最大匹配下得匹配路径，match[i]表示m中的第i个节点连接n中的第几个节点
         """
         self.initialize(m, edge)
 
@@ -60,7 +63,7 @@ class BipartiteGraph(object):
             if self.find_path(u):
                 match_number += 1
 
-        return match_number
+        return match_number, self.match
 
 
 if __name__ == '__main__':

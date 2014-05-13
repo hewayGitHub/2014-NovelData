@@ -69,7 +69,6 @@ class NovelNodeInfo(object):
         return result
 
 
-
 class NovelChapterInfo(object):
     """
         一个章节的基础信息，章节信息作为聚类点的一个特征
