@@ -93,6 +93,7 @@ class NovelSimilarityModule(object):
     def debug_novel_node(self, novel_node):
         """
         """
+        print(novel_node.rank)
         print(', '.join('%s: %d' % (chapter.chapter_title.encode('GBK', 'ignore'), chapter.rank) for chapter in novel_node.chapter_list))
 
 

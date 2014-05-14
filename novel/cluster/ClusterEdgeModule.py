@@ -202,12 +202,12 @@ class ClusterEdgeModule(object):
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:
                 continue
-            novel_node = similarity.virtual_novel_node_generate(cluster_node)
             print('gid: {0}, book_name: {1}, pen_name: {2}'.format(
                 gid,
                 novel_node.book_name.encode('GBK', 'ignore'),
                 novel_node.pen_name.encode('GBK', 'ignore')
             ))
+            novel_node = similarity.virtual_novel_node_generate(cluster_node)
             print(', '.join('%s' % chapter.chapter_title.encode('GBK', 'ignore') for chapter in novel_node.chapter_list))
             print('')
 
