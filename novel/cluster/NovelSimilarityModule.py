@@ -66,7 +66,7 @@ class NovelSimilarityModule(object):
                 chapter.rank = 1
                 virtual_novel_node.chapter_list.append(chapter)
             else:
-                match_chapter = virtual_novel_node[match_list[index]]
+                match_chapter = virtual_novel_node.chapter_list[match_list[index]]
                 match_chapter.rank += 1
         return True
 
