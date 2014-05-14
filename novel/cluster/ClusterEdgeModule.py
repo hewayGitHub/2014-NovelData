@@ -79,16 +79,6 @@ class ClusterEdgeModule(object):
         return cluster_node
 
 
-    def process_gid_collection(self):
-        """
-        """
-        cluster_db = ClusterDBModule()
-        result = cluster_db.get_noveldata_all('novel_cluster_dir_info', ['gid'])
-
-        g = lambda gid: gid % 256 <= self.end_gid_id and gid % 256 >= self.start_gid_id
-        return {}.fromkeys(filter(g, [row[0] for row in result])).keys()
-
-
     def related_gid_collection(self, cluster_node):
         """
         """
@@ -150,6 +140,16 @@ class ClusterEdgeModule(object):
         return (len(insert_edge_list), len(delete_edge_list_x) + len(delete_edge_list_y))
 
 
+    def process_gid_collection(self):
+        """
+        """
+        cluster_db = ClusterDBModule()
+        result = cluster_db.get_noveldata_all('novel_cluster_dir_info', ['gid'])
+
+        g = lambda gid: gid % 256 <= self.end_gid_id and gid % 256 >= self.start_gid_id
+        return {}.fromkeys(filter(g, [row[0] for row in result])).keys()
+
+
     def run(self, process_gid_list = []):
         """
         """
@@ -189,6 +189,28 @@ class ClusterEdgeModule(object):
             ))
 
         return True
+
+
+    def run_test(self):
+        """
+            ÅÜÆÀ¹ÀÊý¾Ý
+        """
+        gid_list = [int(line.strip()) for line in open('./data/rid.txt', 'r').readlines()]
+        similarity = NovelSimilarityModule()
+
+        for index, gid in enumerate(gid_list):
+            cluster_node = self.cluster_node_collection(gid)
+            if not cluster_node:
+                continue
+            novel_node = similarity.virtual_novel_node_generate(cluster_node)
+            print('gid: {0}, book_name: {1}, pen_name: {2}'.format(
+                gid,
+                novel_node.book_name.encode('GBK', 'ignore'),
+                novel_node.pen_name.encode('GBK', 'ignore')
+            ))
+            print(', '.join('%s' % chapter.chapter_title.encode('GBK', 'ignore') for chapter in novel_node.chapter_list))
+            print()
+
 
 
 
