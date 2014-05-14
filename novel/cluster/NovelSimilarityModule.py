@@ -90,6 +90,12 @@ class NovelSimilarityModule(object):
         return True
 
 
+    def debug_novel_node(self, novel_node):
+        """
+        """
+        print(', '.join('%s: %d' % (chapter.chapter_title.encode('GBK', 'ignore'), chapter.rank) for chapter in novel_node.chapter_list))
+
+
     def virtual_novel_node_generate(self, novel_cluster_node):
         """
             一个簇计算产生一个虚拟节点
@@ -112,6 +118,7 @@ class NovelSimilarityModule(object):
 
         max_virtual_novel_node = virtual_novel_node_list[0]
         for virtual_novel_node in virtual_novel_node_list:
+            self.debug_novel_node(virtual_novel_node)
             if virtual_novel_node.rank > max_virtual_novel_node.rank:
                 max_virtual_novel_node = virtual_novel_node
 

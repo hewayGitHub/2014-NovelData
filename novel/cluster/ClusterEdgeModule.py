@@ -209,7 +209,7 @@ class ClusterEdgeModule(object):
                 novel_node.pen_name.encode('GBK', 'ignore')
             ))
             print(', '.join('%s' % chapter.chapter_title.encode('GBK', 'ignore') for chapter in novel_node.chapter_list))
-            print()
+            print('')
 
 
 
