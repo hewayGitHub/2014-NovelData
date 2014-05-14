@@ -55,13 +55,38 @@ class NovelSimilarityModule(object):
     def virtual_novel_node_merge(self, virtual_novel_node, novel_node):
         """
             一个普通节点和一个虚拟节点合并，不能合并返回false
-            默认：virtual_novel_node的章节长度大于novel_node的章节长度
         """
         similarity, match_list = self.novel_node_similarity_calculation(virtual_novel_node, novel_node)
         if similarity < 0.7:
             return False
 
+        virtual_novel_node.rank += 1
+        for index, chapter in enumerate(novel_node.chapter_list):
+            if match_list[index] == -1:
+                chapter.rank = 1
+                virtual_novel_node.chapter_list.append(chapter)
+            else:
+                match_chapter = virtual_novel_node[match_list[index]]
+                match_chapter.rank += 1
+        return True
 
+
+    def virtual_novel_chapter_generate(self, virtual_novel_node):
+        """
+            一个虚拟节点计算产生虚拟目录
+        """
+        threshold = 1
+        left = min([chapter.rank for chapter in virtual_novel_node.chapter_list])
+        right = max([chapter.rank for chapter in virtual_novel_node.chapter_list])
+        while left <= right:
+            mid = (left + right) / 2
+            number = sum([1 for chapter in virtual_novel_node.chapter_list if chapter.rank >= mid])
+            if number >= 60:
+                threshold = mid
+                left = mid + 1
+            else:
+                right = mid - 1
+        virtual_novel_node.chapter_list = [chapter for chapter in virtual_novel_node.chapter_list if chapter.rank >= threshold]
         return True
 
 
@@ -72,24 +97,38 @@ class NovelSimilarityModule(object):
         novel_node_list = novel_cluster_node.novel_node_list
         sorted(novel_node_list, lambda a, b: cmp(len(b.chapter_list), len(a.chapter_list)))
 
-        virtual_node_list = []
+        virtual_novel_node_list = []
         for novel_node in novel_node_list:
             flag = False
-            for index, virtual_novel_node in enumerate(virtual_node_list):
+            for index, virtual_novel_node in enumerate(virtual_novel_node_list):
                 flag = self.virtual_novel_node_merge(virtual_novel_node, novel_node)
-                if flag:
+                if flag is True:
                     break
-            if not flag:
-                virtual_novel_node = novel_node
-                virtual_novel_node.rank = 1
-                virtual_novel_node.chapter_weight_list = [1] * len(novel_node.chapter_list)
-                virtual_node_list.append(virtual_novel_node)
+            if flag is False:
+                novel_node.rank = 1
+                for chapter in novel_node.chapter_list:
+                    chapter.rank = 1
+                virtual_novel_node_list.append(novel_node)
+
+        max_virtual_novel_node = virtual_novel_node_list[0]
+        for virtual_novel_node in virtual_novel_node_list:
+            if virtual_novel_node.rank > max_virtual_novel_node.rank:
+                max_virtual_novel_node = virtual_novel_node
+
+        self.virtual_novel_chapter_generate(max_virtual_novel_node)
+        return max_virtual_novel_node
 
 
     def novel_cluster_similarity_calculation(self, novel_cluster_x, novel_cluster_y):
         """
             计算两个gid的相似度
         """
+        virtual_novel_node_x = self.virtual_novel_node_generate(novel_cluster_x)
+        virtual_novel_node_y = self.virtual_novel_node_generate(novel_cluster_y)
+
+        similarity, match_list = self.novel_node_similarity_calculation(virtual_novel_node_x, virtual_novel_node_y)
+        return similarity
+
 
 
 if __name__ == '__main__':
