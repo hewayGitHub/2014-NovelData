@@ -101,11 +101,13 @@ def avaliable_module():
 def debug():
     """
     """
-    #remove_status_file()
+    remove_status_file()
     #novel_module = ChapterOptimizeModule()
     #novel_module.run_test()
-    novel_module = ChapterAvaliableModule()
-    novel_module.run()
+    #novel_module = ChapterAvaliableModule()
+    #novel_module.run()
+    novel_module = ClusterEdgeModule()
+    novel_module.run_test()
 
 
 if __name__ == '__main__':
