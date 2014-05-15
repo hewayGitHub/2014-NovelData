@@ -101,8 +101,7 @@ class NovelSimilarityModule(object):
         """
             一个簇计算产生一个虚拟节点
         """
-        novel_node_list = novel_cluster_node.novel_node_list
-        sorted(novel_node_list, lambda a, b: cmp(len(b.chapter_list), len(a.chapter_list)))
+        novel_node_list = sorted(novel_cluster_node.novel_node_list, lambda a, b: cmp(len(b.chapter_list), len(a.chapter_list)))
 
         virtual_novel_node_list = []
         for novel_node in novel_node_list:
