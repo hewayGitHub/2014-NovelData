@@ -119,7 +119,6 @@ class NovelSimilarityModule(object):
 
         max_virtual_novel_node = virtual_novel_node_list[0]
         for virtual_novel_node in virtual_novel_node_list:
-            self.debug_novel_node(virtual_novel_node)
             if virtual_novel_node.rank > max_virtual_novel_node.rank:
                 max_virtual_novel_node = virtual_novel_node
 
