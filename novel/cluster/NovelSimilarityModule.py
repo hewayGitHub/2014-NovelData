@@ -43,7 +43,7 @@ class NovelSimilarityModule(object):
                 continue
             for index_y, chapter_y in enumerate(short_list):
                 chapter_similarity = self.novel_chapter_similarity_calculation(chapter_x, chapter_y)
-                if chapter_similarity >= 0.7:
+                if chapter_similarity >= 0.8:
                     similarity_matirx[index_x].append(index_y)
 
         match = BipartiteGraph()
@@ -57,7 +57,7 @@ class NovelSimilarityModule(object):
             一个普通节点和一个虚拟节点合并，不能合并返回false
         """
         similarity, match_list = self.novel_node_similarity_calculation(virtual_novel_node, novel_node)
-        if similarity < 0.7:
+        if similarity < 0.8:
             return False
 
         virtual_novel_node.rank += 1
