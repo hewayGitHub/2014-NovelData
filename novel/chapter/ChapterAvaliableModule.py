@@ -107,16 +107,13 @@ class ChapterAvaliableModule(object):
                 continue
             result = chapter_db.get_novelaggregationdir_rid(table_id)
             rid_list.extend(result)
+        return rid_list
+
 
     def run(self):
         """
         """
-        rid_list = []
-        for index, line in enumerate(open('./data/rid.txt', 'r').readlines()):
-            if index > self.end_rid_id or index < self.start_rid_id:
-                continue
-            rid = int(line.strip())
-            rid_list.append(rid)
+        rid_list = self.candidate_rid_collection()
 
         for index, rid in enumerate(rid_list):
             self.logger.info('index: {0}, rid: {1}'.format(index, rid))
