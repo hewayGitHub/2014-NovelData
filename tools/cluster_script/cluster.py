@@ -33,10 +33,18 @@ if __name__ == '__main__':
                   'gid', 'rid', 'book_name', 'pen_name',
                   'chapter_count', 'chapter_word_sum', 'last_chapter_title']
     result = cluster_db.get_noveldata_all('novel_cluster_dir_info', field_list)
+    insert_tuple_list = []
     for insert_tuple in result:
-        print('dir_id: {0}, dir_url: {1}'.format(insert_tuple[3], insert_tuple[4]))
-        print('gid: {0}, book_name: {1}, pen_name: {2}'.format(insert_tuple[5], insert_tuple[7], insert_tuple[8]))
-        print('last_chapter_title: {0}'.format(insert_tuple[11]))
+        insert_tuple_list.append(insert_tuple)
+        if len(insert_tuple_list) == 100:
+            cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
+            insert_tuple_list = []
+            break
+
+    if len(insert_tuple_list) > 0:
+        cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
+
+
 
 
 

@@ -255,7 +255,7 @@ class ClusterDBModule(MySQLModule):
               'chapter_count, chapter_word_sum, last_chapter_title) ' \
               'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
-            cursor = self.get_cursor('novel_cluster_dir_info')
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
