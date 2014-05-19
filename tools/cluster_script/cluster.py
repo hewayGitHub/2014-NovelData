@@ -39,7 +39,6 @@ if __name__ == '__main__':
         if len(insert_tuple_list) == 100:
             cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
             insert_tuple_list = []
-            break
 
     if len(insert_tuple_list) > 0:
         cluster_db.insert_novelclusterdirinfo(insert_tuple_list)
