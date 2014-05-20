@@ -152,10 +152,10 @@ class ClusterDBModule(MySQLModule):
         """
         """
         sql = 'SELECT dir_id, gid, chapter_count, last_chapter_title ' \
-              'FROM novel_cluster_dir_info ' \
+              'FROM novel_cluster_dir_info_offline ' \
               'WHERE dir_id IN ({0})'.format(', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
-            cursor = self.get_cursor('novel_cluster_dir_info')
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
@@ -172,10 +172,10 @@ class ClusterDBModule(MySQLModule):
         """
         """
         sql = 'SELECT site_id, dir_id, dir_url, gid, book_name, pen_name ' \
-              'FROM novel_cluster_dir_info ' \
+              'FROM novel_cluster_dir_info_offline ' \
               'WHERE gid = {0}'.format(gid)
         try:
-            cursor = self.get_cursor('novel_cluster_dir_info')
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
@@ -191,9 +191,9 @@ class ClusterDBModule(MySQLModule):
     def get_novelclusterdirinfo_name(self, key, value):
         """
         """
-        sql = "SELECT gid FROM novel_cluster_dir_info WHERE {0} = '{1}'".format(key, value)
+        sql = "SELECT gid FROM novel_cluster_dir_info_offline WHERE {0} = '{1}'".format(key, value)
         try:
-            cursor = self.get_cursor('novel_cluster_dir_info')
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
@@ -209,8 +209,8 @@ class ClusterDBModule(MySQLModule):
     def update_novelclusterdirinfo(self, update_tuple_list):
         """
         """
-        cursor = self.get_cursor('novel_cluster_dir_info')
-        sql_prefix = "UPDATE novel_cluster_dir_info " \
+        cursor = self.get_cursor('novel_cluster_dir_info_offline')
+        sql_prefix = "UPDATE novel_cluster_dir_info_offline " \
                      "SET gid = '%d', book_name = '%s', pen_name = '%s', " \
                      "chapter_count = '%d', last_chapter_title = '%s' " \
                      "WHERE dir_id = '%d'"
@@ -229,8 +229,8 @@ class ClusterDBModule(MySQLModule):
     def update_novelclusterdirinfo_gid(self, update_tuple_list):
         """
         """
-        cursor = self.get_cursor('novel_cluster_dir_info')
-        sql_prefix = "UPDATE novel_cluster_dir_info " \
+        cursor = self.get_cursor('novel_cluster_dir_info_offline')
+        sql_prefix = "UPDATE novel_cluster_dir_info_offline " \
                      "SET rid = '%d' " \
                      "WHERE gid = '%d'"
         for update_tuple in update_tuple_list:
@@ -248,14 +248,14 @@ class ClusterDBModule(MySQLModule):
     def insert_novelclusterdirinfo(self, insert_tuple_list):
         """
         """
-        sql = 'INSERT IGNORE INTO novel_cluster_dir_info ' \
+        sql = 'INSERT IGNORE INTO novel_cluster_dir_info_offline ' \
               '(site_id, site, site_status, ' \
               'dir_id, dir_url, ' \
               'gid, rid, book_name, pen_name, ' \
               'chapter_count, chapter_word_sum, last_chapter_title) ' \
               'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
-            cursor = self.get_cursor('novel_cluster_dir_info')
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
@@ -345,10 +345,10 @@ class ClusterDBModule(MySQLModule):
         """
         result = []
         sql = 'SELECT gid_x, gid_y, similarity ' \
-              'FROM novel_cluster_edge_info ' \
+              'FROM novel_cluster_edge_info_offline ' \
               'WHERE gid_x = {0}'.format(gid)
         try:
-            cursor = self.get_cursor('novel_cluster_edge_info')
+            cursor = self.get_cursor('novel_cluster_edge_info_offline')
             cursor.execute(sql)
             for row in cursor.fetchall():
                 result.append(row)
@@ -357,10 +357,10 @@ class ClusterDBModule(MySQLModule):
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
 
         sql = 'SELECT gid_x, gid_y, similarity ' \
-              'FROM novel_cluster_edge_info ' \
+              'FROM novel_cluster_edge_info_offline ' \
               'WHERE gid_y = {0}'.format(gid)
         try:
-            cursor = self.get_cursor('novel_cluster_edge_info')
+            cursor = self.get_cursor('novel_cluster_edge_info_offline')
             cursor.execute(sql)
             for row in cursor.fetchall():
                 result.append(row)
@@ -370,13 +370,13 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def delete_novelclusteredgeinfo(self, key_tuple, gid, gid_list):
+    def delete_novelclusteredgeinfo(self, gid):
         """
         """
-        sql = 'DELETE FROM novel_cluster_edge_info ' \
-              'WHERE {0} = {1} AND {2} IN ({3})'.format(key_tuple[0], gid, key_tuple[1], ', '.join('%d' % gid_y for gid_y in gid_list))
+        sql = 'DELETE FROM novel_cluster_edge_info_offline ' \
+              'WHERE gid_x = {0}'.format(gid)
         try:
-            cursor = self.get_cursor('novel_cluster_edge_info')
+            cursor = self.get_cursor('novel_cluster_edge_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
@@ -389,11 +389,11 @@ class ClusterDBModule(MySQLModule):
     def insert_novelclusteredgeinfo(self, insert_tuple_list):
         """
         """
-        sql = 'INSERT IGNORE INTO novel_cluster_edge_info ' \
+        sql = 'INSERT IGNORE INTO novel_cluster_edge_info_offline ' \
               '(gid_x, gid_y, similarity) ' \
               'VALUES {0}'.format(', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
         try:
-            cursor = self.get_cursor('novel_cluster_edge_info')
+            cursor = self.get_cursor('novel_cluster_edge_info_offline')
             cursor.execute(sql)
         except Exception, e:
             self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))

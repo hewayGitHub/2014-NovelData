@@ -119,7 +119,7 @@ def dirurl():
     """
     dir_url_list = []
     for line in open('./data/dirurl.txt', 'r').readlines():
-        dir_url = int(line.strip())
+        dir_url = line.strip()
         dir_url_list.append(dir_url)
 
     error_count = counter()
@@ -143,7 +143,7 @@ def chapter():
     """
     chapter_url_list = []
     for line in open('./data/chapter.txt', 'r').readlines():
-        chapter_url = int(line.strip())
+        chapter_url = line.strip()
         chapter_url_list.append(chapter_url)
 
     error_count = counter()
