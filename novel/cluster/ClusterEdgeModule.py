@@ -160,7 +160,6 @@ class ClusterEdgeModule(object):
                     self.logger.info('gid: {0}, similarity: {1}, book_name: {2}, pen_name: {3}'.format(
                         related_gid, cluster_similarity, book_name, pen_name
                     ))
-
             self.cluster_edge_update(gid, related_edge_list)
 
         return True
@@ -185,8 +184,6 @@ class ClusterEdgeModule(object):
             novel_node = similarity.virtual_novel_node_generate(cluster_node)
             print(', '.join('%s' % chapter.chapter_title.encode('GBK', 'ignore') for chapter in novel_node.chapter_list))
             print('')
-
-
 
 
 if __name__ == '__main__':
