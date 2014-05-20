@@ -132,17 +132,18 @@ class ClusterEdgeModule(object):
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:
                 continue
+            virtual_node = similarity.virtual_novel_node_generate(cluster_node)
             related_gid_list = self.related_gid_collection(cluster_node)
             if len(related_gid_list) == 0:
                 continue
 
             book_name = cluster_node.book_name.encode('GBK')
             pen_name = cluster_node.pen_name.encode('GBK')
-            self.logger.info('index: {0}/{1}, '
-                             'gid: {2}, book_name: {3}, pen_name: {4}, '
-                             'related_gid_number: {5}'.format(
-                index, len(process_gid_list),
-                gid, book_name, pen_name, len(related_gid_list)
+            self.logger.info('index: {0}/{1}'.format(index, len(process_gid_list)))
+            self.logger.info('novel_info: {0}@{1}@{2}, '
+                             'chater_number: {3}, related_gid_number: {4}'.format(
+                gid, book_name, pen_name,
+                len(virtual_node.chapter_list), len(related_gid_list)
             ))
 
             related_edge_list = []
@@ -150,15 +151,18 @@ class ClusterEdgeModule(object):
                 related_cluster_node = self.cluster_node_collection(related_gid)
                 if not related_cluster_node:
                     continue
-                cluster_similarity = similarity.novel_cluster_similarity_calculation(cluster_node, related_cluster_node)
+                related_virtual_node = similarity.virtual_novel_node_generate(related_cluster_node)
+                cluster_similarity = similarity.novel_cluster_similarity_calculation(virtual_node, related_virtual_node)
                 if cluster_similarity >= 0.7:
                     cluster_edge = ClusterEdgeInfo(cluster_node.gid, related_cluster_node.gid, cluster_similarity)
                     related_edge_list.append(cluster_edge)
 
                     book_name = related_cluster_node.book_name.encode('GBK')
                     pen_name = related_cluster_node.pen_name.encode('GBK')
-                    self.logger.info('gid: {0}, similarity: {1}, book_name: {2}, pen_name: {3}'.format(
-                        related_gid, cluster_similarity, book_name, pen_name
+                    self.logger.info('novel_info: {0}@{1}@{2}, '
+                                     'chapter_number: {3}, similarity: {4}'.format(
+                        gid, book_name, pen_name,
+                        len(related_virtual_node.chapter_list), cluster_similarity
                     ))
             self.cluster_edge_update(gid, related_edge_list)
 

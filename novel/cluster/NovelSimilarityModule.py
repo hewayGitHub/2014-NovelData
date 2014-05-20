@@ -37,6 +37,9 @@ class NovelSimilarityModule(object):
             long_list = novel_node_y.chapter_list
             short_list = novel_node_x.chapter_list
 
+        if len(short_list) <= 2:
+            return 0.0, []
+
         similarity_matirx = defaultdict(list)
         for index_x, chapter_x in enumerate(long_list):
             if chapter_x.chapter_title == '':
@@ -125,16 +128,12 @@ class NovelSimilarityModule(object):
         return max_virtual_novel_node
 
 
-    def novel_cluster_similarity_calculation(self, novel_cluster_x, novel_cluster_y):
+    def novel_cluster_similarity_calculation(self, virtual_novel_node_x, virtual_novel_node_y):
         """
             计算两个gid的相似度
         """
-        virtual_novel_node_x = self.virtual_novel_node_generate(novel_cluster_x)
-        virtual_novel_node_y = self.virtual_novel_node_generate(novel_cluster_y)
-
         similarity, match_list = self.novel_node_similarity_calculation(virtual_novel_node_x, virtual_novel_node_y)
         return similarity
-
 
 
 if __name__ == '__main__':
