@@ -60,7 +60,7 @@ class NovelSimilarityModule(object):
             一个普通节点和一个虚拟节点合并，不能合并返回false
         """
         similarity, match_list = self.novel_node_similarity_calculation(virtual_novel_node, novel_node)
-        if similarity < 0.8:
+        if similarity < 0.7:
             return False
 
         virtual_novel_node.rank += 1

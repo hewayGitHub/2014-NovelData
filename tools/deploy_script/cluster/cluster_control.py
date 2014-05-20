@@ -16,7 +16,11 @@ def start(module):
     """
     """
     for unit in xrange(0, process_number):
-        res = os.system('cd {0} && python NovelData.py {1} &'.format(unit, module))
+        if os.path.exists('./{0}/data/status'.format(unit)):
+            print('failed start [unit: {0}, module: {1}]'.format(unit, module))
+            continue
+
+        res = os.system('cd {0} && nohup python NovelData.py {1} &'.format(unit, module))
         if res != 0:
             print('failed start [unit: {0}, module: {1}]'.format(unit, module))
             return False
@@ -36,6 +40,7 @@ def stop():
             print('no need to stop module {0}'.format(unit))
         else:
             os.system('kill -9 {0}'.format(pid))
+            os.system('rm ./{0}/data/status'.format(unit))
             print('stop module {0}'.format(unit))
 
 
@@ -46,7 +51,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['stop', 'node', 'edge', 'cluster', 'update']:
+    if module not in ['stop', 'node', 'edge', 'cluster', 'update', 'test']:
         print('no module selected !')
         exit()
 
