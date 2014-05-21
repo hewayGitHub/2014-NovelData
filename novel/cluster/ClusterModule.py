@@ -28,7 +28,7 @@ class ClusterModule(object):
         """
         """
         cluster_db = ClusterDBModule()
-        novel_node_list = cluster_db.get_noveldata_all('novel_cluster_dir_info', ['gid', 'rid', 'site_status'])
+        novel_node_list = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid', 'site_status'])
         self.logger.info('novel node number: {0}'.format(len(novel_node_list)))
 
         disjoint_set = DisjointSet()
@@ -40,7 +40,7 @@ class ClusterModule(object):
         """
         """
         cluster_db = ClusterDBModule()
-        novel_edge_list = cluster_db.get_noveldata_all('novel_cluster_edge_info', ['gid_x', 'gid_y'])
+        novel_edge_list = cluster_db.get_noveldata_all('novel_cluster_edge_info_offline', ['gid_x', 'gid_y'])
         self.logger.info('novel edge number: {0}'.format(len(novel_edge_list)))
 
         disjoint_set = DisjointSet()
@@ -53,13 +53,12 @@ class ClusterModule(object):
         """
         disjoint_set = DisjointSet()
         update_tuple_list = disjoint_set.generate_update_tuple_list()
-
         self.logger.info('novel cluster update number: {0}'.format(len(update_tuple_list)))
-        for (rid, gid) in update_tuple_list:
-            self.logger.info('gid: {0}, rid: {1}'.format(gid, rid))
 
         cluster_db = ClusterDBModule()
-        cluster_db.update_novelclusterdirinfo_gid(update_tuple_list)
+        for (rid, gid) in update_tuple_list:
+            self.logger.info('gid: {0}, rid: {1}'.format(gid, rid))
+            cluster_db.update_novelclusterdirinfo_gid(rid, gid)
 
 
     def run(self):

@@ -226,20 +226,18 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def update_novelclusterdirinfo_gid(self, update_tuple_list):
+    def update_novelclusterdirinfo_gid(self, rid, gid):
         """
         """
-        cursor = self.get_cursor('novel_cluster_dir_info_offline')
-        sql_prefix = "UPDATE novel_cluster_dir_info_offline " \
-                     "SET rid = '%d' " \
-                     "WHERE gid = '%d'"
-        for update_tuple in update_tuple_list:
-            sql = sql_prefix % update_tuple
-            try:
-                cursor.execute(sql)
-            except Exception, e:
-                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-                continue
+        sql = 'UPDATE novel_cluster_dir_info_offline ' \
+              'SET rid = {0} ' \
+              'WHERE gid = {1}'.format(rid, gid)
+        try:
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return False
 
         cursor.close()
         return True
