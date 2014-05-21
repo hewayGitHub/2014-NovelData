@@ -13,13 +13,11 @@ def here():
 class ClusterNode(object):
     """
     """
-    def __init__(self, gid = 0, rid = 0):
+    def __init__(self, gid = 0):
         """
         """
         self.gid = gid
         self.parent = gid
-
-        self.rid = rid
 
         self.node_number = 0
         self.authority_node_number = 0
@@ -36,11 +34,11 @@ class DisjointSet(object):
         self.cluster_node_dict = {}
 
 
-    def add_novel_node(self, gid = 0, rid = 0, site_status = 0):
+    def add_novel_node(self, gid = 0, site_status = 0):
         """
         """
         if not self.cluster_node_dict.has_key(gid):
-            self.cluster_node_dict[gid] = ClusterNode(gid, rid)
+            self.cluster_node_dict[gid] = ClusterNode(gid)
         self.cluster_node_dict[gid].node_number += 1
         self.cluster_node_dict[gid].authority_node_number += site_status
 
