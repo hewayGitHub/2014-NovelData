@@ -80,7 +80,7 @@ class ClusterModule(object):
         self.logger.info('novel cluster module start')
 
         self.novel_node_collection()
-        self.novel_edge_collection()
+        #self.novel_edge_collection()
         #self.novel_cluster_update()
 
         self.logger.info('novel cluster module end')
