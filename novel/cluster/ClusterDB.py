@@ -226,7 +226,7 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def update_novelclusterdirinfo_gid(self, rid, gid):
+    def update_novelclusterdirinfo_gid(self, gid, rid):
         """
         """
         sql = 'UPDATE novel_cluster_dir_info_offline ' \

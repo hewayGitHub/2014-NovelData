@@ -28,12 +28,12 @@ class ClusterModule(object):
         """
         """
         cluster_db = ClusterDBModule()
-        novel_node_list = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid', 'site_status'])
+        novel_node_list = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'site_status'])
         self.logger.info('novel node number: {0}'.format(len(novel_node_list)))
 
         disjoint_set = DisjointSet()
-        for (gid, rid, site_status) in novel_node_list:
-            disjoint_set.add_novel_node(gid, rid, site_status)
+        for (gid, site_status) in novel_node_list:
+            disjoint_set.add_novel_node(gid, site_status)
 
 
     def novel_edge_collection(self):
@@ -56,9 +56,9 @@ class ClusterModule(object):
         self.logger.info('novel cluster update number: {0}'.format(len(update_tuple_list)))
 
         cluster_db = ClusterDBModule()
-        for (rid, gid) in update_tuple_list:
+        for (gid, rid) in update_tuple_list:
             self.logger.info('gid: {0}, rid: {1}'.format(gid, rid))
-            cluster_db.update_novelclusterdirinfo_gid(rid, gid)
+            cluster_db.update_novelclusterdirinfo_gid(gid, rid)
 
 
     def run(self):
