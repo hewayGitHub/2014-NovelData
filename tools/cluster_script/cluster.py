@@ -25,58 +25,89 @@ def init_log(name):
     logger.info('{0} log init successful!'.format(name))
 
 
-def show_cluster_node(rid):
+def show_cluster_node(gid):
     """
     """
     cluster_db = ClusterDBModule()
-    result = cluster_db.get_novelclusterdirinfo_name('rid', rid)
 
     cluster_edge = ClusterEdgeModule()
     cluster_similarity = NovelSimilarityModule()
-    gid_list = {}.fromkeys([row[0] for row in result]).keys()
-    print('rid: {0}, gid_number: {1}'.format(rid, len(gid_list)))
-    for index, gid in enumerate(gid_list):
-        cluster_node = cluster_edge.cluster_node_collection(gid)
-        virtual_novel_node = cluster_similarity.virtual_novel_node_generate(cluster_node)
-        book_name = cluster_node.book_name.encode('GBK', 'ignore')
-        pen_name = cluster_node.pen_name.encode('GBK', 'ignore')
-        print('gid: {0}, book_name: {1}, pen_name: {2}'.format(gid, book_name, pen_name))
-        print(', '.join('%s: %d' % (chapter.chapter_title.encode('GBK', 'ignore'), chapter.rank) for chapter in virtual_novel_node.chapter_list))
+
+    cluster_node = cluster_edge.cluster_node_collection(gid)
+    virtual_novel_node = cluster_similarity.virtual_novel_node_generate(cluster_node)
+    book_name = cluster_node.book_name.encode('GBK', 'ignore')
+    pen_name = cluster_node.pen_name.encode('GBK', 'ignore')
+    print('gid: {0}, book_name: {1}, pen_name: {2}'.format(gid, book_name, pen_name))
+    print(', '.join('%s: %d' % (chapter.chapter_title.encode('GBK', 'ignore'), chapter.rank) for chapter in virtual_novel_node.chapter_list))
+
+
+def get_rid(gid, table_name):
+    """
+    """
+    cluster_db = ClusterDBModule()
+
+    cursor = cluster_db.get_cursor(table_name)
+    sql = 'SELECT rid FROM {0} WHERE gid = {1}'.format(table_name, gid)
+    cursor.execute(sql)
+    rid_list = {}.fromkeys([row[0] for row in cursor.fetchall()]).keys()
+    if len(rid_list) > 1 or len(rid_list) < 1:
+        return False
+
+    return rid_list[0]
+
+
+def get_gid_list(rid, table_name):
+    """
+    """
+    cluster_db = ClusterDBModule()
+
+    cursor = cluster_db.get_cursor(table_name)
+    sql = 'SELECT gid FROM {0} WHERE rid = {1}'.format(table_name, rid)
+    cursor.execute(sql)
+    gid_list = {}.fromkeys([row[0] for row in cursor.fetchall()]).keys()
+    return gid_list
+
+
+def check_diff_rid(gid):
+    """
+    """
+    old_rid = get_rid(gid, 'novel_cluster_dir_info')
+    new_rid = get_rid(gid, 'novel_cluster_dir_offline')
+    if old_rid == new_rid:
+        return True
+
+    old_gid_list = get_gid_list(old_rid, 'novel_cluster_dir_info')
+    new_gid_list = get_gid_list(new_rid, 'novel_cluster_dir_info_offline')
+    print('new_rid: {0}, old_rid: {1}'.format(new_rid, old_rid))
+
+    common_gid_list = []
+    for old_gid in old_gid_list:
+        if old_gid in new_gid_list:
+            common_gid_list.append(old_gid)
+    print('common_gid_list: {0}'.format(', '.join(common_gid_list)))
+
+    print('old_gid_only:')
+    for old_gid in old_gid_list:
+        if old_gid in new_gid_list:
+            continue
+        show_cluster_node(old_gid)
+
+    print('new_gid_only:')
+    for new_gid in new_gid_list:
+        if new_gid in old_gid_list:
+            continue
+        show_cluster_node(new_gid)
+
+    print('')
+    return False
 
 
 def check_cluster_diff():
     """
     """
-    cluster_db = ClusterDBModule()
     gid_list = [int(line.strip()) for line in open('./data/rid.txt', 'r').readlines()]
-
-    result = cluster_db.get_noveldata_all('novel_cluster_dir_info', ['gid', 'rid'])
-    old_cluster_result = {}
-    for (gid, rid) in result:
-        if old_cluster_result.has_key(gid):
-            continue
-        old_cluster_result[gid] = rid
-    here()
-
-    result = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid'])
-    new_cluster_result = {}
-    for (gid, rid) in result:
-        if new_cluster_result.has_key(gid):
-            continue
-        new_cluster_result[gid] = rid
-    here()
-
     for index, gid in enumerate(gid_list):
-        if not old_cluster_result.has_key(gid):
-            continue
-        if not new_cluster_result.has_key(gid):
-            continue
-        old_rid = old_cluster_result[gid]
-        new_rid = new_cluster_result[gid]
-        if old_rid == new_rid:
-            continue
-        print('gid: {0}, old_rid: {1}, new_rid: {2}'.format(gid, old_rid, new_rid))
-        show_cluster_node(new_rid)
+        check_diff_rid(gid)
 
 
 if __name__ == '__main__':
