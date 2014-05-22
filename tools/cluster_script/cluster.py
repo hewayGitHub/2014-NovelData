@@ -5,6 +5,8 @@ __author__ = 'sunhaowen'
 __date__ = '2014-02-24 18:43'
 
 from novel.cluster.ClusterDB import *
+from novel.cluster.ClusterEdgeModule import *
+from novel.cluster.NovelSimilarityModule import *
 
 def here():
     print('PrimeMusic')
@@ -29,7 +31,17 @@ def show_cluster_node(rid):
     cluster_db = ClusterDBModule()
     result = cluster_db.get_novelclusterdirinfo_name('rid', rid)
 
+    cluster_edge = ClusterEdgeModule()
+    cluster_similarity = NovelSimilarityModule()
     gid_list = {}.fromkeys([row[0] for row in result]).keys()
+    print('rid: {0}'.format(rid))
+    for index, gid in enumerate(gid_list):
+        cluster_node = cluster_edge.cluster_node_collection(gid)
+        virtual_novel_node = cluster_similarity.virtual_novel_node_generate(cluster_node)
+        book_name = cluster_node.book_name.encode('GBK', 'ignore')
+        pen_name = cluster_node.pen_name.encode('GBK', 'ignore')
+        print('gid: {0}, book_name: {1}, pen_name: {2}'.format(gid, book_name, pen_name))
+        print(', '.join('%s' % (chapter.chapter_title.encode('GBK', 'ignore') for chapter in virtual_novel_node.chapter_list)))
 
 
 def check_cluster_diff():
@@ -54,10 +66,12 @@ def check_cluster_diff():
 
     for index, gid in enumerate(gid_list):
         old_rid = old_cluster_result[gid]
-        new_rid = new_cluster_result[rid]
-
-
-
+        new_rid = new_cluster_result[gid]
+        if old_rid == new_rid:
+            continue
+        print('old_rid: {0}, new_rid: {1}'.format(old_rid, new_rid))
+        show_cluster_node(old_rid)
+        show_cluster_node(new_rid)
 
 
 if __name__ == '__main__':
