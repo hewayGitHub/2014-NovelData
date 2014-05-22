@@ -30,8 +30,9 @@ if __name__ == '__main__':
     cluster_db = ClusterDBModule()
     result = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid'])
     for (gid, rid) in result:
-        print('gid: {0}, rid: {1}'.format(gid, rid))
-        cluster_db.update_novelclusterdirinfo_gid(gid, gid)
+        if gid != rid:
+            print('gid: {0}, rid: {1}'.format(gid, rid))
+            cluster_db.update_novelclusterdirinfo_gid(gid, gid)
 
 
 
