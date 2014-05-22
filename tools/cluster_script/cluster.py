@@ -72,7 +72,12 @@ def check_diff_rid(gid):
     """
     """
     old_rid = get_rid(gid, 'novel_cluster_dir_info')
-    new_rid = get_rid(gid, 'novel_cluster_dir_offline')
+    if old_rid is False:
+        return False
+    new_rid = get_rid(gid, 'novel_cluster_dir_info_offline')
+    if new_rid is False:
+        return False
+
     if old_rid == new_rid:
         return True
 
@@ -80,11 +85,11 @@ def check_diff_rid(gid):
     new_gid_list = get_gid_list(new_rid, 'novel_cluster_dir_info_offline')
     print('new_rid: {0}, old_rid: {1}'.format(new_rid, old_rid))
 
-    common_gid_list = []
+    print('common_gid:')
     for old_gid in old_gid_list:
         if old_gid in new_gid_list:
-            common_gid_list.append(old_gid)
-    print('common_gid_list: {0}'.format(', '.join(common_gid_list)))
+            show_cluster_node(old_gid)
+
 
     print('old_gid_only:')
     for old_gid in old_gid_list:
