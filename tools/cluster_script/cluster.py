@@ -34,7 +34,7 @@ def show_cluster_node(rid):
     cluster_edge = ClusterEdgeModule()
     cluster_similarity = NovelSimilarityModule()
     gid_list = {}.fromkeys([row[0] for row in result]).keys()
-    print('rid: {0}'.format(rid))
+    print('rid: {0}, gid_number: {1}'.format(rid, len(gid_list)))
     for index, gid in enumerate(gid_list):
         cluster_node = cluster_edge.cluster_node_collection(gid)
         virtual_novel_node = cluster_similarity.virtual_novel_node_generate(cluster_node)
