@@ -41,7 +41,7 @@ def show_cluster_node(rid):
         book_name = cluster_node.book_name.encode('GBK', 'ignore')
         pen_name = cluster_node.pen_name.encode('GBK', 'ignore')
         print('gid: {0}, book_name: {1}, pen_name: {2}'.format(gid, book_name, pen_name))
-        print(', '.join("'%s'" % (chapter.chapter_title.encode('GBK', 'ignore') for chapter in virtual_novel_node.chapter_list)))
+        print(', '.join('%s: %d' % (chapter.chapter_title.encode('GBK', 'ignore'), chapter.rank) for chapter in virtual_novel_node.chapter_list))
 
 
 def check_cluster_diff():
@@ -76,7 +76,6 @@ def check_cluster_diff():
         if old_rid == new_rid:
             continue
         print('gid: {0}, old_rid: {1}, new_rid: {2}'.format(gid, old_rid, new_rid))
-        show_cluster_node(old_rid)
         show_cluster_node(new_rid)
 
 
