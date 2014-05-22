@@ -23,14 +23,16 @@ def init_log(name):
     logger.info('{0} log init successful!'.format(name))
 
 
-def check_gid_rid():
-    """
-    """
-
-
 if __name__ == '__main__':
     init_log('novel')
     init_log('err')
+
+    cluster_db = ClusterDBModule()
+    result = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid'])
+    for (gid, rid) in result:
+        print('gid: {0}, rid: {1}'.format(gid, rid))
+        cluster_db.update_novelclusterdirinfo_gid(gid, gid)
+
 
 
 
