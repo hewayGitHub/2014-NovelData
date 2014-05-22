@@ -56,6 +56,7 @@ def check_cluster_diff():
         if old_cluster_result.has_key(gid):
             continue
         old_cluster_result[gid] = rid
+    here()
 
     result = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid'])
     new_cluster_result = {}
@@ -63,6 +64,7 @@ def check_cluster_diff():
         if new_cluster_result.has_key(gid):
             continue
         new_cluster_result[gid] = rid
+    here()
 
     for index, gid in enumerate(gid_list):
         if not old_cluster_result.has_key(gid):
@@ -82,19 +84,7 @@ if __name__ == '__main__':
     init_log('novel')
     init_log('err')
 
-    cluster_db = ClusterDBModule()
-    result = cluster_db.get_noveldata_all('novel_cluster_dir_info_offline', ['gid', 'rid'])
-    update_gid_dict = {}
-    for (gid, rid) in result:
-        if gid == rid:
-            continue
-        if update_gid_dict.has_key(gid):
-            continue
-        print('gid: {0}, rid: {1}'.format(gid, rid))
-        cluster_db.update_novelclusterdirinfo_gid(gid, gid)
-        update_gid_dict[gid] = 1
-
-
+    check_cluster_diff()
 
 
 
