@@ -13,6 +13,11 @@ from novel.cluster.ClusterModule import *
 from novel.chapter.ChapterOptimizeModule import *
 from novel.chapter.ChapterAvaliableModule import *
 
+from tools.chapter_format.ChapterFormatter import *
+from tools.chapter_format.SampleChapter import *
+from tools.chapter_format.TestChapterFormatter import *
+
+
 def here():
     print('PrimeMusic')
 
@@ -91,23 +96,21 @@ def chapter_module():
     novel_module.run()
 
 
-def avaliable_module():
-    """
-    """
-    novel_module = ChapterAvaliableModule()
-    novel_module.run()
-
-
 def debug():
     """
+        svn代码中debug入口内代码都加上注释，具体测试加上运行时再打开
     """
     remove_status_file()
-    #novel_module = ChapterOptimizeModule()
-    #novel_module.run_test()
     #novel_module = ChapterAvaliableModule()
     #novel_module.run()
-    novel_module = ClusterEdgeModule()
-    novel_module.run_test()
+
+    #novel_module = ChapterOptimizeModule()
+    #novel_module.run_test()
+
+    #sample_chapter_run()
+    #extract_sample(debug=False)
+    run_chapter()
+
 
 
 if __name__ == '__main__':
@@ -119,7 +122,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['node', 'edge', 'cluster', 'update', 'chapter', 'avaliable', 'test']:
+    if module not in ['node', 'edge', 'cluster', 'update', 'chapter', 'test']:
         print('no module selected !')
         exit()
 
@@ -137,8 +140,6 @@ if __name__ == '__main__':
         cluster_update_module()
     if module == 'chapter':
         chapter_module()
-    if module == 'avaliable':
-        avaliable_module()
     if module == 'test':
         debug()
 

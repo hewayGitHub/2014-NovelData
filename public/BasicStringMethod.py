@@ -22,8 +22,11 @@ def is_chinese(char):
 def is_number(char):
     """
         判断char是否为数字，char为unicode
+
+        修改为，识别全角和半角的数字
     """
-    if char >= u'\u0030' and char <= u'\u0039':
+    if (char >= u'\u0030' and char <= u'\u0039') or \
+        (char >= u'\uff10' and char <= u'\uff19'):
         return True
     else:
         return False
@@ -31,11 +34,18 @@ def is_number(char):
 def is_alphabet(char):
     """
         判断char是否为字母，char为unicode
+
+        修改为，识别全角和半角的字母
     """
     if char >= u'\u0041' and char <= u'\u005a':
         return True
     if char >= u'\u0061' and char <= u'\u007a':
         return True
+    if char >= u'\uff21' and char <= u'\uff3a':
+        return True
+    if char >= u'\uff41' and char <= u'\uff5a':
+        return True
+
     return False
 
 def is_legal(char):
@@ -81,7 +91,7 @@ def string_Q2B(string):
 
 def string_filter(string):
     """
-        全角转半角，过滤各种特殊符号
+        过滤各种特殊符号
     """
     string = ''.join(is_legal(char) and char or '' for char in string)
     return string

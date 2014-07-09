@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../DataFrame/.idea/DataFrame.iml" filepath="$PROJECT_DIR$/../DataFrame/.idea/DataFrame.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/NovelData.iml" filepath="$PROJECT_DIR$/.idea/NovelData.iml" />
+      <module fileurl="file://D:/PycharmProjects/WebService/.idea/WebService.iml" filepath="D:/PycharmProjects/WebService/.idea/WebService.iml" />
+      <module fileurl="file://D:/PycharmProjects/for_scikit/.idea/for_scikit.iml" filepath="D:/PycharmProjects/for_scikit/.idea/for_scikit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/novel-data.iml" filepath="$PROJECT_DIR$/.idea/novel-data.iml" />
     </modules>
   </component>
 </project>

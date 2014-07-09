@@ -4,7 +4,7 @@
 __author__ = 'sunhaowen'
 __date__ = '2014-02-16 17:09'
 
-from basic.NovelStructure import *
+#from basic.NovelStructure import *
 
 def here():
     print('PrimeMusic')
@@ -14,7 +14,7 @@ class BipartiteGraph(object):
     """
         ¶þ·ÖÍ¼
     """
-    __metaclass__ = Singleton
+    #__metaclass__ = Singleton
 
     def initialize(self, m, edge):
         """
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     edge[2] = [1, 3]
     edge[3] = [2]
     edge[4] = [3]
-    print(max_match.bipartite_graph_max_match(5, 5, edge))
+    print(max_match.bipartite_graph_max_match(4, 5, edge))
 
     here()    
 

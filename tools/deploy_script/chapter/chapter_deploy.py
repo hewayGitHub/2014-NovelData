@@ -23,7 +23,7 @@ def set_module_conf_file(unit, proc_start_rid_id, proc_end_rid_id):
         修改当前进程的配置信息
     """
     try:
-        raw_file = open(MODULE_CONF_FILE.format('NovelData'), 'r')
+        raw_file = open(MODULE_CONF_FILE.format('novel-data'), 'r')
         target_file = open(MODULE_CONF_FILE.format(unit), 'w')
         for line in raw_file:
             if line.find("proc_start_rid_id") >= 0 :
@@ -47,9 +47,9 @@ def deploy_unit(unit, proc_start_rid_id, proc_end_rid_id):
     """
     if os.path.exists("./{0}".format(unit)):
         os.system("rm -rf {0}".format(unit))
-    res = os.system("cp -r NovelData {0}".format(unit))
+    res = os.system("cp -r novel-data {0}".format(unit))
     if res != 0:
-        print "Failed to cp NovelData to {0}".format(unit)
+        print "Failed to cp novel-data to {0}".format(unit)
         return False
 
     if not set_module_conf_file(unit, proc_start_rid_id, proc_end_rid_id):

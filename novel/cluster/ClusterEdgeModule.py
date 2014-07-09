@@ -12,7 +12,6 @@ from basic.NovelStructure import *
 from novel.cluster.ClusterDB import *
 from novel.cluster.NovelSimilarityModule import *
 from public.BasicStringMethod import *
-from tools.debug import *
 
 def here():
     print('PrimeMusic')
@@ -61,8 +60,8 @@ class ClusterEdgeModule(object):
             chapter_dict[dir_id].append(chapter)
 
         cluster_node.novel_node_list = []
-        for (site_id, dir_id, dir_url, gid, book_name, pen_name) in dir_info_list:
-            novel_node = NovelNodeInfo(site_id = site_id, dir_id = dir_id, dir_url = dir_url, gid = gid)
+        for (site_id, site_status, dir_id, dir_url, gid, book_name, pen_name) in dir_info_list:
+            novel_node = NovelNodeInfo(site_id = site_id, site_status = site_status, dir_id = dir_id, dir_url = dir_url, gid = gid)
             novel_node.book_name = book_name.decode('GBK', 'ignore')
             novel_node.pen_name = pen_name.decode('GBK', 'ignore')
             if not chapter_dict.has_key(novel_node.dir_id):
@@ -87,7 +86,11 @@ class ClusterEdgeModule(object):
         related_list = []
         if cluster_node.book_name not in [u'', u'未知']:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('book_name', cluster_node.book_name.encode('GBK', 'ignore')))
-        if cluster_node.pen_name not in [u'', u'未知', u'匿名', u'作者', u'feiku', u'发表评论']:
+        if cluster_node.pen_name not in [
+            u'', u'未知', u'暂缺', u'匿名',
+            u'1', u'作者', u'feiku', u'发表评论', u'征文作者',
+            u'金庸', u'古龙'
+        ]:
             related_list.extend(cluster_db.get_novelclusterdirinfo_name('pen_name', cluster_node.pen_name.encode('GBK', 'ignore')))
 
         g = lambda gid: gid != cluster_node.gid
@@ -125,10 +128,16 @@ class ClusterEdgeModule(object):
     def run(self):
         """
         """
+        self.logger.info('novel cluster edge module start')
+
         similarity = NovelSimilarityModule()
 
         process_gid_list = self.process_gid_collection()
         for index, gid in enumerate(process_gid_list):
+
+            cluster_db = ClusterDBModule()
+            cluster_db.delete_novelclusteredgeinfo(gid)
+
             cluster_node = self.cluster_node_collection(gid)
             if not cluster_node:
                 continue
@@ -161,33 +170,13 @@ class ClusterEdgeModule(object):
                     pen_name = related_cluster_node.pen_name.encode('GBK')
                     self.logger.info('novel_info: {0}@{1}@{2}, '
                                      'chapter_number: {3}, similarity: {4}'.format(
-                        gid, book_name, pen_name,
+                        related_gid, book_name, pen_name,
                         len(related_virtual_node.chapter_list), cluster_similarity
                     ))
             self.cluster_edge_update(gid, related_edge_list)
 
+        self.logger.info('novel cluster edge module end')
         return True
-
-
-    def run_test(self):
-        """
-            跑评估数据
-        """
-        gid_list = [int(line.strip()) for line in open('./data/rid.txt', 'r').readlines()]
-        similarity = NovelSimilarityModule()
-
-        for index, gid in enumerate(gid_list):
-            cluster_node = self.cluster_node_collection(gid)
-            if not cluster_node:
-                continue
-            print('gid: {0}, book_name: {1}, pen_name: {2}'.format(
-                gid,
-                cluster_node.book_name.encode('GBK', 'ignore'),
-                cluster_node.pen_name.encode('GBK', 'ignore')
-            ))
-            novel_node = similarity.virtual_novel_node_generate(cluster_node)
-            print(', '.join('%s' % chapter.chapter_title.encode('GBK', 'ignore') for chapter in novel_node.chapter_list))
-            print('')
 
 
 if __name__ == '__main__':

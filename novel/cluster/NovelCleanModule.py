@@ -5,11 +5,9 @@ __author__ = 'sunhaowen'
 __date__ = '2014-02-11 15:42'
 
 import re
-
 from basic.NovelStructure import *
 from public.Trie import *
 from public.BasicStringMethod import *
-
 
 def here():
     print('PrimeMusic')
@@ -131,6 +129,16 @@ class NovelCleanModule(object):
                     chapter.chapter_title = chapter.chapter_title[length : ]
 
 
+    def manual_prefix_filter(self, chapter_title):
+        """
+            暴力方式，手工去除一些badcase
+        """
+        chapter_title = re.sub(u'VIP', '', chapter_title)
+        chapter_title = re.sub(u'^0?第?0[章|回|节]', '', chapter_title)
+        chapter_title = re.sub(u'^.*第0[章|回|节]', '', chapter_title)
+        return chapter_title
+
+
     def number_char_recover(self, chapter_title, raw_chapter_title):
         """
             恢复chapter_title中被归一化的数字字符
@@ -232,12 +240,11 @@ class NovelCleanModule(object):
 
         self.chapter_title_format(novel_node.chapter_list)
         self.common_prefix_filter(novel_node.chapter_list)
-
         for chapter in novel_node.chapter_list:
+            chapter.chapter_title = self.manual_prefix_filter(chapter.chapter_title)
             chapter.chapter_title = self.number_char_recover(chapter.chapter_title, chapter.raw_chapter_title)
 
         self.useless_suffix_filter(novel_node.chapter_list)
-
         for chapter in novel_node.chapter_list:
             chapter.chapter_title = string_filter(chapter.chapter_title)
 

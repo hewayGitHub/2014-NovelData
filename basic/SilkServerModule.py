@@ -25,7 +25,8 @@ class SilkServer(object):
 
 
     def __init__(self):
-        self._pathPrefix = 'http://10.211.141.17:8851/webapp'
+        self._pathPrefixGet = 'http://pagestruct.baidu.com/webapp'
+        self._pathPrefixPost = 'http://10.211.141.17:8851/webapp'
         self._timeout = 30
         self._defaultParam = {
             'structpage': 1,
@@ -45,17 +46,15 @@ class SilkServer(object):
         param.update(self._defaultParam)
         if pageid != None :
             param['xs_pageid'] = pageid
-        path = self._pathPrefix + '?' + urllib.urlencode(param) + '&' + urllib.urlencode({'src': src + '#reqtype=1'})
+        path = self._pathPrefixGet + '?' + urllib.urlencode(param) + '&' + urllib.urlencode({'src': src + '#reqtype=1'})
         header={'Host' : 'internal_wise_domain.baidu.com'}
         try:
             r = requests.get(path, headers = header, timeout = self._timeout)
             if r.status_code != requests.codes.ok:
-                #self.err.warning("Failed to request silkserver.get, status_code:{0}, path:{1}".format(r.status_code, r.url))
                 return False
             result = r.json()
             return result
         except Exception as e:
-            #self.err.warning("Failed to request silkserver.get, exception:{0}".format(e))
             return False
 
 
@@ -65,7 +64,7 @@ class SilkServer(object):
         param.update(self._defaultParam)
         param['xs_pageid'] = pageid
         param['xs_pageexpiretime'] = int(time.time()) + expr
-        path = self._pathPrefix + '?' + urllib.urlencode(param) + '&' + urllib.urlencode({'src': 'www.baidu.com'})
+        path = self._pathPrefixPost + '?' + urllib.urlencode(param) + '&' + urllib.urlencode({'src': 'www.baidu.com'})
         try:
             str_data = json.dumps(data)
             header = {

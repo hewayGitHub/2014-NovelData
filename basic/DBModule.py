@@ -10,6 +10,8 @@ import types
 import MySQLdb
 import MySQLdb.connections
 import logging
+import random
+from collections import defaultdict
 from ConfigParser import SafeConfigParser
 
 def here():
@@ -77,18 +79,20 @@ class MySQLModule(object):
         """
             单例类，初始化操作读取配置
         """
+        self.logger = logging.getLogger('novel.db')
+        self.err = logging.getLogger('err.db')
+
         parser = SafeConfigParser()
         parser.read('./conf/db.conf')
 
-        self.conection_info = {}
+        self.conection_info = defaultdict(list)
         for table_name in parser.sections():
             item = {}
             for key, value in parser.items(table_name):
                 item[key] = value
-            self.conection_info[table_name] = item
+            table_name = table_name.split('-')[0]
+            self.conection_info[table_name].append(item)
 
-        self.logger = logging.getLogger('novel.db')
-        self.err = logging.getLogger('err.db')
 
 
     def db_connect(self, *args, **kwargs):
@@ -101,7 +105,6 @@ class MySQLModule(object):
         except Exception as e:
             self.err.warning('[connect error: {0}]'.format(e))
             conn = False
-
         return conn
 
 
@@ -112,12 +115,13 @@ class MySQLModule(object):
         if not self.conection_info.has_key(table_name):
             self.err.warning('no table {0}'.format(table_name))
             return False
+        item = self.conection_info[table_name][random.randint(0, len(self.conection_info[table_name]) - 1)]
         conn = self.db_connect(
-            host = self.conection_info[table_name]['host'],
-            port = int(self.conection_info[table_name]['port']),
-            user = self.conection_info[table_name]['user'],
-            passwd = self.conection_info[table_name]['passwd'],
-            db = self.conection_info[table_name]['db']
+            host = item['host'],
+            port = int(item['port']),
+            user = item['user'],
+            passwd = item['passwd'],
+            db = item['db']
         )
         return conn
 

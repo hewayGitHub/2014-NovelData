@@ -111,7 +111,8 @@ class ClusterDBModule(MySQLModule):
     def get_dirfmtinfo_info(self, site_id, novel_id_list):
         """
         """
-        sql = 'SELECT site_id, site, site_status, dir_id, dir_url, gid, book_name, pen_name, update_time ' \
+        sql = 'SELECT site_id, site, site_status, ' \
+              'dir_id, dir_url, gid, book_name, pen_name, chapter_count, last_chapter_title, update_time ' \
               'FROM dir_fmt_info{0} ' \
               'WHERE id IN ({1})'.format(site_id, ', '.join("'%d'" % novel_id for novel_id in novel_id_list))
         try:
@@ -131,7 +132,7 @@ class ClusterDBModule(MySQLModule):
     def get_chapteroriinfo_list(self, site_id, dir_id_list):
         """
         """
-        sql = 'SELECT dir_id, chapter_id, chapter_sort, chapter_url, chapter_title, chapter_status ' \
+        sql = 'SELECT dir_id, chapter_id, chapter_sort, chapter_url, chapter_title ' \
               'FROM chapter_ori_info{0} ' \
               'WHERE dir_id IN ({1}) AND chapter_sort <= 60'.format(site_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
         try:
@@ -148,7 +149,7 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
-    def get_novelclusterdirinfo_list(self, dir_id_list):
+    def get_novelclusterdirinfo_diridlist(self, dir_id_list):
         """
         """
         sql = 'SELECT dir_id, gid, chapter_count, last_chapter_title ' \
@@ -168,10 +169,30 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
+    def get_novelclusterdirinfo_gidlist(self, gid_list):
+        """
+        """
+        sql = 'SELECT gid, rid ' \
+              'FROM novel_cluster_dir_info_offline ' \
+              'WHERE gid IN ({0})'.format(', '.join("'%d'" % gid for gid in gid_list))
+        try:
+            cursor = self.get_cursor('novel_cluster_dir_info_offline')
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
+
     def get_novelclusterdirinfo_gid(self, gid):
         """
         """
-        sql = 'SELECT site_id, dir_id, dir_url, gid, book_name, pen_name ' \
+        sql = 'SELECT site_id, site_status, dir_id, dir_url, gid, book_name, pen_name ' \
               'FROM novel_cluster_dir_info_offline ' \
               'WHERE gid = {0}'.format(gid)
         try:
@@ -211,7 +232,7 @@ class ClusterDBModule(MySQLModule):
         """
         cursor = self.get_cursor('novel_cluster_dir_info_offline')
         sql_prefix = "UPDATE novel_cluster_dir_info_offline " \
-                     "SET gid = '%d', book_name = '%s', pen_name = '%s', " \
+                     "SET gid = '%d', rid = '%d', book_name = '%s', pen_name = '%s', " \
                      "chapter_count = '%d', last_chapter_title = '%s' " \
                      "WHERE dir_id = '%d'"
         for update_tuple in update_tuple_list:
@@ -283,6 +304,25 @@ class ClusterDBModule(MySQLModule):
         return result
 
 
+    def get_novelclusterchapterinfo_diridlist(self, table_id, dir_id_list):
+        """
+        """
+        sql = 'SELECT dir_id, chapter_sort, gid, chapter_title ' \
+              'FROM novel_cluster_chapter_info{0} ' \
+              'WHERE dir_id IN ({1})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
+        try:
+            cursor = self.get_cursor('novel_cluster_chapter_info')
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for row in cursor.fetchall():
+            result.append(row)
+        cursor.close()
+        return result
+
 
     def insert_novelclusterchapterinfo(self, table_id, insert_tuple_list):
         """
@@ -303,36 +343,40 @@ class ClusterDBModule(MySQLModule):
         return True
 
 
-    def replace_novelclusterchapterinfo(self, table_id, insert_tuple_list):
+    def update_novelclusterchapterinfo(self, table_id, update_tuple_list):
         """
         """
-        sql = 'REPLACE INTO novel_cluster_chapter_info{0} ' \
-              '(gid, site_id, dir_id, chapter_sort, chapter_id, ' \
-              'chapter_url, chapter_title, raw_chapter_title, ' \
-              'chapter_status, word_sum) ' \
-              'VALUES {1}'.format(table_id, ', '.join('(%s)' % ', '.join("'%s'" % str(field) for field in tuple) for tuple in insert_tuple_list))
-        try:
-            cursor = self.get_cursor('novel_cluster_chapter_info')
-            cursor.execute(sql)
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return False
+        cursor = self.get_cursor('novel_cluster_chapter_info')
+        sql_prefix = "UPDATE novel_cluster_chapter_info{0} " \
+                     "SET gid = '%d', chapter_title = '%s', raw_chapter_title = '%s' " \
+                     "WHERE dir_id = '%d' AND chapter_sort = '%d'".format(table_id)
+
+        for update_tuple in update_tuple_list:
+            sql = sql_prefix % update_tuple
+            try:
+                cursor.execute(sql)
+            except Exception, e:
+                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+                continue
 
         cursor.close()
         return True
 
 
-    def delete_novelclusterchapterinfo(self, table_id, dir_id_list):
+    def delete_novelclusterchapterinfo(self, table_id, delete_tuple_list):
         """
         """
-        sql = 'DELETE FROM novel_cluster_chapter_info{0} ' \
-              'WHERE dir_id IN ({1})'.format(table_id, ', '.join("'%d'" % dir_id for dir_id in dir_id_list))
-        try:
-            cursor = self.get_cursor('novel_cluster_chapter_info')
-            cursor.execute(sql)
-        except Exception, e:
-            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
-            return False
+        cursor = self.get_cursor('novel_cluster_chapter_info')
+        sql_prefix = "DELETE FROM novel_cluster_chapter_info{0} " \
+                     "WHERE dir_id = '%d' AND chapter_sort = '%d'".format(table_id)
+
+        for delete_tuple in delete_tuple_list:
+            sql = sql_prefix % delete_tuple
+            try:
+                cursor.execute(sql)
+            except Exception, e:
+                self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+                continue
 
         cursor.close()
         return True
@@ -399,6 +443,24 @@ class ClusterDBModule(MySQLModule):
 
         cursor.close()
         return True
+
+
+    def get_novelaggregationdir_rid(self, table_id):
+        """
+        """
+        cursor = self.get_cursor('novel_aggregation_dir')
+        sql = 'SELECT distinct(rid) FROM dir_agg_chapter_info{0}'.format(table_id)
+        try:
+            cursor.execute(sql)
+        except Exception, e:
+            self.err.warning('[sql: {0}, error: {1}]'.format(sql, e))
+            return []
+
+        result = []
+        for (rid, ) in cursor.fetchall():
+            result.append(rid)
+        cursor.close()
+        return result
 
 
 if __name__ == '__main__':

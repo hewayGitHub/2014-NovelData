@@ -38,14 +38,17 @@ class NovelChapterFilter(object):
         """
         sentence_list = []
 
-        sentence = ''
-        for char in chapter.chapter_content:
-            if is_legal(char):
-                sentence += char
-            else:
-                if len(sentence) > 5 and len(sentence) < 50:
-                    sentence_list.append(sentence)
-                sentence = ''
+        for para in chapter.paragraph_list:
+            sentence = ''
+            for char in para.raw_content:
+                if is_legal(char):
+                    sentence += char
+                else:
+                    if len(sentence) > 5 and len(sentence) < 50:
+                        sentence_list.append(sentence)
+                    sentence = ''
+            if sentence != '':
+                sentence_list.append(sentence)
 
         chapter.sentence_set.update(sentence_list)
         return sentence_list
@@ -77,7 +80,7 @@ class NovelChapterFilter(object):
                 else:
                     chapter.feature_list.append(0)
 
-        threshold = max(len(candidate_chapter_list) * 0.3, 1.0)
+        threshold = 1
         for (sentence, (site_id, site_count, total_count)) in chapter_feature_list:
             if site_count > threshold:
                 break

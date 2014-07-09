@@ -2,7 +2,7 @@
 # -*- coding:GBK
 
 __author__ = 'sunhaowen'
-__date__ = '2014-03-09 16:54'
+__date__ = '2014-03-26 15:35'
 
 import os
 import sys
@@ -10,7 +10,7 @@ import sys
 def here():
     print('PrimeMusic')
 
-process_number = 16
+process_number = 64
 
 def start(module):
     """
@@ -20,7 +20,7 @@ def start(module):
             print('failed start [unit: {0}, module: {1}]'.format(unit, module))
             continue
 
-        res = os.system('cd {0} && nohup python NovelData.py {1} &'.format(unit, module))
+        res = os.system('cd {0} && python NovelData.py {1} &'.format(unit, module))
         if res != 0:
             print('failed start [unit: {0}, module: {1}]'.format(unit, module))
             return False
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         exit()
 
     module = sys.argv[1]
-    if module not in ['stop', 'node', 'edge', 'cluster', 'update', 'test']:
+    if module not in ['stop', 'node', 'edge', 'cluster', 'update', 'chapter', 'test']:
         print('no module selected !')
         exit()
 
@@ -59,7 +59,6 @@ if __name__ == '__main__':
         stop()
     else:
         start(module)
-
 
 
 

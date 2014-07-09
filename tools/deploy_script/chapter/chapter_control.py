@@ -20,7 +20,7 @@ def start(module):
             print('failed start [unit: {0}, module: {1}]'.format(unit, module))
             continue
 
-        res = os.system('cd {0} && nohup python NovelData.py {1} &'.format(unit, module))
+        res = os.system('cd {0} && python NovelData.py {1} &'.format(unit, module))
         if res != 0:
             print('failed start [unit: {0}, module: {1}]'.format(unit, module))
             return False

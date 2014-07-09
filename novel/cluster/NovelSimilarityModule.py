@@ -9,7 +9,6 @@ from collections import defaultdict
 from basic.NovelStructure import *
 from public.BasicStringMethod import *
 from public.BipartiteGraph import *
-from tools.debug import *
 
 def here():
     print('PrimeMusic')
@@ -31,27 +30,28 @@ class NovelSimilarityModule(object):
         """
             计算两本小说的相似性
         """
-        long_list = novel_node_x.chapter_list
-        short_list = novel_node_y.chapter_list
-        if len(novel_node_y.chapter_list) > len(novel_node_x.chapter_list):
-            long_list = novel_node_y.chapter_list
-            short_list = novel_node_x.chapter_list
-
-        if len(short_list) <= 2:
+        min_length = min(len(novel_node_x.chapter_list), len(novel_node_y.chapter_list))
+        if min_length <= 2:
             return 0.0, []
 
         similarity_matirx = defaultdict(list)
-        for index_x, chapter_x in enumerate(long_list):
-            if chapter_x.chapter_title == '':
+        for index_x, chapter_x in enumerate(novel_node_x.chapter_list):
+            if len(chapter_x.chapter_title) == 0:
                 continue
-            for index_y, chapter_y in enumerate(short_list):
+            for index_y, chapter_y in enumerate(novel_node_y.chapter_list):
+                if len(chapter_y.chapter_title) == 0:
+                    continue
                 chapter_similarity = self.novel_chapter_similarity_calculation(chapter_x, chapter_y)
                 if chapter_similarity >= 0.8:
                     similarity_matirx[index_x].append(index_y)
 
         match = BipartiteGraph()
-        match_number, match_list = match.bipartite_graph_max_match(len(long_list), len(short_list), similarity_matirx)
-        similarity = match_number * 1.0 / len(short_list)
+        match_number, match_list = match.bipartite_graph_max_match(
+            len(novel_node_x.chapter_list),
+            len(novel_node_y.chapter_list),
+            similarity_matirx
+        )
+        similarity = match_number * 1.0 / min_length
         return similarity, match_list
 
 
@@ -63,11 +63,10 @@ class NovelSimilarityModule(object):
         if similarity < 0.7:
             return False
 
-        virtual_novel_node.rank += 1
+        virtual_novel_node.rank += novel_node.site_status + 1
         for index, chapter in enumerate(novel_node.chapter_list):
             if match_list[index] == -1:
-                chapter.rank = 1
-                virtual_novel_node.chapter_list.append(chapter)
+                continue
             else:
                 match_chapter = virtual_novel_node.chapter_list[match_list[index]]
                 match_chapter.rank += 1
@@ -90,6 +89,12 @@ class NovelSimilarityModule(object):
             else:
                 right = mid - 1
         virtual_novel_node.chapter_list = [chapter for chapter in virtual_novel_node.chapter_list if chapter.rank >= threshold]
+
+        real_chapter_number = len([chapter for chapter in virtual_novel_node.chapter_list if len(chapter.chapter_title) > 0])
+        real_chapter_rate = 1.0 * real_chapter_number / len(virtual_novel_node.chapter_list)
+        if real_chapter_number >= 20 or real_chapter_rate >= 0.6:
+            virtual_novel_node.chapter_list = [chapter for chapter in virtual_novel_node.chapter_list if len(chapter.chapter_title) > 0]
+
         return True
 
 
@@ -100,23 +105,31 @@ class NovelSimilarityModule(object):
         print(', '.join('%s: %d' % (chapter.chapter_title.encode('GBK', 'ignore'), chapter.rank) for chapter in novel_node.chapter_list))
 
 
+    def virtual_novel_node_init(self, novel_node):
+        """
+        """
+        novel_node.rank = novel_node.site_status + 1
+        for chapter in novel_node.chapter_list:
+            chapter.rank = 0
+
+
     def virtual_novel_node_generate(self, novel_cluster_node):
         """
             一个簇计算产生一个虚拟节点
         """
-        novel_node_list = sorted(novel_cluster_node.novel_node_list, lambda a, b: cmp(len(b.chapter_list), len(a.chapter_list)))
-
+        novel_cluster_node.novel_node_list = sorted(
+            novel_cluster_node.novel_node_list,
+            lambda a, b: cmp(len(b.chapter_list), len(a.chapter_list))
+        )
         virtual_novel_node_list = []
-        for novel_node in novel_node_list:
+        for novel_node in novel_cluster_node.novel_node_list:
             flag = False
-            for index, virtual_novel_node in enumerate(virtual_novel_node_list):
+            for virtual_novel_node in virtual_novel_node_list:
                 flag = self.virtual_novel_node_merge(virtual_novel_node, novel_node)
                 if flag is True:
                     break
             if flag is False:
-                novel_node.rank = 1
-                for chapter in novel_node.chapter_list:
-                    chapter.rank = 1
+                self.virtual_novel_node_init(novel_node)
                 virtual_novel_node_list.append(novel_node)
 
         max_virtual_novel_node = virtual_novel_node_list[0]
@@ -124,7 +137,11 @@ class NovelSimilarityModule(object):
             if virtual_novel_node.rank > max_virtual_novel_node.rank:
                 max_virtual_novel_node = virtual_novel_node
 
-        self.virtual_novel_chapter_generate(max_virtual_novel_node)
+        real_chapter_number = len([chapter for chapter in max_virtual_novel_node.chapter_list if len(chapter.chapter_title) > 0])
+        real_chapter_rate = 1.0 * real_chapter_number / len(max_virtual_novel_node.chapter_list)
+        if real_chapter_number >= 20 or real_chapter_rate >= 0.6:
+            max_virtual_novel_node.chapter_list = [chapter for chapter in max_virtual_novel_node.chapter_list if len(chapter.chapter_title) > 0]
+
         return max_virtual_novel_node
 
 

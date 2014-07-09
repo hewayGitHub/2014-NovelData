@@ -21,35 +21,51 @@ class ChapterAvaliableModule(object):
         self.logger = logging.getLogger('novel.chapter.avaliable')
         self.err = logging.getLogger('err.chapter.avaliable')
 
-        self.total_chapter_number = 0
-        self.total_avaliable_chapter_number = 0
-
         parser = SafeConfigParser()
         parser.read('./conf/NovelChapterModule.conf')
         self.start_rid_id = parser.getint('chapter_module', 'proc_start_rid_id')
         self.end_rid_id = parser.getint('chapter_module', 'proc_end_rid_id')
 
+        self.total_chapter_number = 0
+        self.total_unavaliable_chapter_number = 0
+
+
+    def optimize_chapter_collection(self, rid, align_id):
+        """
+        """
+        silk_server = SilkServer()
+        chapter_page = silk_server.get(src = 'http://test.com', pageid = '{0}|{1}'.format(rid, align_id))
+
+        if not chapter_page:
+            return False
+        if not chapter_page.has_key('blocks'):
+            return False
+        return chapter_page
+
 
     def optimize_chapter_check(self, rid, align_id):
         """
         """
-        silk_server = SilkServer()
-
-        chapter_page = silk_server.get(src = 'http://test.com', pageid = '{0}|{1}'.format(rid, align_id))
-        if not chapter_page:
-            return False
-        if not chapter_page.has_key('blocks'):
+        chapter_page = self.optimize_chapter_collection(rid, align_id)
+        if chapter_page is False:
+            chapter_page = self.optimize_chapter_collection(rid, align_id)
+        if chapter_page is False:
+            chapter_page = self.optimize_chapter_collection(rid, align_id)
+        if chapter_page is False:
             return False
 
         raw_chapter_content = ''
         for block in chapter_page['blocks']:
             if block.has_key('type') and block['type'] == 'NOVELCONTENT':
                 raw_chapter_content = block['data_value']
-        raw_chapter_content = html_filter(raw_chapter_content)
-        if len(raw_chapter_content) < 50:
-            return False
 
-        return chapter_page
+        chapter_chinest_count = 0
+        for char in raw_chapter_content:
+            if is_chinese(char):
+                chapter_chinest_count += 1
+        if chapter_chinest_count < 10:
+            return False
+        return chapter_chinest_count
 
 
     def update_chapter_info(self, rid, align_id):
@@ -59,14 +75,7 @@ class ChapterAvaliableModule(object):
         chapter_db.update_novelaggregationdir_init(rid, align_id)
 
 
-    def update_chapter_content(self, rid, align_id, chapter_page):
-        """
-        """
-        silk_server = SilkServer()
-        silk_server.save('{0}|{1}'.format(rid, align_id), chapter_page)
-
-
-    def aggregation_dir_check(self, rid, flag = False):
+    def aggregation_dir_check(self, rid):
         """
         """
         chapter_db = ChapterDBModule()
@@ -74,29 +83,48 @@ class ChapterAvaliableModule(object):
 
         avaliable_chapter_num = 0
         for (chapter_index, align_id, chapter_id, chapter_url, chapter_title, optimize_chapter_wordsum) in aggregation_dir_list:
-            if flag is True:
-                self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
-
+            self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
             if optimize_chapter_wordsum == 0:
                 continue
+            flag = self.optimize_chapter_check(rid, align_id)
             if flag is False:
-                avaliable_chapter_num += 1
-                continue
-
-            chapter_page = self.optimize_chapter_check(rid, align_id)
-            if chapter_page is False:
-                self.err.warning('rid: {0}, align_id: {1}, chapter_index: {2}, chapter_title: {3}'.format(
-                    rid, align_id, chapter_index, chapter_title))
                 self.update_chapter_info(rid, align_id)
                 continue
             avaliable_chapter_num += 1
+            self.logger.info('chapter optimize OK!')
 
-        self.total_avaliable_chapter_number += avaliable_chapter_num
+        self.logger.info('rid: {0}, unavaliable: {1}/{2}'.format(rid, len(aggregation_dir_list) - avaliable_chapter_num, len(aggregation_dir_list)))
+
+
+    def unavaliable_chapter_count(self, rid):
+        """
+        """
+        chapter_db = ChapterDBModule()
+        aggregation_dir_list = chapter_db.get_novelaggregationdir_all(rid)
+
+        avaliable_chapter_num = 0
+        for (chapter_index, align_id, chapter_id, chapter_url, chapter_title, optimize_chapter_wordsum) in aggregation_dir_list:
+            if optimize_chapter_wordsum == 0:
+                self.logger.info('chapter_index: {0}, chapter_title: {1}'.format(chapter_index, chapter_title))
+                continue
+            avaliable_chapter_num += 1
+        self.logger.info('rid: {0}, unavaliable: {1}/{2}'.format(rid, len(aggregation_dir_list) - avaliable_chapter_num, len(aggregation_dir_list)))
         self.total_chapter_number += len(aggregation_dir_list)
-        self.logger.info('rid: {0}, unavaliable: {1}, total: {2}'.format(rid, len(aggregation_dir_list) - avaliable_chapter_num, len(aggregation_dir_list)))
+        self.total_unavaliable_chapter_number += len(aggregation_dir_list) - avaliable_chapter_num
 
 
-    def candidate_rid_collection(self):
+    def top_candidate_rid_collection(self):
+        """
+        """
+        rid_list = []
+        result = [int(line.strip()) for line in open('./data/rid.txt', 'r').readlines()]
+        for index, rid in enumerate(result):
+            if index <= self.end_rid_id and index >= self.start_rid_id:
+                rid_list.append(rid)
+        return rid_list
+
+
+    def total_candidate_rid_collection(self):
         """
         """
         chapter_db = ChapterDBModule()
@@ -113,13 +141,16 @@ class ChapterAvaliableModule(object):
     def run(self):
         """
         """
-        rid_list = self.candidate_rid_collection()
+        rid_list = self.top_candidate_rid_collection()
+        #rid_list = self.total_candidate_rid_collection()
 
         for index, rid in enumerate(rid_list):
             self.logger.info('index: {0}, rid: {1}'.format(index, rid))
-            self.aggregation_dir_check(rid)
+            #self.aggregation_dir_check(rid)
+            self.unavaliable_chapter_count(rid)
 
-        self.logger.info('avaliable: {0}, total: {1}'.format(self.total_avaliable_chapter_number, self.total_chapter_number))
+        self.logger.info('total unavaliable chapter number: {0}'.format(self.total_unavaliable_chapter_number))
+        self.logger.info('total chapter number: {0}'.format(self.total_chapter_number))
         self.logger.info('avaliable module end!')
 
 
